@@ -12,7 +12,7 @@ app.set("views", "./views")
 
 
 app.get("/", (req, res) =>{
-    res.send("Hola, este es el inicio del proyecto")
+    res.render("index")
 })
 
 app.listen(port, () => console.log(`El servidor se encuentra en el puerto ${port}`))

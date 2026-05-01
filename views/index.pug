@@ -1,0 +1,19 @@
+include layout.pug 
+
+block metadata
+    title Inicio
+
+block content
+    body(class="bg-gray-300")
+
+        .bar_naranja(class="bg-orange-400 px-6 py-5 text-3xl h-20 flex justify-between items-center")
+            p(class="cursor-pointer hover:bg-cyan-400 hover:text-white") home
+            .user(class="flex gap-10")
+                p(class="py-2") Notificaciones 
+                img(src="", alt="img" class="bg-blue-500 rounded-full size-12 text-xl")
+    form(action="", method="get" id="form_buscar") 
+        .foto_buscador(class="flex justify-center items-center mt-5")
+            input(class="bg-white text-3xl p-3 mr-10 w-xl rounded-md focus:outline-orange-300" type="text" name="buscador" id="buscador") 
+            button#filtros(type="button" class="bg-white pl-2 pr-2 text-2xl py-2 rounded-md hover:bg-amber-400") Filtrar por
+            
+    script(src="/script/index.js" defer) 
