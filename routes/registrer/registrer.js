@@ -1,9 +1,8 @@
 import express from "express"
+import { registrerIndex } from "../../controllers/registrer/registrerController.js"
 
 const router = express.Router()
 
-router.get("/", (req, res) =>{
-    res.render("./registrer/registrer")
-})
+router.get("/", registrerIndex)
 
 export default router
