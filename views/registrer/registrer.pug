@@ -1,28 +1,63 @@
 extends ../layout.pug
-
-block metadata
-    title Registrarse
+include ../mixins/mix_registrer/registrerMixins
 
 block metadata
     title Registrarse
 
 block content
-    .login_content(class="bg-gray-200 flex flex-col items-center justify-center mx-110 mt-20")
-        p(class="text-4xl font-bold block mt-5") Ingrese los siguientes datos
+    body
+        .login_content(class="bg-gray-200 flex flex-col items-center justify-center mx-150 mt-10")
+            p(class="text-3xl font-bold block mt-5") Ingrese los siguientes datos
 
-        form(action="", method="get")
-            div(class="flex flex-col mt-10 mb-10")
-                input(type="text", name="nombre" id="nombre" placeholder="Nombre" class="text-2xl text-gray-400 font-bold pt-2 pb-2 pl-4 bg-white block w-200 mb-2")
-                input(type="text", name="apellido" id="apellido" placeholder="Apellido" class="text-2xl text-gray-400 font-bold  pt-2 pb-2 pl-4 bg-white block w-200 mb-2")
-                input(type="text", name="anio_nacimiento" id="anio_nacimiento" placeholder="Fecha y año de nacimiento" class="text-2xl text-gray-400 font-bold  pt-2 pb-2 pl-4 bg-white block w-200 mb-2")
-                input(type="text", name="genero" id="genero" placeholder="Genero" class="text-2xl text-gray-400 font-bold  pt-2 pb-2 pl-4 bg-white block w-200 mb-2")
-                input(type="text", name="país" id="país" placeholder="País de residencia" class="text-2xl text-gray-400 font-bold  pt-2 pb-2 pl-4 bg-white block w-200 mb-2")
-                input(type="text", name="mail" id="mail" placeholder="Mail" class="text-2xl text-gray-400 font-bold pt-2 pb-2 pl-4 bg-white block w-200 mb-2")
-                input(type="text", name="dni" id="dni" placeholder="DNI" class="text-2xl text-gray-400 font-bold pt-2 pb-2 pl-4 bg-white block w-200 mb-2")
-                input(type="text", name="tipo_dni" id="tipo_dni" placeholder="Tipo DNI" class="text-2xl text-gray-400 font-bold pt-2 pb-2 pl-4 bg-white block w-200")
-            div(class="flex justify-center mb-5")
-                a(href="/login" class="hover:text-blue-400") 
-                    p(class="text-2xl") Inicia sesion si ya tiene una cuenta
-            div(class="flex justify-center mb-5")
-                button(type="submit" class="border-none pl-20 pr-20 pt-2 pb-2 text-3xl bg-white font-bold hover:bg-orange-500 hover:text-white") Continuar
-                            
+            form(action="/registrer/", method="post" id="form_registrer")
+                div(class="flex flex-col mt-10 mb-7")
+                
+                    label(for="nombre" class="text-[25px]") Nombre
+                    input(type="text", name="nombre" id="nombre" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-4")
+                    
+                    label(for="apellido" class="text-[25px]") Apellido
+                    input(type="text", name="apellido" id="apellido" class="text-1xl text-gray-950 font-bold  py-[5px] pl-2 bg-white block w-125 mb-4")
+
+                    label(for="nombre_usuario" class="text-[25px]") Nombre de usuario
+                    input(type="text", name="nombre_usuario" id="nombre_usuario" class="text-1xl text-gray-950 font-bold  py-[5px] pl-2 bg-white block w-125 mb-4")
+                    
+                    label(for="contrasenia" class="text-[25px]") Contraseña
+                    input(type="password", name="contrasenia" id="contrasenia" class="text-1xl text-gray-950 font-bold  py-[5px] pl-2 bg-white block w-125 mb-4")
+                    
+                    label(for="confirmar_contrasenia" class="text-[25px]") Confirmar contrasenia
+                    input(type="password", name="confirmar_contrasenia" id="confirmar_contrasenia" class="text-1xl text-gray-950 font-bold  py-[5px] pl-2 bg-white block w-125 mb-4")
+
+                    label(for="fecha_nacimiento" class="text-[25px]") Fecha de Nacimiento
+                    input(type="date", name="fecha_nacimiento" id="fecha_nacimiento" class="text-1xl text-gray-950 font-bold pl-1 py-[5px] bg-white block w-125 mb-4")
+                    
+                    label(for="genero" class="text-[25px]") Genero
+                    select(name="genero" id="genero" class="text-1xl text-gray-500 font-bold py-[5px] pl-1 bg-white block w-125 mb-4")
+                        option(value="genero_default" selected disabled) Genero
+                            each val_genre in options_genre
+                                option(class="text-black" value= val_genre)= val_genre
+                    
+                    label(for="mail" class="text-[25px]") Mail
+                    input(type="text", name="mail" id="mail" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-4")
+                    
+                    label(for="tipodni" class="text-[25px]") Tipo de DNI
+                    select(name="tipodni" id="tipodni" class="text-1xl text-gray-500 font-bold py-[5px] pl-1 bg-white block w-125 mb-4")
+                        option(value="tipo_dni" selected disabled) Tipo DNI
+                            each val_dni in options_dni
+                                option(class="text-black" value= val_dni)= val_dni
+                    
+                    label(for="dni" class="text-[25px]") Ingrese su numero de DNI
+                    input(type="text", name="dni" id="dni" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-2")
+                      
+                   
+                div(class="flex justify-center mb-5")
+                    a(href="/login" class="hover:text-blue-400") 
+                        p(class="text-2xl") Inicia sesion si ya tiene una cuenta
+                div(class="flex justify-center mb-5")
+                    button(type="submit" class="border-none pl-20 pr-20 py-2 text-2xl bg-white font-bold hover:bg-orange-500 hover:text-white") Continuar
+        if error
+            +error_form(error)
+        else
+            div(class="bg-green-300/80 mt-15 mb-30 w-[70rem] m-auto text-green-600")
+                h1(class="text-[3rem] text-center font-bold pt-5 pb-5") SALIO BIEN!!!
+    script(src="script/registrer/registrer_src.js" defer) 
+             

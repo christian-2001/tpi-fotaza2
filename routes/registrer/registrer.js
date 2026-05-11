@@ -1,8 +1,9 @@
 import express from "express"
-import { registrerIndex } from "../../controllers/registrer/registrerController.js"
+import { registroIndex, validarRegistro } from "../../controllers/registrer/registrerController.js"
 
 const router = express.Router()
 
-router.get("/", registrerIndex)
+router.get("/", registroIndex)
 
+router.post("/", validarRegistro)
 export default router
