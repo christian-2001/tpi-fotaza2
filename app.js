@@ -3,7 +3,6 @@ import 'dotenv/config';
 import loginRoutes from "./routes/login/login.js"
 import registrerRoutes from "./routes/registrer/registrer.js"
 import { db_conexion } from "./models/index.js";
-
 const app = express()
 const port = process.env.PORT
 
@@ -33,6 +32,6 @@ db_conexion()
     })
 })
 .catch((err) => {
-    console.error("Error al sinctonizar con la base de datos:", err)
+    console.error("Error al sincronizar con la base de datos:", err)
 })
 

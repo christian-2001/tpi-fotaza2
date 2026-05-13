@@ -1,0 +1,28 @@
+import { Model, DataTypes } from "sequelize"
+import sequelize from "../db/config.js";
+
+export class Etiqueta extends Model { }
+
+Etiqueta.init(
+    {
+        id_etiqueta: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+        },
+
+        nom_etiqueta: {
+            type: DataTypes.STRING,
+            unique: true
+        }
+    },
+    
+    {
+        sequelize,
+        modelName: "Etiqueta",
+        tableName: "etiqueta",
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+    }
+)
