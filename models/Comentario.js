@@ -9,11 +9,12 @@ Comentario.init(
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
+            unique: "ComentarioUnico"
         },
 
         fh_comentario: {
             type: DataTypes.DATE,
-            primaryKey: true,
+            unique: "ComentarioUnico"
         },
 
         cant_likes: {

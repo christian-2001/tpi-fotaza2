@@ -14,16 +14,7 @@ Publicacion_Etiqueta.init(
             key: "id_post",
         },
     },
-/*
 
-    fh_publicacion: {
-        type: DataTypes.DATE,
-        references: {
-            model: Publicacion,
-            key: "fh_publicacion",
-        },
-    },
-*/
     id_etiqueta: {
         type: DataTypes.INTEGER,
         references: {

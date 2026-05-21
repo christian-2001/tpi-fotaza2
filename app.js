@@ -1,15 +1,15 @@
 import express from "express"
 import 'dotenv/config';
-import loginRoutes from "./routes/login/login.js"
+import loginRoutes from "./routes/loginRoutes/loginRoutes.js"
 import registrerRoutes from "./routes/registrer/registrer.js"
-import postRoutes from "./routes/post/post.js"
+import postRoutes from "./routes/postRoutes/postRoutes.js"
 import { db_conexion } from "./models/index.js";
 
 const app = express()
 const port = process.env.PORT || 3000
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json())
+app.use(express.json({limit: "50mb"}))
 app.use(express.static("public"))
 
 app.set("view engine", "pug")
@@ -23,7 +23,7 @@ app.use("/login", loginRoutes)
 
 app.use("/registrer", registrerRoutes)
 
-app.use("/subirpost", postRoutes)
+app.use("/subirPost", postRoutes)
 
 /*
 

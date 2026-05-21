@@ -8,6 +8,6 @@ const router = express.Router()
 
 router.get("/", postIndex)
 
-router.post("/", img_upload.array("img_file", 2), subirPost)
+router.post("/", subirPost)
 
 export default router 

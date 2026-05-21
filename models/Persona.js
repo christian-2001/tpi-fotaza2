@@ -8,25 +8,34 @@ Persona.init(
     dni: {
       type: DataTypes.STRING(8),
       primaryKey: true,
+      unique: "PersonaUnica"
     },
+
     tipo_dni: {
       type: DataTypes.STRING(40),
+      unique: "PersonaUnica",
       //primaryKey: true,
     },
+
     sexo: {
       type: DataTypes.STRING(20),
+      unique: "PersonaUnica",
       //primaryKey: true,
     },
+
     nombre: {
       type: DataTypes.STRING(20),
     },
+
     apellido: {
       type: DataTypes.STRING(20),
     },
+
     mail: {
       type: DataTypes.STRING,
       unique: true,
     },
+
     fecha_nacimiento: {
       type: DataTypes.DATEONLY,
     },

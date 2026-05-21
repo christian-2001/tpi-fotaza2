@@ -9,27 +9,30 @@ Publicacion.init(
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
+            unique: "PublicacionUnica",
         },
-/*
+
         fh_publicacion: {
             type: DataTypes.DATE,
-            primaryKey: true
+            unique: "PublicacionUnica",
         },
-*/
+
         titulo: {
             type: DataTypes.STRING()
         },
 
         descripcion: {
-            type: DataTypes.TEXT
+            type: DataTypes.TEXT,
+            defaultValue: "Ninguna"
         }
     },
     {
         sequelize,
+        timestamps: true,
         modelName: "Publicacion",
         tableName: "publicacion",
-        createdAt: true,
-        updatedAt: true,
+        createdAt: "fh_publicacion",
+        updatedAt: "fh_edit_publicacion",
         deletedAt: true,
     }
 )

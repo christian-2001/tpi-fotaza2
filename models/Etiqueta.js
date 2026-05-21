@@ -9,11 +9,13 @@ Etiqueta.init(
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
+            unique: "EtiquetaUnica"
         },
 
         nom_etiqueta: {
             type: DataTypes.STRING,
-            unique: true
+            unique: true,
+            unique: "EtiquetaUnica"
         }
     },
     

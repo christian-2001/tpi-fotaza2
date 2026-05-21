@@ -19,20 +19,30 @@ Imagen.init(
             type: DataTypes.BLOB,
         },
 
-        licencia: {
-            type: DataTypes.BOOLEAN
+        copyright: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
+
+        extension: {
+            type: DataTypes.STRING,
+            allowNull: false
         },
 
         cant_votaciones: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         },
 
         cant_valorizaciones: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         },
 
         prom_valorizaciones: {
-            type: DataTypes.DOUBLE
+            type: DataTypes.DOUBLE,
+            defaultValue: 0
         },
     },
 
@@ -40,7 +50,7 @@ Imagen.init(
         sequelize,
         modelName: "Imagen",
         tableName: "imagen",
-        createdAt: true,
+        createdAt: "fh_subida",
         updatedAt: true,
         deletedAt: true,
     }

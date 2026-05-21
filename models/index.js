@@ -6,6 +6,9 @@ import { Persona } from "./Persona.js";
 import { Publicacion } from "./Publicacion.js";
 import { Publicacion_Etiqueta } from "./Publicacion_Etiqueta.js";
 import { Usuario } from "./Usuario.js";
+import { Valorizacion } from "./Valorizacion.js";
+import { Seguidores } from "./Seguidores.js";
+import { Imagen_Etiqueta } from "./Imagen_Etiqueta.js";
 
 /*
 ⁡⁢⁢⁢Relacion 1 a 1 con:
@@ -41,8 +44,17 @@ Usuario.belongsTo(Persona, { foreignKey: "dni" })
 Publicacion.hasMany(Imagen, { foreignKey: "id_post" })
 Imagen.belongsTo(Publicacion, { foreignKey: "id_post" })
 
-Imagen.hasMany(Comentario, { foreignKey: "id_img"})
-Comentario.belongsTo(Imagen, { foreignKey: "id_img"})
+Imagen.hasMany(Comentario, { foreignKey: "id_img" })
+Comentario.belongsTo(Imagen, { foreignKey: "id_img" })
+
+Usuario.hasMany(Comentario, { foreignKey: "id_usuario" })
+Comentario.belongsTo(Usuario, { foreignKey: "id_usuario" })
+
+Imagen.hasMany(Valorizacion, { foreignKey: "id_img" })
+Valorizacion.belongsTo(Imagen, { foreignKey: "id_img"})
+
+Usuario.hasMany(Valorizacion, { foreignKey: "id_usuario"})
+Valorizacion.belongsTo(Usuario, { foreignKey: "id_usuario"})
 
 //⁡⁢⁣⁣𝗥𝗲𝗹𝗮𝗰𝗶𝗼𝗻𝗲𝘀 𝗡 𝗮 𝗡⁡
 
@@ -57,6 +69,21 @@ Etiqueta.belongsToMany(Publicacion, {
     foreignKey: 'id_etiqueta',
     otherKey: 'id_post',
 })
+
+Imagen.belongsToMany(Etiqueta, {
+    through: Imagen_Etiqueta,
+    foreignKey: "id_img",
+    otherKey: "id_etiqueta"
+})
+
+Etiqueta.belongsToMany(Imagen, {
+    through: Imagen_Etiqueta,
+    foreignKey: "id_etiqueta",
+    otherKey: "id_img"
+})
+
+Usuario.hasMany(Seguidores, { foreignKey: "id_usuario" })
+Seguidores.belongsTo(Usuario, { foreignKey: "id_usuario" })
 
 //-------------------------------------------------------------------------------------
 

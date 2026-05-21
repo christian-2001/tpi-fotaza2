@@ -5,20 +5,26 @@ export class Usuario extends Model { }
 
 Usuario.init(
     {
-        
+
         id_usuario: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
+            unique: "UsuarioUnico"
         },
-/*
+
         nombre_usuario: {
             type: DataTypes.STRING(50),
-            primaryKey: true
+            unique: "UsuarioUnico",
         },
-*/
+
         perfil_descripcion: {
             type: DataTypes.STRING,
+        },
+
+        email: {
+            type: DataTypes.STRING(),
+            unique: true,
         },
 
         cant_publicaciones: {
@@ -34,9 +40,10 @@ Usuario.init(
         },
 
         estado_cuenta: {
-            type: DataTypes.BOOLEAN
+            type: DataTypes.BOOLEAN,
         },
     },
+    
     {
         sequelize,
         modelName: "Usuario",
