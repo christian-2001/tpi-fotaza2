@@ -1,5 +1,6 @@
 import { Model, DataTypes } from "sequelize"
 import sequelize from "../db/config.js";
+import { Persona } from "./Persona.js";
 
 export class Usuario extends Model { }
 
@@ -20,28 +21,42 @@ Usuario.init(
 
         perfil_descripcion: {
             type: DataTypes.STRING,
+            defaultValue: "Ninguna"
         },
 
         email: {
             type: DataTypes.STRING(),
             unique: true,
+            allowNull: false
         },
 
         cant_publicaciones: {
             type: DataTypes.INTEGER,
+            defaultValue: 0
         },
 
         cant_seguidores: {
             type: DataTypes.INTEGER,
+            defaultValue: 0
         },
 
         cant_seguidos: {
             type: DataTypes.INTEGER,
+            defaultValue: 0
         },
 
         estado_cuenta: {
-            type: DataTypes.BOOLEAN,
+            type: DataTypes.STRING,
+            defaultValue: "Activo"
         },
+
+        id_persona: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: Persona,
+                key: "id_persona"
+            }
+        }
     },
     
     {

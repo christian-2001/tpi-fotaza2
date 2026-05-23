@@ -5,10 +5,17 @@ export class Persona extends Model { }
 
 Persona.init(
   {
+    id_persona: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      unique: true
+    },
+
     dni: {
       type: DataTypes.STRING(8),
-      primaryKey: true,
       unique: "PersonaUnica"
+      //primaryKey: true,
     },
 
     tipo_dni: {
@@ -29,11 +36,6 @@ Persona.init(
 
     apellido: {
       type: DataTypes.STRING(20),
-    },
-
-    mail: {
-      type: DataTypes.STRING,
-      unique: true,
     },
 
     fecha_nacimiento: {

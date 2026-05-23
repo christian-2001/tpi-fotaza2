@@ -1,5 +1,6 @@
 import { Model, DataTypes } from "sequelize"
 import sequelize from "../db/config.js";
+import { Publicacion } from "./Publicacion.js";
 
 export class Imagen extends Model { }
 
@@ -44,6 +45,14 @@ Imagen.init(
             type: DataTypes.DOUBLE,
             defaultValue: 0
         },
+
+        id_post: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: Publicacion,
+                key: "id_post"
+            }
+        }
     },
 
     {

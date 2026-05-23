@@ -14,8 +14,8 @@ Etiqueta.init(
 
         nom_etiqueta: {
             type: DataTypes.STRING,
-            unique: true,
-            unique: "EtiquetaUnica"
+            unique: "EtiquetaUnica",
+            allowNull: false
         }
     },
     

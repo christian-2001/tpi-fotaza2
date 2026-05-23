@@ -38,8 +38,8 @@ import { Imagen_Etiqueta } from "./Imagen_Etiqueta.js";
 Usuario.hasMany(Publicacion, { foreignKey: "id_usuario" })
 Publicacion.belongsTo(Usuario, { foreignKey: "id_usuario" })
 
-Persona.hasMany(Usuario, { foreignKey: "dni" })
-Usuario.belongsTo(Persona, { foreignKey: "dni" })
+Persona.hasMany(Usuario, { foreignKey: "id_persona" })
+Usuario.belongsTo(Persona, { foreignKey: "id_persona" })
 
 Publicacion.hasMany(Imagen, { foreignKey: "id_post" })
 Imagen.belongsTo(Publicacion, { foreignKey: "id_post" })
@@ -56,6 +56,7 @@ Valorizacion.belongsTo(Imagen, { foreignKey: "id_img"})
 Usuario.hasMany(Valorizacion, { foreignKey: "id_usuario"})
 Valorizacion.belongsTo(Usuario, { foreignKey: "id_usuario"})
 
+
 //⁡⁢⁣⁣𝗥𝗲𝗹𝗮𝗰𝗶𝗼𝗻𝗲𝘀 𝗡 𝗮 𝗡⁡
 
 Publicacion.belongsToMany(Etiqueta, {
@@ -69,6 +70,11 @@ Etiqueta.belongsToMany(Publicacion, {
     foreignKey: 'id_etiqueta',
     otherKey: 'id_post',
 })
+
+Publicacion.hasMany(Publicacion_Etiqueta, { foreignKey: "id_post"})
+Publicacion_Etiqueta.belongsTo(Publicacion, { foreignKey: "id_post"})
+Etiqueta.hasMany(Publicacion_Etiqueta, { foreignKey: "id_etiqueta"})
+Publicacion_Etiqueta.belongsTo(Etiqueta, { foreignKey: "id_etiqueta"})
 
 Imagen.belongsToMany(Etiqueta, {
     through: Imagen_Etiqueta,
@@ -93,7 +99,7 @@ export async function db_conexion() {
         await sequelize.authenticate()
         console.log("Se conectó a la bd")
 
-        await sequelize.sync({ alter: true, force: true })
+        await sequelize.sync({ alter: true})
         console.log("Sincronizacion de los modelos...")
     } catch (error) {
         console.error("Error en la conexion a la base de datos", error)

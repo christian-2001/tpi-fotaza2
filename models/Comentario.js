@@ -1,5 +1,7 @@
 import { Model, DataTypes } from "sequelize"
 import sequelize from "../db/config.js";
+import { Imagen } from "./Imagen.js";
+import { Usuario } from "./Usuario.js";
 
 export class Comentario extends Model { }
 
@@ -24,6 +26,22 @@ Comentario.init(
         texto: {
             type: DataTypes.TEXT
         },
+
+        id_img: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: Imagen,
+                key: "id_img"
+            }
+        },
+
+        id_usuario: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: Usuario,
+                key: "id_usuario"
+            }
+        }
     },
 
     {

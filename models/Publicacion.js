@@ -1,5 +1,6 @@
 import { Model, DataTypes } from "sequelize"
 import sequelize from "../db/config.js";
+import { Usuario } from "./Usuario.js";
 
 export class Publicacion extends Model { }
 
@@ -14,6 +15,7 @@ Publicacion.init(
 
         fh_publicacion: {
             type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
             unique: "PublicacionUnica",
         },
 
@@ -24,6 +26,14 @@ Publicacion.init(
         descripcion: {
             type: DataTypes.TEXT,
             defaultValue: "Ninguna"
+        },
+        
+        id_usuario: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: Usuario,
+                key: "id_usuario"
+            }
         }
     },
     {
