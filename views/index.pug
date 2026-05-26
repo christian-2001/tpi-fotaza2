@@ -7,10 +7,10 @@ block metadata
     title Inicio
 
 block content
-    +home(postTag)
+    +home(query)
            
-    if queryTags 
-        +tagsQuery(queryTags)
+    if queryResult 
+        +tagsQuery(queryResult)
     else
         div(class="grid grid-cols-2 my-20 mx-60 gap-4")
             each val in posts

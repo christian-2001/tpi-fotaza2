@@ -1,36 +1,42 @@
-mixin tagsQuery(queryTags = undefined)
-    body
-        if queryTags.length === 1
-            div(class="flex flex-col justify-center my-20 mx-150")
-                div(class="grid bg-white")
-                    .post(class="bg-white border-1 border-gray-400 rounded-[10px] p-3") 
-                        .post_usuario(class="text-center text-[20px]")
-                            p Publicado por #{queryTags[0].Usuario.nombre_usuario} - #{queryTags[0].fh_publicacion.toLocaleDateString()} - #{queryTags[0].fh_publicacion.toLocaleTimeString()}
-                        .post_titulo(class="mt-3 text-center text-3xl font-bold")
-                            h1 #{queryTags[0].titulo}
-                        .post_descripcion(class="mt-5 text-1xl")
-                            p #{queryTags[0].descripcion}
-                        .post_etiquetas(class="mt-2 inline-block")
-                            p Etiquetas:
-                                form(action="/buscar" method="get") 
-                                    each tags in queryTags[0].Etiqueta
-                                        label(for=`${tags.nom_etiqueta}`)
-                                            button(type="submit" name="etiqueta" id="etiqueta" value= `${tags.nom_etiqueta}`  class="etiquetaPost font-bold text-blue-600 mr-[3px]") ##{tags.nom_etiqueta} 
+mixin tagsQuery(queryResult = undefined)
+    div(class="flex justify-center mt-5 text-[35px] font-bold")
+        p Resultados de Busqueda:
 
-        else if queryTags.length > 1
-            div(class="grid grid-cols-2 my-20 mx-60 gap-4")
-                each post in queryTags
-                    .post(class="bg-white border-1 border-gray-400 rounded-[10px] p-3") 
-                        .post_usuario(class="text-center text-[20px]")
-                            p Publicado por #{post.Usuario.nombre_usuario} - #{post.fh_publicacion.toLocaleDateString()} - #{post.fh_publicacion.toLocaleTimeString()}
-                        .post_titulo(class="mt-3 text-center text-3xl font-bold")
-                            h1 #{post.titulo}
-                        .post_descripcion(class="mt-5 text-1xl")
-                            p #{post.descripcion}
-                        .post_etiquetas(class="mt-2 inline-block")
-                            p Etiquetas:
-                                form(action="/buscar" method="get") 
-                                    each tags in post.Etiqueta
-                                        label(for=`${tags.nom_etiqueta}`)
-                                            button(type="submit" name="etiqueta" id="etiqueta" value= `${tags.nom_etiqueta}`  class="etiquetaPost font-bold text-blue-600 mr-[3px]") ##{tags.nom_etiqueta} 
+    if queryResult.length === 1
+        div(class="flex flex-col justify-center mt-10 mb-20 mx-150")
+            div(class="grid bg-white")
+                .post(class="bg-white border-1 border-gray-400 rounded-[10px] p-3") 
+                    .post_usuario(class="text-center text-[20px]")
+                        p Publicado por #{queryResult[0].Usuario.nombre_usuario} - #{queryResult[0].fh_publicacion.toLocaleDateString()} - #{queryResult[0].fh_publicacion.toLocaleTimeString()}
+                    .post_titulo(class="mt-3 text-center text-3xl font-bold")
+                        h1 #{queryResult[0].titulo}
+                    .post_descripcion(class="mt-5 text-1xl")
+                        p #{queryResult[0].descripcion}
+                    .post_etiquetas(class="mt-2 inline-block")
+                        p Etiquetas:
+                            form(action="/buscar" method="get") 
+                                each tags in queryResult[0].Etiqueta
+                                    label(for=`${tags.nom_etiqueta}`)
+                                        button(type="submit" name="etiqueta" id="etiqueta" value= `${tags.nom_etiqueta}`  class="etiquetaPost font-bold text-blue-600 mr-[3px]") ##{tags.nom_etiqueta} 
+
+    else if queryResult.length > 1
+        div(class="grid grid-cols-2 mt-10 mb-20 mx-60 gap-4")
+            each post in queryResult
+                .post(class="bg-white border-1 border-gray-400 rounded-[10px] p-3") 
+                    .post_usuario(class="text-center text-[20px]")
+                        p Publicado por #{post.Usuario.nombre_usuario} - #{post.fh_publicacion.toLocaleDateString()} - #{post.fh_publicacion.toLocaleTimeString()}
+                    .post_titulo(class="mt-3 text-center text-3xl font-bold")
+                        h1 #{post.titulo}
+                    .post_descripcion(class="mt-5 text-1xl")
+                        p #{post.descripcion}
+                    .post_etiquetas(class="mt-2 inline-block")
+                        p Etiquetas:
+                            form(action="/buscar" method="get") 
+                                each tags in post.Etiqueta
+                                    label(for=`${tags.nom_etiqueta}`)
+                                        button(type="submit" name="etiqueta" id="etiqueta" value= `${tags.nom_etiqueta}`  class="etiquetaPost font-bold text-blue-600 mr-[3px]") ##{tags.nom_etiqueta}
+    else
+        div(class="ml-[3rem] text-[35px] font-bold text-red-500")
+            p No se ha obtenido resultados
+
         
