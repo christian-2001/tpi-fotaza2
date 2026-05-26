@@ -65,6 +65,13 @@ Publicacion.belongsToMany(Etiqueta, {
     otherKey: "id_etiqueta",
 })
 
+Publicacion.belongsToMany(Etiqueta, {
+    through: Publicacion_Etiqueta,
+    foreignKey: "id_post",
+    otherKey: "id_etiqueta",
+    as: "Tags"
+})
+
 Etiqueta.belongsToMany(Publicacion, {
     through: Publicacion_Etiqueta,
     foreignKey: 'id_etiqueta',

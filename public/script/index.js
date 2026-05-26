@@ -1,8 +1,15 @@
 document.getElementById("filtros").addEventListener("click", mostrarFiltros)
+const postTags = document.querySelectorAll(".etiquetaPost")
+
+for (const tag of postTags) {
+    tag.classList.toggle("cursor-pointer")
+    tag.classList.toggle("hover:text-blue-500/50")
+}
+
 
 function mostrarFiltros() {
     const form = document.querySelector("#form_buscar")
-    if(form.lastElementChild.id == "lista_filtros"){
+    if (form.lastElementChild.id == "lista_filtros") {
         form.lastElementChild.remove()
     } else {
         crearListado(form)
@@ -40,7 +47,7 @@ function crearListado(form) {
     form.appendChild(listado)
 }
 
-function listadoClases(listado){
+function listadoClases(listado) {
     listado.classList.toggle("bg-white")
     listado.classList.toggle("mt-5")
     listado.classList.toggle("text-3xl")
@@ -53,8 +60,16 @@ function listadoClases(listado){
     listado.classList.toggle("p-2")
 }
 
-    /*
-        div(class="bg-red-500")
-                input(type="checkbox", name="filtro1" id="filtro1" value="f1" class="size-5 mr-3")
-                label(for="filtro1") filtro1 
-        */
+//=====================================================================================================================================
+/*
+const img_container = document.getElementById("img_container")
+const img_contents = img_container.querySelectorAll(".img_content")[3]
+console.log(img_contents)
+*/
+
+/*
+if(img_cant > 4) {
+    
+}
+*/
+
