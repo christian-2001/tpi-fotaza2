@@ -94,7 +94,7 @@ async function seed() {
         { nom_etiqueta: "postGreen" },
 
         //tags[1]
-        { nom_etiqueta: "postGreen2" },
+        { nom_etiqueta: "aguantefotaza" },
 
         //tags[2]
         { nom_etiqueta: "imgGreen" },
@@ -117,6 +117,17 @@ async function seed() {
         //tags[8]
         { nom_etiqueta: "imgGreen2" },
 
+        //tags[9]
+        { nom_etiqueta: "imgGreen1Extra" },
+
+        //tags[10]
+        { nom_etiqueta: "imgGreen1Extra2" },
+
+        //tags[11]
+        { nom_etiqueta: "imgGreen1Extra3" },
+
+        //tags[12]
+        { nom_etiqueta: "imgGreen1Extra4" },
     ])
 
     //Publicacion_Etiqueta
@@ -150,7 +161,7 @@ async function seed() {
         //imagesPost[1]
         {
             nombre_img: "Imagen de flojocosmico",
-            img_path: "https://res.cloudinary.com/fotaza2/image/upload/v1778563529/main-sample.png",
+            img_path: "https://res.cloudinary.com/fotaza2/image/upload/v1778563529/cld-sample-4.jpg",
             extension: "png",
             id_post: posts[1].id_post
         },
@@ -170,6 +181,38 @@ async function seed() {
             extension: "jpg",
             id_post: posts[3].id_post
         },
+             
+        //imagesPost[4]
+        {
+            nombre_img: "Imagen de chrisgreen EXTRA",
+            img_path: "https://res.cloudinary.com/fotaza2/image/upload/v1778563525/samples/cup-on-a-table.jpg",
+            extension: "jpg",
+            id_post: posts[0].id_post,
+        },
+
+        //imagesPost[5]
+        {
+            nombre_img: "Imagen de chrisgreen EXTRA 2",
+            img_path: "https://res.cloudinary.com/fotaza2/image/upload/v1778563529/cld-sample-5.jpg",
+            extension: "jpg",
+            id_post: posts[0].id_post,
+        },
+
+         //imagesPost[6]
+        {
+            nombre_img: "Imagen de chrisgreen EXTRA 3",
+            img_path: "https://res.cloudinary.com/fotaza2/image/upload/v1778563528/cld-sample-2.jpg",
+            extension: "jpg",
+            id_post: posts[0].id_post,
+        },
+
+         //imagesPost[7]
+        {
+            nombre_img: "Imagen de chrisgreen EXTRA 4",
+            img_path: "https://res.cloudinary.com/fotaza2/image/upload/v1778563528/cld-sample-2.jpg",
+            extension: "jpg",
+            id_post: posts[0].id_post,
+        },
     ])
 
     //Imagen_Etiqueta
@@ -177,25 +220,49 @@ async function seed() {
         //Imagen de chrisgreen
         {
             id_img: imagesPost[0].id_img,
-            id_etiqueta: tags[1].id_etiqueta,
+            id_etiqueta: tags[2].id_etiqueta,
         },
 
         //Imagen de flojocosmico
         {
             id_img: imagesPost[1].id_img,
-            id_etiqueta: tags[3].id_etiqueta,
+            id_etiqueta: tags[4].id_etiqueta,
         },
 
         //Imagen de nozye500
         {
             id_img: imagesPost[2].id_img,
-            id_etiqueta: tags[5].id_etiqueta,
+            id_etiqueta: tags[6].id_etiqueta,
         },
 
         //otra imagen de chrisgreen
         {
             id_img: imagesPost[3].id_img,
             id_etiqueta: tags[8].id_etiqueta,
+        },
+
+        //Imagen de chrisgreen EXTRA
+        {
+            id_img: imagesPost[4].id_img,
+            id_etiqueta: tags[9].id_etiqueta,
+        },
+
+        //Imagen de chrisgreen EXTRA 2
+        {
+            id_img: imagesPost[5].id_img,
+            id_etiqueta: tags[10].id_etiqueta,
+        },
+
+        //Imagen de chrisgreen EXTRA 3
+        {
+            id_img: imagesPost[6].id_img,
+            id_etiqueta: tags[11].id_etiqueta,
+        },
+
+        //Imagen de chrisgreen EXTRA 4
+        {
+            id_img: imagesPost[7].id_img,
+            id_etiqueta: tags[12].id_etiqueta,
         },
     ])
 }

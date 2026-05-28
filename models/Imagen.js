@@ -17,7 +17,7 @@ Imagen.init(
         },
 
         img_path: {
-            type: DataTypes.BLOB,
+            type: DataTypes.STRING
         },
 
         copyright: {

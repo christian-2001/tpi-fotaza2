@@ -80,6 +80,7 @@ Etiqueta.belongsToMany(Publicacion, {
 
 Publicacion.hasMany(Publicacion_Etiqueta, { foreignKey: "id_post"})
 Publicacion_Etiqueta.belongsTo(Publicacion, { foreignKey: "id_post"})
+
 Etiqueta.hasMany(Publicacion_Etiqueta, { foreignKey: "id_etiqueta"})
 Publicacion_Etiqueta.belongsTo(Etiqueta, { foreignKey: "id_etiqueta"})
 
@@ -94,6 +95,14 @@ Etiqueta.belongsToMany(Imagen, {
     foreignKey: "id_etiqueta",
     otherKey: "id_img"
 })
+
+Imagen.hasMany(Imagen_Etiqueta, { foreignKey: "id_img"})
+Imagen_Etiqueta.belongsTo(Imagen, { foreignKey: "id_img"})
+
+Etiqueta.hasMany(Imagen_Etiqueta, { foreignKey: "id_etiqueta"})
+Imagen_Etiqueta.belongsTo(Etiqueta, { foreignKey: "id_etiqueta"})
+
+
 
 Usuario.hasMany(Seguidores, { foreignKey: "id_usuario" })
 Seguidores.belongsTo(Usuario, { foreignKey: "id_usuario" })
