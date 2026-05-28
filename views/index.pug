@@ -14,20 +14,29 @@ block content
     else
         div(class="grid grid-cols-2 my-20 mx-60 gap-4")
             each val in posts
-                .post(class="bg-white border-1 border-gray-400 rounded-[10px] p-3") 
+                .post(class="bg-white border-1 border-gray-400 rounded-[10px] p-2") 
                     .post_usuario(class="text-center text-[20px]")
                         p Publicado por #{val.Usuario.nombre_usuario} - #{val.fh_publicacion.toLocaleDateString()} - #{val.fh_publicacion.toLocaleTimeString()}
                     .post_titulo(class="mt-3 text-center text-3xl font-bold")
                         h1 #{val.titulo}
                     .post_descripcion(class="mt-5 text-1xl")
                         p #{val.descripcion}
-                    .post_etiquetas(class="mt-2 inline-block")
+                    .post_etiquetas(class="mt-2")
                         p Etiquetas:
                             form(action="/buscar" method="get") 
                                 each val2 in val.Etiqueta
                                     label(for=`${val2.nom_etiqueta}`)
-                                        button(type="submit" name="etiqueta" id="etiqueta" value= `${val2.nom_etiqueta}`  class="etiquetaPost font-bold text-blue-600 mr-[3px]") ##{val2.nom_etiqueta} 
-
-
+                                        button(type="submit" name="etiqueta" id="etiqueta" value= `${val2.nom_etiqueta}`  class="cursor-pointer hover:text-blue-500/50 font-bold text-blue-600 mr-[3px]") ##{val2.nom_etiqueta} 
+                    .post_imagenes(class="bg-gray-400 border-[1px] border-gray-400/50")
+                        if val.Imagens.length > 1
+                            .imagenes(class="grid grid-cols-2 gap-[1px]")
+                                each post_img in val.Imagens
+                                    .img_elem
+                                        img(src=`${post_img.img_path}`)
+                        else if val.Imagens.length == 1
+                            .imagenes(class="grid grid-cols-1")
+                                each post_img in val.Imagens
+                                    .img_elem
+                                        img(src=`${post_img.img_path}`)
         
     script(src="/script/index.js" defer) 

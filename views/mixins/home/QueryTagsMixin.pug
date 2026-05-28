@@ -17,7 +17,18 @@ mixin tagsQuery(queryResult = undefined)
                             form(action="/buscar" method="get") 
                                 each tags in queryResult[0].Etiqueta
                                     label(for=`${tags.nom_etiqueta}`)
-                                        button(type="submit" name="etiqueta" id="etiqueta" value= `${tags.nom_etiqueta}`  class="etiquetaPost font-bold text-blue-600 mr-[3px]") ##{tags.nom_etiqueta} 
+                                        button(type="submit" name="etiqueta" id="etiqueta" value= `${tags.nom_etiqueta}`  class="cursor-pointer hover:text-blue-500/50 font-bold text-blue-600 mr-[3px]") ##{tags.nom_etiqueta} 
+                    .post_imagenes(class="bg-gray-400 border-[1px] border-gray-400/50")
+                        if queryResult[0].Imagens.length > 1
+                            .imagenes(class="grid grid-cols-2 gap-[1px]")
+                                each post_img in queryResult[0].Imagens
+                                    .img_elem
+                                        img(src=`${post_img.img_path}`)
+                        else if queryResult[0].Imagens.length == 1
+                            .imagenes(class="grid grid-cols-1")
+                                each post_img in queryResult[0].Imagens
+                                    .img_elem
+                                        img(src=`${post_img.img_path}`)
 
     else if queryResult.length > 1
         div(class="grid grid-cols-2 mt-10 mb-20 mx-60 gap-4")
@@ -34,7 +45,18 @@ mixin tagsQuery(queryResult = undefined)
                             form(action="/buscar" method="get") 
                                 each tags in post.Etiqueta
                                     label(for=`${tags.nom_etiqueta}`)
-                                        button(type="submit" name="etiqueta" id="etiqueta" value= `${tags.nom_etiqueta}`  class="etiquetaPost font-bold text-blue-600 mr-[3px]") ##{tags.nom_etiqueta}
+                                        button(type="submit" name="etiqueta" id="etiqueta" value= `${tags.nom_etiqueta}`  class="cursor-pointer hover:text-blue-500/50 font-bold text-blue-600 mr-[3px]") ##{tags.nom_etiqueta}
+                    .post_imagenes(class="bg-gray-400 border-[1px] border-gray-400/50")
+                        if post.Imagens.length > 1
+                            .imagenes(class="grid grid-cols-2 gap-[1px]")
+                                each post_img in post.Imagens
+                                    .img_elem
+                                        img(src=`${post_img.img_path}`)
+                        else if post.Imagens.length == 1
+                            .imagenes(class="grid grid-cols-1")
+                                each post_img in post.Imagens
+                                    .img_elem
+                                        img(src=`${post_img.img_path}`)
     else
         div(class="ml-[3rem] text-[35px] font-bold text-red-500")
             p No se ha obtenido resultados

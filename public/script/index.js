@@ -1,21 +1,38 @@
-const postTags = document.querySelectorAll(".etiquetaPost")
+let img_container = document.querySelectorAll(".post_imagenes")
+for (const i of img_container) {
 
-for (const tag of postTags) {
-    tag.classList.toggle("cursor-pointer")
-    tag.classList.toggle("hover:text-blue-500/50")
+    let images = i.querySelectorAll(".imagenes")[0]
+    images = images.querySelectorAll(".img_elem")
+
+    if (images.length > 4) {
+        for (let a = 0; a < images.length; a++) {
+
+            if (a === 3) {
+                images[3].classList.toggle("relative")
+
+                const dark_bg = document.createElement("div")
+                dark_bg.classList.toggle("absolute")
+                dark_bg.classList.toggle("inset-0")
+                dark_bg.classList.toggle("bg-black/75")
+
+                const text_img = document.createElement("p")
+                text_img.classList.toggle("absolute")
+                text_img.classList.toggle("inset-0")
+                text_img.classList.toggle("items-center")
+                text_img.classList.toggle("flex")
+                text_img.classList.toggle("justify-center")
+                text_img.classList.toggle("text-white")
+                text_img.classList.toggle("text-4xl")
+                text_img.textContent = "Ver más"
+
+                images[3].appendChild(dark_bg)
+                images[3].appendChild(text_img)
+
+            } else if (a > 3) {
+                images[a].classList.toggle("hidden")
+            }
+        }
+    }
 }
 
-
-//=====================================================================================================================================
-/*
-const img_container = document.getElementById("img_container")
-const img_contents = img_container.querySelectorAll(".img_content")[3]
-console.log(img_contents)
-*/
-
-/*
-if(img_cant > 4) {
-    
-}
-*/
-
+//link(rel="stylesheet", href="./style/output.css")
