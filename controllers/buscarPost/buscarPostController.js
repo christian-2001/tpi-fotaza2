@@ -10,14 +10,13 @@ export async function buscarPost(req, res) {
 
     let postQuery = (req.query.buscador) ? req.query.buscador.trim() : ""
     let postTag = (req.query.etiqueta) ? req.query.etiqueta : ""
-    let queryResult = ""
 
     //Comprobamos si lo que vino desde el frontend es via barra de busqueda o el valor obtenido al clickear una etiqueta
 
     //Si el usuario no ha ingresado nada en la barra de busqueda, la pagina lo redirige al "home"
     if (postTag) {
         //Si la etiqueta se obtuvo al hacerle click recibiendo su nombre
-       
+
         //Filtrar las publicaciones que contenga la etiqueta recibida
         try {
             const queryResult = await getPostTag(postTag)
@@ -38,7 +37,7 @@ export async function buscarPost(req, res) {
 
         //Si la etiqueta proviene de la barra de busqueda
         postQuery = postQuery.split("#")[1]
-        
+
         //Filtrar las publicaciones que coincidan con el valor obtenido en la barra de busqueda
         try {
             const queryResult = await getPostTag(postQuery)
@@ -63,23 +62,39 @@ export async function buscarPost(req, res) {
 //Filtrar las publicaciones que contenga la etiqueta recibida
 async function getPostTag(tag) {
 
-    const queryResult = await Publicacion.findAll({
+    const result = await Publicacion.findAll({
+
+        where: {
+            [Op.or]: [
+                {
+                    '$Etiqueta.nom_etiqueta$': {
+                        [Op.iLike]: `%${tag}%`
+                    }
+                },
+                {
+                    '$Tags.nom_etiqueta$': {
+                        [Op.eq]: tag
+                    }
+                }
+            ]
+        },
+
         include: [
             { model: Usuario, required: true },
             { model: Etiqueta, required: true },
             { model: Imagen, required: true },
-            { model: Etiqueta, as: "Tags", where: { nom_etiqueta: tag }, required: true }
+            { model: Etiqueta, as: "Tags", required: true }
         ],
     })
 
-    return queryResult
+    return result
 }
 
 //Filtrar las publicaciones que coincidan con el valor obtenido en la barra de busqueda
 async function getPostQuery(query) {
     //Esta consulta trae todas las publicaciones solo si el "query" coincide con el titulo de la publicacion,
     //nombre del usuario quien lo subio, o por el nombre de la etiqueta, o coincide con todo lo anterior
-    const queryResult = await Publicacion.findAll({
+    const result = await Publicacion.findAll({
 
         where: {
             [Op.or]: [
@@ -113,5 +128,5 @@ async function getPostQuery(query) {
             { model: Imagen, required: true },
         ],
     })
-    return queryResult
+    return result
 }

@@ -16,13 +16,17 @@ app.use(express.static("public"))
 app.set("view engine", "pug")
 app.set("views", "./views")
 
-app.use("/", IndexRoutes)
-
 app.use("/login", loginRoutes)
 
 app.use("/registrer", registrerRoutes)
 
+app.use("/", IndexRoutes)
+
 app.use("/subirPost", postRoutes)
+
+
+
+
 
 db_conexion()
     .then(() => {

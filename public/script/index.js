@@ -1,4 +1,5 @@
 let img_container = document.querySelectorAll(".post_imagenes")
+
 for (const i of img_container) {
 
     let images = i.querySelectorAll(".imagenes")[0]
@@ -13,26 +14,31 @@ for (const i of img_container) {
                 const dark_bg = document.createElement("div")
                 dark_bg.classList.toggle("absolute")
                 dark_bg.classList.toggle("inset-0")
-                dark_bg.classList.toggle("bg-black/75")
+                dark_bg.classList.toggle("bg-black/50")
 
-                const text_img = document.createElement("p")
-                text_img.classList.toggle("absolute")
-                text_img.classList.toggle("inset-0")
-                text_img.classList.toggle("items-center")
-                text_img.classList.toggle("flex")
-                text_img.classList.toggle("justify-center")
-                text_img.classList.toggle("text-white")
-                text_img.classList.toggle("text-4xl")
-                text_img.textContent = "Ver más"
+
+
 
                 images[3].appendChild(dark_bg)
-                images[3].appendChild(text_img)
 
             } else if (a > 3) {
                 images[a].classList.toggle("hidden")
+
             }
         }
+        const text_img = document.createElement("p")
+        text_img.classList.toggle("absolute")
+        text_img.classList.toggle("inset-0")
+        text_img.classList.toggle("items-center")
+        text_img.classList.toggle("flex")
+        text_img.classList.toggle("justify-center")
+        text_img.classList.toggle("text-white")
+        text_img.classList.toggle("text-4xl")
+        text_img.textContent = `+${images.length - 4}`
+
+        images[3].appendChild(text_img)
     }
 }
+
 
 //link(rel="stylesheet", href="./style/output.css")

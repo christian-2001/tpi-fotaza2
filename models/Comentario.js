@@ -20,7 +20,8 @@ Comentario.init(
         },
 
         cant_likes: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         },
 
         texto: {
@@ -46,9 +47,10 @@ Comentario.init(
 
     {
         sequelize,
+        timestamps: true,
         modelName: "Comentario",
         tableName: "comentario",
-        createdAt: true,
+        createdAt: "fh_comentario",
         updatedAt: true,
         deletedAt: true,
     }
