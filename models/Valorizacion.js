@@ -23,6 +23,10 @@ Valorizacion.init(
                 model: Usuario,
                 key: "id_usuario",
             }
+        },
+
+        puntaje: {
+            type: DataTypes.INTEGER,
         }
     },
     {

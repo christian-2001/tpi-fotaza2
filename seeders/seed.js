@@ -292,22 +292,22 @@ async function seed() {
     // VALORIZACION  (16 valoraciones — una por user/imagen sin repetir)
     // ─────────────────────────────────────────────
     await Valorizacion.bulkCreate([
-        { id_img: imgs[0].id_img,  id_usuario: users[1].id_usuario },
-        { id_img: imgs[0].id_img,  id_usuario: users[2].id_usuario },
-        { id_img: imgs[0].id_img,  id_usuario: users[3].id_usuario },
-        { id_img: imgs[2].id_img,  id_usuario: users[4].id_usuario },
-        { id_img: imgs[2].id_img,  id_usuario: users[5].id_usuario },
-        { id_img: imgs[3].id_img,  id_usuario: users[0].id_usuario },
-        { id_img: imgs[5].id_img,  id_usuario: users[7].id_usuario },
-        { id_img: imgs[5].id_img,  id_usuario: users[1].id_usuario },
-        { id_img: imgs[7].id_img,  id_usuario: users[2].id_usuario },
-        { id_img: imgs[8].id_img,  id_usuario: users[5].id_usuario },
-        { id_img: imgs[8].id_img,  id_usuario: users[6].id_usuario },
-        { id_img: imgs[13].id_img, id_usuario: users[6].id_usuario },
-        { id_img: imgs[13].id_img, id_usuario: users[7].id_usuario },
-        { id_img: imgs[15].id_img, id_usuario: users[1].id_usuario },
-        { id_img: imgs[17].id_img, id_usuario: users[3].id_usuario },
-        { id_img: imgs[17].id_img, id_usuario: users[4].id_usuario },
+        { id_img: imgs[0].id_img,  id_usuario: users[1].id_usuario, puntaje: 4 },
+        { id_img: imgs[0].id_img,  id_usuario: users[2].id_usuario, puntaje: 5 },
+        { id_img: imgs[0].id_img,  id_usuario: users[3].id_usuario, puntaje: 3 },
+        { id_img: imgs[2].id_img,  id_usuario: users[4].id_usuario, puntaje: 2 },
+        { id_img: imgs[2].id_img,  id_usuario: users[5].id_usuario, puntaje: 3 },
+        { id_img: imgs[3].id_img,  id_usuario: users[0].id_usuario, puntaje: 5 },
+        { id_img: imgs[5].id_img,  id_usuario: users[7].id_usuario, puntaje: 1 },
+        { id_img: imgs[5].id_img,  id_usuario: users[1].id_usuario, puntaje: 4 },
+        { id_img: imgs[7].id_img,  id_usuario: users[2].id_usuario, puntaje: 5 },
+        { id_img: imgs[8].id_img,  id_usuario: users[5].id_usuario, puntaje: 3 },
+        { id_img: imgs[8].id_img,  id_usuario: users[6].id_usuario, puntaje: 3 },
+        { id_img: imgs[13].id_img, id_usuario: users[6].id_usuario, puntaje: 5 },
+        { id_img: imgs[13].id_img, id_usuario: users[7].id_usuario, puntaje: 3 },
+        { id_img: imgs[15].id_img, id_usuario: users[1].id_usuario, puntaje: 3 },
+        { id_img: imgs[17].id_img, id_usuario: users[3].id_usuario, puntaje: 1 },
+        { id_img: imgs[17].id_img, id_usuario: users[4].id_usuario, puntaje: 3 },
     ]);
  /*
     // ─────────────────────────────────────────────
