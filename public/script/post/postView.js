@@ -20,13 +20,14 @@ const comment_form = document.forms[0]
 
 comment_form.addEventListener("submit", async (e) => {
     e.preventDefault()
-
+    console.log(comment_input.value)
     //Usamos otra funcion que valida si el comentario enviado es o no vacio
     const approved = validarComentario_caracteres2()
     if(!approved){
         return
     }
-    const text = e.target[0].value
+    //Guardamos el commentario quitando espacios sobrantes
+    const text = e.target[0].value.trim()
     console.log(text)
     console.log(comment_form.action)
     const response = await fetch(comment_form.action, {
@@ -34,7 +35,7 @@ comment_form.addEventListener("submit", async (e) => {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ n_text: text })
+        body: JSON.stringify({ comment_text: text })
     })
 
     const newComment = await response.json();
@@ -67,7 +68,7 @@ comment_form.addEventListener("submit", async (e) => {
 
     const h1_texto = document.createElement("h1")
     h1_texto.className = "texto"
-    h1_texto.textContent = newComment.n_text
+    h1_texto.textContent = newComment.comment_text
 
     svg_tag.appendChild(path_tag)
     div_comment_options.appendChild(svg_tag)
@@ -120,7 +121,8 @@ function validarComentario_caracteres1() {
 
 //Funcion para validar si un comentario es o no vacio
 function validarComentario_caracteres2(){
-    if (comment_input.value.length == 0) {
+    //Comprueba si el comentario es totalmente vacio, si contiene unicamente saltos de linea, o caracteres en blanco por ejemplo -> "  "
+    if (comment_input.value.length == 0 || (/^\n+$/).test(comment_input.value) || (/^\s*$/).test(comment_input.value)) {
         //Si el comentario es vacio, aplicamos las mismas clases pero con otro mensaje
         if (!textarea_styles) {
             textarea_styles = ["border-2", "border-red-600"]
