@@ -12,6 +12,8 @@ export async function mostrarPost(req, res) {
     const id = req.params.id_post
     let img = Number(req.params.img_index)
 
+    const current_url = req.originalUrl
+    console.log(req.originalUrl)
     const imgs = await Imagen.findAll({
         include: [
             { model: Publicacion, required: true, where: { id_post: id } },
@@ -26,7 +28,7 @@ export async function mostrarPost(req, res) {
         ]
     })
 
-    let prom_valorizacion = 0 
+    let prom_valorizacion = 0
     let cant = 0
 
     imgs[img].Valorizacions.forEach(i => {
@@ -48,7 +50,8 @@ export async function mostrarPost(req, res) {
             imgIndex: img,
             cant_valorizaciones: cant,
             prom_valorizacion: prom_valorizacion,
-            comments: img_coments
+            comments: img_coments,
+            current_url: current_url
         })
     } else {
         res.render("./post/postView", {
@@ -57,7 +60,8 @@ export async function mostrarPost(req, res) {
             imgIndex: img,
             cant_valorizaciones: cant,
             prom_valorizacion: prom_valorizacion,
-            comments: img_coments
+            comments: img_coments,
+            current_url: current_url
         })
     }
     
