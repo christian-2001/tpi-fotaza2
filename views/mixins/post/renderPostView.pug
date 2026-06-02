@@ -1,4 +1,4 @@
-mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, post_id, prev, next, comments, current_url, url)
+mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, post_id, prev, next, comments, current_url)
     body(class="fixed inset-0 bg-black/60")
     -let n = 0
         div(class="flex justify-center items-center z-1 overflow-auto")
@@ -99,7 +99,7 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, p
                                 .no_msg_text(class="flex justify-center flex-col absolute inset-0 items-center text-3xl text-black/70")
                                     p No hay comentarios
                                     p Se el primero en comentar
-                        div(class="sticky top-200")
+                        .div_comment_submit(class="sticky top-200")
                             .comment_submit(class="bg-gray-200 py-5")
                                 form(action=`${current_url}` method="post" name="comment_form") 
                                     .comment_text(class="mx-4")
@@ -180,7 +180,7 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, p
 
                         .div_comment_submit(class="sticky top-200")
                             .comment_submit(class="bg-gray-200 py-5")
-                                form(action=`${url}` method="post" name="comment_form") 
+                                form(action=`${current_url}` method="post" name="comment_form") 
                                     .comment_text(class="mx-4")
                                         textarea#comment_input(name="comment_input" class="bg-white w-full h-50 outline-none " maxlength="1000"  placeholder="Escribe tu comentario(maximo 1000 caracteres)")
                                     .coment_botones(class="mt-4 flex justify-center")
