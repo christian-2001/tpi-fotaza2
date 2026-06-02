@@ -1,0 +1,189 @@
+mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, post_id, prev, next, comments, current_url, url)
+    body(class="fixed inset-0 bg-black/60")
+    -let n = 0
+        div(class="flex justify-center items-center z-1 overflow-auto")
+
+            .post_content(class="flex flex-row mt-8 w-450 h-215")
+
+                if postImages.length > 1
+                    .img_content(class="bg-blue-400 relative inline-block") 
+                        img(src=`${postImages[imgIndex].img_path}`, alt="img_prueba", class="size-full object-cover")
+                        div(class="absolute bottom-0 w-full z-99 text-[20px] text-white")
+                            .img_desc(class="bg-black/85 flex justify-around")
+                                div(class="py-3")
+                                    p Cantidad de valoriaciones
+                                    if cant_valorizaciones > 0
+                                        p(class="text-center") #{cant_valorizaciones}
+                                    else
+                                        p(class="text-center") Ninguna
+                                        
+                                div(class="py-3")
+                                    p Promedio de valorizaciones
+                                    if prom_valorizacion > 0
+                                        p(class=" text-center") 
+                                            while n < prom_valorizacion
+                                                | &#11088;
+                                                - n++
+                                    else
+                                        p(class=" text-center") Ninguna
+                            .botones(class="bg-orange-600/85 py-5 px-20 flex justify-center")
+
+                                button.btn_valorizar(type="button" class="hover:font-bold") 
+                                    p Valorizar
+                                    .notas(class="hidden flex")
+                                        .stars
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
+                                    
+                                        .stars                                    
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
+                                    
+                                        .stars                                   
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
+                                    
+                                        .stars                               
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")                    
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
+                                    
+                                        .stars                                    
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
+
+                        h1(class="text-gray-300 text-[80px] absolute inset-0 flex justify-center items-center") marca_de_agua
+                        .img_carrousel(class="text-2xl text-white")
+                            if imgIndex == 0
+                                a(href=`/post/${post_id}/${++imgIndex}`)
+                                    svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="w-20 absolute top-[47%] right-0 mr-3 hover:w-25")
+                                        path(fill="#4f46e5" d="m21.188 9.28l-1.407 1.44L24.063 15H4v2h20.063l-4.282 4.28l1.407 1.44l6-6l.72-.72l-.72-.72z") 
+
+                            else if imgIndex == (postImages.length - 1)
+                                a(href=`/post/${post_id}/${--imgIndex}`)
+                                    svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="w-20 absolute top-[47%] left-0 ml-3 hover:w-25")
+                                        path(fill="#4f46e5" d="m10.813 9.28l-6 6l-.72.72l.72.72l6 6l1.406-1.44L7.936 17H28v-2H7.937l4.282-4.28l-1.408-1.44z") 
+
+                            else if imgIndex > 0 && imgIndex < (postImages.length - 1)
+                            
+                                a(href=`/post/${post_id}/${next}`)
+                                    svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="w-20 absolute top-[47%] right-0 mr-3 hover:w-25")
+                                        path(fill="#4f46e5" d="m21.188 9.28l-1.407 1.44L24.063 15H4v2h20.063l-4.282 4.28l1.407 1.44l6-6l.72-.72l-.72-.72z") 
+        
+                                a(href=`/post/${post_id}/${prev}`)
+                                    svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="w-20 absolute top-[47%] left-0 ml-3 hover:w-25")
+                                        path(fill="#4f46e5" d="m10.813 9.28l-6 6l-.72.72l.72.72l6 6l1.406-1.44L7.936 17H28v-2H7.937l4.282-4.28l-1.408-1.44z")  
+
+                    .comentarios(class="bg-green-200 w-1/2 overflow-y-auto relative")
+                                                
+                        .contenido(class="mx-5 mt-5")
+ 
+                            if comments.length > 0
+                                each user_comment in comments
+                                    .comentario_usuario(class="bg-blue-200 rounded-[1vw] mb-5 pl-3 pr-4 pt-2 pb-4 w-fit")
+                                        .comment_options(class="relative")
+                                            svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="w-5 absolute -right-4 hover:cursor-pointer hover:w-6")
+                                                path(fill="#4f46e5" d="M9.5 13a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0") 
+                                        h1.nombre_usuario(class="font-bold") #{user_comment.Usuario.nombre_usuario} 
+                                        h1.texto #{user_comment.texto}
+                            else
+                                .no_msg_text(class="flex justify-center flex-col absolute inset-0 items-center text-3xl text-black/70")
+                                    p No hay comentarios
+                                    p Se el primero en comentar
+                        div(class="sticky top-200")
+                            .comment_submit(class="bg-gray-200 py-5")
+                                form(action=`${current_url}` method="post" name="comment_form") 
+                                    .comment_text(class="mx-4")
+                                        textarea#comment_input(name="comment_input" class="bg-white w-full h-50 outline-none " maxlength="1000"  placeholder="Escribe tu comentario(maximo 1000 caracteres)")
+                                    .coment_botones(class="mt-4 flex justify-center")
+                                        button(type="submit" class="bg-blue-500 text-white w-fit px-5 py-2 hover:bg-blue-500/75 hover:font-bold") Confirmar
+                else
+                    .img_content(class="bg-blue-400 relative inline-block") 
+                        img(src=`${postImages[0].img_path}`, alt="img_prueba", class="size-full object-cover")
+                        div(class="absolute bottom-0 w-full z-99 text-[20px] text-white")
+                            .img_desc(class="bg-black/85 flex justify-around")
+                                div(class="py-3")
+                                    p Cantidad de valoriaciones
+                                    if cant_valorizaciones > 0
+                                        p(class="text-center") #{cant_valorizaciones}
+                                    else
+                                        p(class="text-center") Ninguna
+                                        
+                                div(class="py-3")
+                                    p Promedio de valorizaciones
+                                    if prom_valorizacion > 0
+                                        p(class=" text-center") 
+                                            while n < prom_valorizacion
+                                                | &#11088;
+                                                - n++
+                                    else
+                                        p(class=" text-center") Ninguna
+                            .botones(class="bg-orange-600/85 py-5 px-20 flex justify-center")
+
+                                button.btn_valorizar(type="button" class="hover:font-bold") 
+                                    p Valorizar
+                                    .notas(class="hidden flex")
+                                        .stars
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
+                                    
+                                        .stars                                    
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
+                                    
+                                        .stars                                   
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
+                                    
+                                        .stars                               
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")                    
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
+                                    
+                                        .stars                                    
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
+                                            svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
+                                                path(fill="#eab308" fill-rule="evenodd" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
+
+                        h1(class="text-gray-300 text-[80px] absolute inset-0 flex justify-center items-center") marca_de_agua
+
+                    .comentarios(class="bg-green-200 w-1/2 overflow-y-auto relative")
+                                                
+                        .contenido(class="mx-5 mt-5")
+
+                            if comments.length > 0
+                                each user_comment in comments
+                                    .comentario_usuario(class="bg-blue-200 rounded-[1vw] mb-5 pl-3 pr-4 pt-2 pb-4 w-fit")
+                                        h1.nombre_usuario(class="font-bold") #{user_comment.Usuario.nombre_usuario} 
+                                        h1.texto #{user_comment.texto}
+                            else
+                                .no_msg_text(class="flex justify-center flex-col absolute inset-0 items-center text-3xl text-black/70")
+                                    p No hay comentarios
+                                    p Se el primero en comentar
+
+                        .div_comment_submit(class="sticky top-200")
+                            .comment_submit(class="bg-gray-200 py-5")
+                                form(action=`${url}` method="post" name="comment_form") 
+                                    .comment_text(class="mx-4")
+                                        textarea#comment_input(name="comment_input" class="bg-white w-full h-50 outline-none " maxlength="1000"  placeholder="Escribe tu comentario(maximo 1000 caracteres)")
+                                    .coment_botones(class="mt-4 flex justify-center")
+                                        button(type="submit" class="bg-blue-500 text-white w-fit px-5 py-2 hover:bg-blue-500/75 hover:font-bold") Confirmar
+        
+    script(src="../../script/post/postView.js" defer) 

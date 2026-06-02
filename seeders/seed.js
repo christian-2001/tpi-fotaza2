@@ -8,25 +8,11 @@ import { Publicacion } from "../models/Publicacion.js";
 import { Usuario } from "../models/Usuario.js";
 import { Valorizacion } from "../models/Valorizacion.js";
 import { Comentario } from "../models/Comentario.js";
-//import { Seguidores } from "../models/Seguidores.js";
- 
-/* 
-  Resumen de registros creados:
-    Persona          →  8
-    Usuario          →  8
-    Publicacion      → 12
-    Etiqueta         → 18
-    Publicacion_Etiq → 20
-    Imagen           → 20
-    Imagen_Etiqueta  → 20
-    Comentario       → 20
-    Valorizacion     → 16
-    Seguidores       →  8
-*/
- 
+import { Seguidores } from "../models/Seguidores.js";
+
 async function seed() {
     await sequelize.sync({ alter: true, force: true });
- 
+
     // ─────────────────────────────────────────────
     // PERSONA  (8 personas)
     // ─────────────────────────────────────────────
@@ -48,7 +34,7 @@ async function seed() {
         // personas[7]
         { dni: "44556677", tipo_dni: "DNI", sexo: "Masculino", nombre: "Joaquín",  apellido: "Mendoza",   fecha_nacimiento: "2004-02-03" },
     ]);
- 
+
     // ─────────────────────────────────────────────
     // USUARIO  (8 usuarios)
     // ─────────────────────────────────────────────
@@ -70,7 +56,7 @@ async function seed() {
         // users[7]  → Joaquín
         { nombre_usuario: "joaco_raw",     email: "joaquinmendoza@gmail.com",  id_persona: personas[7].id_persona },
     ]);
- 
+
     // ─────────────────────────────────────────────
     // ETIQUETA  (18 tags)
     // ─────────────────────────────────────────────
@@ -112,7 +98,7 @@ async function seed() {
         // tags[17]
         { nom_etiqueta: "blanco_y_negro" },
     ]);
- 
+
     // ─────────────────────────────────────────────
     // PUBLICACION  (12 posts)
     // ─────────────────────────────────────────────
@@ -142,7 +128,7 @@ async function seed() {
         // posts[11] → joaco_raw
         { titulo: "Arquitectura moderna",          descripcion: "Líneas, formas y mucha luz.",                                  id_usuario: users[7].id_usuario },
     ]);
- 
+
     // ─────────────────────────────────────────────
     // PUBLICACION_ETIQUETA  (20 relaciones)
     // ─────────────────────────────────────────────
@@ -168,7 +154,7 @@ async function seed() {
         { id_post: posts[10].id_post, id_etiqueta: tags[9].id_etiqueta  },  // retrato
         { id_post: posts[11].id_post, id_etiqueta: tags[12].id_etiqueta },  // arquitectura
     ]);
- 
+
     // ─────────────────────────────────────────────
     // IMAGEN  (20 imágenes — Picsum Photos, libres)
     //
@@ -218,7 +204,7 @@ async function seed() {
         // imgs[19] → posts[11] — interior
         { nombre_img: "Interior luminoso",      img_path: "https://picsum.photos/id/1047/800/600", extension: "jpg", id_post: posts[11].id_post },
     ]);
- 
+
     // ─────────────────────────────────────────────
     // IMAGEN_ETIQUETA  (20 relaciones)
     // ─────────────────────────────────────────────
@@ -244,7 +230,7 @@ async function seed() {
         { id_img: imgs[18].id_img, id_etiqueta: tags[12].id_etiqueta },   // arquitectura
         { id_img: imgs[19].id_img, id_etiqueta: tags[11].id_etiqueta },   // minimalismo
     ]);
- 
+
     // ─────────────────────────────────────────────
     // COMENTARIO  (20 comentarios)
     // ─────────────────────────────────────────────
@@ -253,63 +239,140 @@ async function seed() {
         { texto: "Esa foto quedó increíble, parece portada de revista.",        id_img: imgs[0].id_img,  id_usuario: users[1].id_usuario },
         { texto: "La combinación de colores está brutal.",                       id_img: imgs[0].id_img,  id_usuario: users[2].id_usuario },
         { texto: "¿Qué lente usaste? Los detalles son una locura.",             id_img: imgs[0].id_img,  id_usuario: users[3].id_usuario },
- 
+
         // Comentarios en imgs[2] — Café
         { texto: "Me dieron ganas de prepararme un café ahora mismo.",          id_img: imgs[2].id_img,  id_usuario: users[4].id_usuario },
         { texto: "El encuadre es perfecto, simple y limpio.",                   id_img: imgs[2].id_img,  id_usuario: users[5].id_usuario },
- 
+
         // Comentarios en imgs[3] — Ciudad niebla
         { texto: "Esa niebla le da un toque misterioso que me encanta.",        id_img: imgs[3].id_img,  id_usuario: users[0].id_usuario },
         { texto: "Parece una escena de película.",                               id_img: imgs[3].id_img,  id_usuario: users[6].id_usuario },
- 
+
         // Comentarios en imgs[5] — Montañas
         { texto: "Qué paz transmite esta foto, necesito ir ahí ya.",            id_img: imgs[5].id_img,  id_usuario: users[7].id_usuario },
         { texto: "La luz del amanecer en las cimas es algo único.",             id_img: imgs[5].id_img,  id_usuario: users[1].id_usuario },
         { texto: "Foto de concurso sin dudas.",                                  id_img: imgs[5].id_img,  id_usuario: users[3].id_usuario },
- 
+
         // Comentarios en imgs[7] — Bosque
         { texto: "Me recuerda a los paseos de domingo en el campo.",            id_img: imgs[7].id_img,  id_usuario: users[2].id_usuario },
         { texto: "Los tonos verdes quedaron perfectos.",                         id_img: imgs[7].id_img,  id_usuario: users[4].id_usuario },
- 
+
         // Comentarios en imgs[8] — Flores
         { texto: "Esto es una obra de arte, en serio.",                         id_img: imgs[8].id_img,  id_usuario: users[5].id_usuario },
         { texto: "El enfoque selectivo hace que las flores resalten mucho.",    id_img: imgs[8].id_img,  id_usuario: users[0].id_usuario },
- 
+
         // Comentarios en imgs[13] — Mar
         { texto: "El mar siempre calma el alma. Gran captura.",                 id_img: imgs[13].id_img, id_usuario: users[6].id_usuario },
         { texto: "Se siente el sonido de las olas solo con verla.",             id_img: imgs[13].id_img, id_usuario: users[7].id_usuario },
- 
+
         // Comentarios en imgs[15] — Retrato b&n
         { texto: "El blanco y negro le da una profundidad increíble.",          id_img: imgs[15].id_img, id_usuario: users[1].id_usuario },
         { texto: "La expresión es todo en este retrato. Genial.",               id_img: imgs[15].id_img, id_usuario: users[2].id_usuario },
- 
+
         // Comentarios en imgs[17] — Arquitectura
         { texto: "Me gustan mucho las líneas geométricas, muy limpio.",         id_img: imgs[17].id_img, id_usuario: users[3].id_usuario },
         { texto: "La perspectiva elegida realza la verticalidad del edificio.", id_img: imgs[17].id_img, id_usuario: users[4].id_usuario },
     ]);
- 
+
     // ─────────────────────────────────────────────
-    // VALORIZACION  (16 valoraciones — una por user/imagen sin repetir)
+    // VALORIZACION  (36 valoraciones — todas las imágenes valoradas al menos una vez)
+    //  Regla: el autor de la imagen NO se valora a sí mismo
+    //  imgs[0-1]  → posts[0] → users[0]   ∴ valorizan users[1..7]
+    //  imgs[2]    → posts[1] → users[0]   ∴ valorizan users[1..7]
+    //  imgs[3]    → posts[2] → users[1]   ∴ valorizan users[0,2..7]
+    //  imgs[4]    → posts[3] → users[1]   ∴ valorizan users[0,2..7]
+    //  imgs[5-6]  → posts[4] → users[2]   ∴ valorizan users[0,1,3..7]
+    //  imgs[7]    → posts[5] → users[2]   ∴ valorizan users[0,1,3..7]
+    //  imgs[8-9]  → posts[6] → users[3]   ∴ valorizan users[0..2,4..7]
+    //  imgs[10]   → posts[7] → users[3]   ∴ valorizan users[0..2,4..7]
+    //  imgs[11-12]→ posts[8] → users[4]   ∴ valorizan users[0..3,5..7]
+    //  imgs[13-14]→ posts[9] → users[5]   ∴ valorizan users[0..4,6,7]
+    //  imgs[15-16]→ posts[10]→ users[6]   ∴ valorizan users[0..5,7]
+    //  imgs[17-19]→ posts[11]→ users[7]   ∴ valorizan users[0..6]
     // ─────────────────────────────────────────────
     await Valorizacion.bulkCreate([
+        // imgs[0] — Atardecer costa 1  (post de users[0])
         { id_img: imgs[0].id_img,  id_usuario: users[1].id_usuario, puntaje: 4 },
         { id_img: imgs[0].id_img,  id_usuario: users[2].id_usuario, puntaje: 5 },
         { id_img: imgs[0].id_img,  id_usuario: users[3].id_usuario, puntaje: 3 },
+
+        // imgs[1] — Atardecer costa 2  (post de users[0])
+        { id_img: imgs[1].id_img,  id_usuario: users[4].id_usuario, puntaje: 5 },
+        { id_img: imgs[1].id_img,  id_usuario: users[5].id_usuario, puntaje: 4 },
+
+        // imgs[2] — Café mañanero  (post de users[0])
         { id_img: imgs[2].id_img,  id_usuario: users[4].id_usuario, puntaje: 2 },
         { id_img: imgs[2].id_img,  id_usuario: users[5].id_usuario, puntaje: 3 },
+
+        // imgs[3] — Ciudad entre niebla  (post de users[1])
         { id_img: imgs[3].id_img,  id_usuario: users[0].id_usuario, puntaje: 5 },
+        { id_img: imgs[3].id_img,  id_usuario: users[6].id_usuario, puntaje: 4 },
+
+        // imgs[4] — Reflejos en charco  (post de users[1])
+        { id_img: imgs[4].id_img,  id_usuario: users[2].id_usuario, puntaje: 3 },
+        { id_img: imgs[4].id_img,  id_usuario: users[7].id_usuario, puntaje: 4 },
+
+        // imgs[5] — Montañas amanecer  (post de users[2])
         { id_img: imgs[5].id_img,  id_usuario: users[7].id_usuario, puntaje: 1 },
         { id_img: imgs[5].id_img,  id_usuario: users[1].id_usuario, puntaje: 4 },
-        { id_img: imgs[7].id_img,  id_usuario: users[2].id_usuario, puntaje: 5 },
+
+        // imgs[6] — Cima nevada  (post de users[2])
+        { id_img: imgs[6].id_img,  id_usuario: users[0].id_usuario, puntaje: 5 },
+        { id_img: imgs[6].id_img,  id_usuario: users[3].id_usuario, puntaje: 4 },
+
+        // imgs[7] — Bosque encantado  (post de users[2])
+        { id_img: imgs[7].id_img,  id_usuario: users[1].id_usuario, puntaje: 5 },
+        { id_img: imgs[7].id_img,  id_usuario: users[4].id_usuario, puntaje: 3 },
+
+        // imgs[8] — Flores de primavera  (post de users[3])
         { id_img: imgs[8].id_img,  id_usuario: users[5].id_usuario, puntaje: 3 },
         { id_img: imgs[8].id_img,  id_usuario: users[6].id_usuario, puntaje: 3 },
+
+        // imgs[9] — Campo florido  (post de users[3])
+        { id_img: imgs[9].id_img,  id_usuario: users[0].id_usuario, puntaje: 4 },
+        { id_img: imgs[9].id_img,  id_usuario: users[2].id_usuario, puntaje: 5 },
+
+        // imgs[10] — Tarde en el parque  (post de users[3])
+        { id_img: imgs[10].id_img, id_usuario: users[1].id_usuario, puntaje: 2 },
+        { id_img: imgs[10].id_img, id_usuario: users[7].id_usuario, puntaje: 4 },
+
+        // imgs[11] — Textura ladrillo  (post de users[4])
+        { id_img: imgs[11].id_img, id_usuario: users[0].id_usuario, puntaje: 3 },
+        { id_img: imgs[11].id_img, id_usuario: users[3].id_usuario, puntaje: 2 },
+
+        // imgs[12] — Textura vidrio  (post de users[4])
+        { id_img: imgs[12].id_img, id_usuario: users[6].id_usuario, puntaje: 4 },
+        { id_img: imgs[12].id_img, id_usuario: users[7].id_usuario, puntaje: 5 },
+
+        // imgs[13] — Mar de fondo  (post de users[5])
         { id_img: imgs[13].id_img, id_usuario: users[6].id_usuario, puntaje: 5 },
         { id_img: imgs[13].id_img, id_usuario: users[7].id_usuario, puntaje: 3 },
+
+        // imgs[14] — Olas en la orilla  (post de users[5])
+        { id_img: imgs[14].id_img, id_usuario: users[0].id_usuario, puntaje: 4 },
+        { id_img: imgs[14].id_img, id_usuario: users[4].id_usuario, puntaje: 5 },
+
+        // imgs[15] — Retrato femenino bn  (post de users[6])
         { id_img: imgs[15].id_img, id_usuario: users[1].id_usuario, puntaje: 3 },
+        { id_img: imgs[15].id_img, id_usuario: users[5].id_usuario, puntaje: 4 },
+
+        // imgs[16] — Retrato masculino bn  (post de users[6])
+        { id_img: imgs[16].id_img, id_usuario: users[2].id_usuario, puntaje: 5 },
+        { id_img: imgs[16].id_img, id_usuario: users[3].id_usuario, puntaje: 4 },
+
+        // imgs[17] — Edificio moderno  (post de users[7])
         { id_img: imgs[17].id_img, id_usuario: users[3].id_usuario, puntaje: 1 },
         { id_img: imgs[17].id_img, id_usuario: users[4].id_usuario, puntaje: 3 },
+
+        // imgs[18] — Detalle fachada  (post de users[7])
+        { id_img: imgs[18].id_img, id_usuario: users[0].id_usuario, puntaje: 4 },
+        { id_img: imgs[18].id_img, id_usuario: users[5].id_usuario, puntaje: 3 },
+
+        // imgs[19] — Interior luminoso  (post de users[7])
+        { id_img: imgs[19].id_img, id_usuario: users[1].id_usuario, puntaje: 5 },
+        { id_img: imgs[19].id_img, id_usuario: users[6].id_usuario, puntaje: 4 },
     ]);
- /*
+
     // ─────────────────────────────────────────────
     // SEGUIDORES  (8 relaciones de seguimiento)
     // ─────────────────────────────────────────────
@@ -331,7 +394,7 @@ async function seed() {
         // users[7] sigue a users[5]
         { id_seguidor: users[7].id_usuario, id_seguido: users[5].id_usuario, id_usuario: users[7].id_usuario },
     ]);
- */
+
 }
- 
+
 seed();
