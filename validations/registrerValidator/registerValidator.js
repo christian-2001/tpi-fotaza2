@@ -1,18 +1,11 @@
 import * as z from "zod"
 
 //Patrones para nombre y apellido(solo caracteres, si o si el primer caracter con mayuscula y un rango entre 4 y 20 caracteres, no se permiten numeros y tampoco espacios entre caracteres o al final de la palabra)
-const name_regex = /^[A-Z]([a-z]){4,20}$/
+const name_regex = /^[A-Z]([a-z]){3,20}$/
 const lastname_regex = /^[A-Z]([a-z]){4,20}$/
 
-//Patron para nombre de usuario(se permiten caracteres, numeros, guion bajo, puntos y que tenga entre 4 y 20 caracteres) 
-const username_regex = /^[A-Za-z]([A-Za-z0-9_.]){4,20}$/
-
-// variable con patron para la contraseña (debe tener minimamente minuscula, mayuscula, numeros y que tenga entre 7 y 30 caracteres, los caracteres especiales son opcionales)
-const password_regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[^\w\d\s]).{7,30}$/
-
-//Variable con patron para el numero de DNI (Solo admite numeros y debe tener exactamente 8 digitos)
+//Expresion regular para el numero de DNI (Solo admite numeros y debe tener exactamente 8 digitos)
 const dni_regex = /([0-9]){8}/
-
 
 //Objeto que valida cada input del formulario recibido
 const Registro = z.object({
@@ -21,16 +14,6 @@ const Registro = z.object({
 
   //Apellido
   lastname: z.string().regex(lastname_regex, "Apellido -> Solo admite una mayuscula como primer caracter, el resto del apellido unicamente en minuscula y entre 4 y 20 caracteres"),
-
-  //Nombre de usuario
-  username: z.string().regex(username_regex, "Nombre de usuario -> Solo admite una letra como primer caracter, caracteres, numeros, puntos, guiones bajos y entre 4 y 20 caracteres"),
-
-  //Contraseña y otra validacion para confirmar contraseña
-  password_form: z.object({
-    password: z.string()
-      .regex(password_regex, "Contraseña -> Debe tener al menos una minuscula, mayuscula, un numero, un caracter especial y entre 7 y 30 caracteres"),
-    confirm: z.string()
-  }).refine((p) => p.password === p.confirm, { error: "Confirmar contraseña -> Ambas contraseñas no coinciden" }),
 
   //Fecha de nacimiento
   birthday: z.iso.date("Fecha de Nacimiento -> Fecha vacia"),

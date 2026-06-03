@@ -2,6 +2,7 @@ extends ../layout.pug
 include ../mixins/mix_registrer/registrerMixins
 
 block metadata
+    link(rel="stylesheet", href="../style/output.css")
     title Registrarse
 
 block content
@@ -9,26 +10,17 @@ block content
         .login_content(class="bg-gray-200 flex flex-col items-center justify-center mx-150 mt-10")
             p(class="text-3xl font-bold block mt-5") Ingrese los siguientes datos
 
-            form(action="/registrer/", method="post" id="form_registrer")
+            form(action=`${current_url}`, method="post" id="form_registrer" name="form_registrer")
                 div(class="flex flex-col mt-10 mb-7")
                 
                     label(for="nombre" class="text-[25px]") Nombre
-                    input(type="text", name="nombre" id="nombre" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-4")
+                    input(type="text", name="nombre" id="nombre" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-4" value=form_name ? form_name : "")
                     
                     label(for="apellido" class="text-[25px]") Apellido
-                    input(type="text", name="apellido" id="apellido" class="text-1xl text-gray-950 font-bold  py-[5px] pl-2 bg-white block w-125 mb-4")
-
-                    label(for="nombre_usuario" class="text-[25px]") Nombre de usuario
-                    input(type="text", name="nombre_usuario" id="nombre_usuario" class="text-1xl text-gray-950 font-bold  py-[5px] pl-2 bg-white block w-125 mb-4")
-                    
-                    label(for="contrasenia" class="text-[25px]") Contraseña
-                    input(type="password", name="contrasenia" id="contrasenia" class="text-1xl text-gray-950 font-bold  py-[5px] pl-2 bg-white block w-125 mb-4")
-                    
-                    label(for="confirmar_contrasenia" class="text-[25px]") Confirmar contrasenia
-                    input(type="password", name="confirmar_contrasenia" id="confirmar_contrasenia" class="text-1xl text-gray-950 font-bold  py-[5px] pl-2 bg-white block w-125 mb-4")
+                    input(type="text", name="apellido" id="apellido" class="text-1xl text-gray-950 font-bold  py-[5px] pl-2 bg-white block w-125 mb-4" value=form_last_name ? form_last_name : "")
 
                     label(for="fecha_nacimiento" class="text-[25px]") Fecha de Nacimiento
-                    input(type="date", name="fecha_nacimiento" id="fecha_nacimiento" class="text-1xl text-gray-950 font-bold pl-1 py-[5px] bg-white block w-125 mb-4")
+                    input(type="date", name="fecha_nacimiento" id="fecha_nacimiento" class="text-1xl text-gray-950 font-bold pl-1 py-[5px] bg-white block w-125 mb-4" value=form_birthday ? form_birthday : "")
                     
                     label(for="genero" class="text-[25px]") Genero
                     select(name="genero" id="genero" class="text-1xl text-gray-500 font-bold py-[5px] pl-1 bg-white block w-125 mb-4")
@@ -37,16 +29,16 @@ block content
                                 option(class="text-black" value= val_genre)= val_genre
                     
                     label(for="mail" class="text-[25px]") Mail
-                    input(type="text", name="mail" id="mail" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-4")
-                    
+                    input(type="text", name="mail" id="mail" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-4" value=form_mail ? form_mail : "")
+
                     label(for="tipodni" class="text-[25px]") Tipo de DNI
                     select(name="tipodni" id="tipodni" class="text-1xl text-gray-500 font-bold py-[5px] pl-1 bg-white block w-125 mb-4")
-                        option(value="tipo_dni" selected disabled) Tipo DNI
+                        option(value="tipo_dni" selected disabled class=form_typedni ? "text-black": "") Tipo DNI
                             each val_dni in options_dni
                                 option(class="text-black" value= val_dni)= val_dni
                     
                     label(for="dni" class="text-[25px]") Ingrese su numero de DNI
-                    input(type="text", name="dni" id="dni" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-2")
+                    input(type="text", name="dni" id="dni" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-2" value=form_dni ? form_dni : "")
                       
                    
                 div(class="flex justify-center mb-5")
@@ -55,9 +47,7 @@ block content
                 div(class="flex justify-center mb-5")
                     button(type="submit" class="border-none pl-20 pr-20 py-2 text-2xl bg-white font-bold hover:bg-orange-500 hover:text-white") Continuar
         if error
-            +error_form(error)
-        else
-            div(class="bg-green-300/80 mt-15 mb-30 w-[70rem] m-auto text-green-600")
-                h1(class="text-[3rem] text-center font-bold pt-5 pb-5") SALIO BIEN!!!
-    script(src="script/registrer/registrer_src.js" defer) 
+            +error_form1(error)
+        
+    script(src="../script/registrer/registrer_src.js" defer) 
              

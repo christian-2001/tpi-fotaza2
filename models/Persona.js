@@ -41,6 +41,12 @@ Persona.init(
     fecha_nacimiento: {
       type: DataTypes.DATEONLY,
     },
+
+    mail: {
+      type: DataTypes.STRING(),
+      unique: true,
+      allowNull: false
+    },
   },
   {
     sequelize,

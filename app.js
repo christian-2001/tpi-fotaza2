@@ -18,7 +18,7 @@ app.set("views", "./views")
 
 app.use("/login", loginRoutes)
 
-app.use("/registrer", registrerRoutes)
+app.use("/registrarse", registrerRoutes)
 
 app.use("/", IndexRoutes)
 

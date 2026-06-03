@@ -24,12 +24,6 @@ Usuario.init(
             defaultValue: "Ninguna"
         },
 
-        email: {
-            type: DataTypes.STRING(),
-            unique: true,
-            allowNull: false
-        },
-
         cant_publicaciones: {
             type: DataTypes.INTEGER,
             defaultValue: 0
