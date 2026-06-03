@@ -5,8 +5,11 @@ mixin error_form1(error = undefined)
         h1(class="text-[3rem] text-center font-bold pt-5") Error al enviar el formulario
         div(class="mx-20 px-3 pt-5 pb-2 font-bold text-[18px]")
             ul
-                each err_value in error 
-                    li(class="mb-3")= err_value  
+                each err_value in error
+                    if err_value.person_msg
+                        li(class="mb-3 text-center")= err_value.person_msg
+                    else
+                        li(class="mb-3")= err_value
 
 //-Muestra un mensaje indicando que datos no son validos junto con las reglas que debe cumplir cada dato
 //-Esto es para el formulario para datos del usuario o cuenta para la persona

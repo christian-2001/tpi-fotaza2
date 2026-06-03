@@ -1,8 +1,8 @@
 //El select que contiene opciones para elegir el genero/sexo
-const genero_select = document.getElementById("genero")
+const genero_select = document.getElementById("form_genero")
 
 //El select que contiene los distintos tipos de DNI
-const tipoDNI_select = document.getElementById("tipodni")
+const tipoDNI_select = document.getElementById("form_tipodni")
 
 //Cuando elijo el genero(o la opcion "Prefiero no responder") el color del texto cambia a negro
 genero_select.addEventListener("change", cambiar_color_select1)

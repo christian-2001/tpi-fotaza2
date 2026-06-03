@@ -2,7 +2,7 @@ import * as z from "zod"
 
 //Patrones para nombre y apellido(solo caracteres, si o si el primer caracter con mayuscula y un rango entre 4 y 20 caracteres, no se permiten numeros y tampoco espacios entre caracteres o al final de la palabra)
 const name_regex = /^[A-Z]([a-z]){3,20}$/
-const lastname_regex = /^[A-Z]([a-z]){4,20}$/
+const lastname_regex = /^[A-Z]([a-z]){3,20}$/
 
 //Expresion regular para el numero de DNI (Solo admite numeros y debe tener exactamente 8 digitos)
 const dni_regex = /([0-9]){8}/

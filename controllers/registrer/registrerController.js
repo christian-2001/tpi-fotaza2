@@ -1,5 +1,7 @@
 import { validarFormRegistro } from "../../validations/registrerValidator/registerValidator.js"
 import { validarFormRegistro2 } from "../../validations/registrerValidator/registerValidator2.js"
+import { Persona } from "../../models/Persona.js"
+import { Usuario } from "../../models/Usuario.js"
 
 const options_dni = ["DNI", "Libreta Cívica(LC)", "Libreta de Enrolamiento (LE)", "Pasaporte", "Cédula de Identidad(CI)"]
 const options_genre = ["Masculino", "Femenino", "No especificar"]
@@ -18,28 +20,28 @@ export function registroIndex(req, res) {
 }
 
 //Validacion de los datos obtenidos del formulario que contiene los datos personales del cliente
-export function validarRegistro(req, res) {
+export async function validarRegistroPerfil(req, res) {
     //url que contiene el formulario
     let url = req.originalUrl
 
     //Guardamos todos los datos del formulario 
-    const { nombre, apellido, fecha_nacimiento, genero, mail, tipodni, dni } = req.body
+    const { form_nombre, form_apellido, form_fecha_nacimiento, form_genero, form_mail, form_tipodni, form_dni } = req.body
 
     //Validamos cada dato
     const validate_result = validarFormRegistro({
-        name: nombre,
-        lastname: apellido,
-        birthday: fecha_nacimiento,
-        genre: genero,
-        mail: mail,
-        dni_type: tipodni,
-        dni_number: dni
+        name: form_nombre,
+        lastname: form_apellido,
+        birthday: form_fecha_nacimiento,
+        genre: form_genero,
+        mail: form_mail,
+        dni_type: form_tipodni,
+        dni_number: form_dni
     })
+
+    const arr_errores = []
 
     //Se construye un mensaje con una cadena de errores por cada dato no valido
     if (validate_result.success === false) {
-
-        const arr_errores = []
 
         if (validate_result.errors.name) {
             arr_errores.push(validate_result.errors.name.toString())
@@ -75,21 +77,66 @@ export function validarRegistro(req, res) {
             options_dni: options_dni,
             options_genre: options_genre,
             error: arr_errores,
-            form_name: nombre,
-            form_last_name: apellido,
-            form_birthday: fecha_nacimiento,
-            form_genre: genero,
-            form_mail: mail,
-            form_typedni: tipodni,
-            form_dni: dni,
+            form_name: form_nombre,
+            form_last_name: form_apellido,
+            form_birthday: form_fecha_nacimiento,
+            form_genre: form_genero,
+            form_mail: form_mail,
+            form_typedni: form_tipodni,
+            form_dni: form_dni,
             current_url: url
         })
         return
 
     }
 
-    //Si todos los datos son validos, se procede a la creacion del usuario
-    res.redirect("/registrarse/crearUsuario")
+    //Comprobamos si ya existe una persona con el mismo dni
+    const query_dni = await Persona.findOne({ 
+        where: { 
+            '$Persona.dni$': form_dni 
+        } 
+    })
+ 
+    if(query_dni){
+        if(form_dni === query_dni.dni){
+        
+            arr_errores.push({person_msg: `Ya existe la persona con el dni ${form_dni}`})
+            
+            res.status(400).render("./registrer/registrer", {
+                options_dni: options_dni,
+                options_genre: options_genre,
+                error: arr_errores,
+                form_name: form_nombre,
+                form_last_name: form_apellido,
+                form_birthday: form_fecha_nacimiento,
+                form_genre: form_genero,
+                form_mail: form_mail,
+                form_typedni: form_tipodni,
+                form_dni: form_dni,
+                current_url: url
+            })
+    
+            return
+        }
+    }
+
+    try {
+        const profile = await Persona.create({
+            dni: form_dni,
+            tipo_dni: form_tipodni,
+            sexo: form_genero,
+            nombre: form_nombre,
+            apellido: form_apellido,
+            fecha_nacimiento: form_fecha_nacimiento,
+            mail: form_mail
+        })
+        res.status(200).render("./registrer/profileConfirm", { msg: `Perfil de ${profile.nombre} creado/a y guardado/a exitosamente`})
+    } catch (error) {
+        res.send(`Ocurrio un error al crear la persona -> ${error}`)
+    }
+    //Si todos los datos son validos, se muestra un mensaje confirmando la creacion de los datos de la persona
+    
+    //res.redirect("/registrarse/crearUsuario")
 }
 
 //Renderiza el formulario para crear un usuario
@@ -101,11 +148,15 @@ export function usuarioFormulario(req, res) {
 //Validacion de los datos obtenido del formulario para la creacion del usuario
 export function validarRegistroUsuario(req, res) {
     const url = req.originalUrl
-    const { nombre_usuario, contrasenia } = req.body
+    const { form_nombre_usuario, form_contrasenia, form_mail } = req.body
+
+    console.log(req.body)
+
 
     const validate_result = validarFormRegistro2({
-        username: nombre_usuario,
-        password: contrasenia
+        username: form_nombre_usuario,
+        password: form_contrasenia,
+        mail: form_mail
     })
 
     if (validate_result.success === false) {
@@ -118,18 +169,24 @@ export function validarRegistroUsuario(req, res) {
         if (validate_result.errors.password) {
             arr_errores.push(validate_result.errors.password.toString())
         }
+        if (validate_result.errors.mail) {
+            arr_errores.push(validate_result.errors.mail.toString())
+        }
 
         res.status(400).render("./registrer/registrer2", {
             error: arr_errores,
             current_url: url,
             titulo: "Registrarse",
-            form_user_name: nombre_usuario        
+            form_user_name: form_nombre_usuario,
+            form_user_mail: form_mail
         })
         return
     }
 
+    //LOGICA PARA CREAR EL USUARIO
     res.status(200).send(`<h1 class="text-center"> SALIO BIEN </h1>`)
 }
-//.login_content(class="bg-gray-200 flex flex-col justify-center items-center mx-155 mt-20")
-//.login_content(class="bg-gray-200 flex flex-col justify-center items-center mx-155 mt-65")
 
+export function personaMsg(req, res){
+    res.render("./registrer/profileConfirm")
+}

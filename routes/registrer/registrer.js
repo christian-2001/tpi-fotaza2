@@ -1,13 +1,16 @@
 import express from "express"
-import { registroIndex, validarRegistro, usuarioFormulario, validarRegistroUsuario} from "../../controllers/registrer/registrerController.js"
+import { registroIndex, validarRegistroPerfil, usuarioFormulario, validarRegistroUsuario, personaMsg} from "../../controllers/registrer/registrerController.js"
 
 const router = express.Router()
 
-router.get("/", registroIndex)
+router.get("/crearPerfil", registroIndex)
 
-router.post("/", validarRegistro)
+router.post("/crearPerfil", validarRegistroPerfil)
+
+router.get("/confirmacion", personaMsg)
 
 router.get("/crearUsuario", usuarioFormulario)
 
 router.post("/crearUsuario", validarRegistroUsuario)
+
 export default router

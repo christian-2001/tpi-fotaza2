@@ -9,32 +9,42 @@ block content
     body
         if error
             .login_content(class="bg-gray-200 flex flex-col justify-center items-center mx-155 mt-20")
+                p(class="text-2xl font-bold block mt-5") Paso 2 de 2
+
                 p(class="text-2xl font-bold block mt-5") Ingrese los siguientes datos para crear su cuenta
 
                 form(action=`${current_url}`, method="post" id="userform_registrer" name="userform_registrer")
                     div(class="flex flex-col mt-10 mb-7")
                 
                         label(for="nombre" class="text-[25px]") Nombre de usuario
-                        input(type="text", name="nombre_usuario" id="nombre_usuario" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-4" value=form_user_name ? form_user_name : "")
+                        input(type="text", name="form_nombre_usuario" id="form_nombre_usuario" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-4" value=form_user_name ? form_user_name : "")
                     
                         label(for="apellido" class="text-[25px]") Contraseña
-                        input(type="password", name="contrasenia" id="contrasenia" class="text-1xl text-gray-950 font-bold  py-[5px] pl-2 bg-white block w-125 mb-4")
+                        input(type="password", name="form_contrasenia" id="form_contrasenia" class="text-1xl text-gray-950 font-bold  py-[5px] pl-2 bg-white block w-125 mb-4")
+
+                        label(for="nombre" class="text-[25px]") Mail
+                        input(type="text", name="form_mail" id="form_mail" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-4" value=form_user_mail ? form_user_mail : "")
+
                                   
                     div(class="flex justify-center mb-5")
                         button(type="submit" class="border-none pl-20 pr-20 py-2 text-2xl bg-white font-bold hover:bg-orange-500 hover:text-white") Continuar   
             +error_form2(error)
         else
-            .login_content(class="bg-gray-200 flex flex-col justify-center items-center mx-155 mt-65")
+            .login_content(class="bg-gray-200 flex flex-col justify-center items-center mx-155 mt-45")
+                p(class="text-2xl font-bold block mt-5") Paso 2 de 2
+                
                 p(class="text-2xl font-bold block mt-5") Ingrese los siguientes datos para crear su cuenta
 
                 form(action=`${current_url}`, method="post" id="userform_registrer" name="userform_registrer")
                     div(class="flex flex-col mt-10 mb-7")
                 
                         label(for="nombre" class="text-[25px]") Nombre de usuario
-                        input(type="text", name="nombre_usuario" id="nombre_usuario" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-4")
+                        input(type="text", name="form_nombre_usuario" id="form_nombre_usuario" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-4" value=form_user_name ? form_user_name : "")
                     
                         label(for="apellido" class="text-[25px]") Contraseña
-                        input(type="password", name="contrasenia" id="contrasenia" class="text-1xl text-gray-950 font-bold  py-[5px] pl-2 bg-white block w-125 mb-4")
+                        input(type="password", name="form_contrasenia" id="form_contrasenia" class="text-1xl text-gray-950 font-bold  py-[5px] pl-2 bg-white block w-125 mb-4")
                                   
+                        label(for="nombre" class="text-[25px]") Mail
+                        input(type="text", name="form_mail" id="form_mail" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-4" value=form_user_mail ? form_user_mail : "")
                     div(class="flex justify-center mb-5")
                         button(type="submit" class="border-none pl-20 pr-20 py-2 text-2xl bg-white font-bold hover:bg-orange-500 hover:text-white") Continuar
