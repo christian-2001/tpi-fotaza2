@@ -19,11 +19,10 @@ Usuario.init(
             unique: "UsuarioUnico",
         },
 
-        perfil_descripcion: {
-            type: DataTypes.STRING,
-            defaultValue: "Ninguna"
+        contrasenia: {
+            type: DataTypes.STRING
         },
-
+        
         cant_publicaciones: {
             type: DataTypes.INTEGER,
             defaultValue: 0

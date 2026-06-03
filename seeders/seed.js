@@ -1,4 +1,5 @@
 import sequelize from "../db/config.js";
+import bcrypt from "bcrypt"
 import { Etiqueta } from "../models/Etiqueta.js";
 import { Imagen_Etiqueta } from "../models/Imagen_Etiqueta.js";
 import { Imagen } from "../models/Imagen.js";
@@ -38,24 +39,36 @@ async function seed() {
     // ─────────────────────────────────────────────
     // USUARIO  (8 usuarios)
     // ─────────────────────────────────────────────
-    const users = await Usuario.bulkCreate([
+
+    const usuariosData = [
         // users[0]  → Chris
-        { nombre_usuario: "chrisgreen", id_persona: personas[0].id_persona },
+        { nombre_usuario: 'chrisgreen', id_persona: personas[0].id_persona, contrasenia: 'chris@123' },
         // users[1]  → Nicky
-        { nombre_usuario: "flojocosmico", id_persona: personas[1].id_persona },
+        { nombre_usuario: 'flojocosmico', id_persona: personas[1].id_persona, contrasenia: 'flojo@123' },
         // users[2]  → Tomi
-        { nombre_usuario: "nozye500", id_persona: personas[2].id_persona },
+        { nombre_usuario: "nozye500", id_persona: personas[2].id_persona, contrasenia: "tomi@222" },
         // users[3]  → Valentina
-        { nombre_usuario: "vale.snap", id_persona: personas[3].id_persona },
+        { nombre_usuario: "vale.snap", id_persona: personas[3].id_persona, contrasenia: "vale@999"},
         // users[4]  → Luciana
-        { nombre_usuario: "luci_frames", id_persona: personas[4].id_persona },
+        { nombre_usuario: "luci_frames", id_persona: personas[4].id_persona, contrasenia: "luciframes@111" },
         // users[5]  → Mateo
-        { nombre_usuario: "mateo.lens", id_persona: personas[5].id_persona },
+        { nombre_usuario: "mateo.lens", id_persona: personas[5].id_persona, contrasenia: "mateolens@250" },
         // users[6]  → Camila
-        { nombre_usuario: "cami_vis", id_persona: personas[6].id_persona },
+        { nombre_usuario: "cami_vis", id_persona: personas[6].id_persona, contrasenia: "camivis@687" },
         // users[7]  → Joaquín
-        { nombre_usuario: "joaco_raw", id_persona: personas[7].id_persona },
-    ]);
+        { nombre_usuario: "joaco_raw", id_persona: personas[7].id_persona, contrasenia: "joacoraw@333" },
+    ];
+
+    //Generar hash para cada contraseña
+    const usuariosHasheados = await Promise.all(
+        usuariosData.map(async (u) => ({
+            ...u,
+            contrasenia: await bcrypt.hash(u.contrasenia, 10),
+        }))
+    );
+
+    //Generar datos de prueba de "Usuario" con contraseñas hasheadas
+    const users = await Usuario.bulkCreate(usuariosHasheados);
 
     // ─────────────────────────────────────────────
     // ETIQUETA  (18 tags)
