@@ -19,3 +19,9 @@ function cambiar_color_select2() {
     //Cambia el color del select al elegir una de varias opciones
     tipoDNI_select.classList.replace("text-gray-500", "text-black")
 }
+
+const errores = document.querySelector("#errores")
+
+if(errores){
+    location.hash = "#errores"
+}
