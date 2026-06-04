@@ -12,9 +12,6 @@ const Registro2 = z.object({
 
     //Contraseña
     password: z.string().regex(password_regex, "Contraseña -> Debe tener al menos una minuscula, mayuscula, un numero, un caracter especial y entre 7 y 30 caracteres"),
-
-    //Mail
-    mail: z.email("Mail -> No valido o vacio"),
 })
 
 export function validarFormRegistro2(registro2) {

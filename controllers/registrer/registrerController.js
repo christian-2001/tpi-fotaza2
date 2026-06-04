@@ -6,7 +6,7 @@ import { Usuario } from "../../models/Usuario.js"
 const options_dni = ["DNI", "Libreta Cívica(LC)", "Libreta de Enrolamiento (LE)", "Pasaporte", "Cédula de Identidad(CI)"]
 const options_genre = ["Masculino", "Femenino", "No especificar"]
 
-//Renderiza el formulario para ingresar datos personales del cliente
+//Renderiza el formulario para ingresar datos personales del cliente y crear su perfil
 export function registroIndex(req, res) {
     //url que contiene el formulario
     const url = req.originalUrl
@@ -19,7 +19,7 @@ export function registroIndex(req, res) {
     })
 }
 
-//Validacion de los datos obtenidos del formulario que contiene los datos personales del cliente
+//Validacion de los datos obtenidos del formulario de creacion del perfil
 export async function validarRegistroPerfil(req, res) {
     //url que contiene el formulario
     let url = req.originalUrl
@@ -29,18 +29,18 @@ export async function validarRegistroPerfil(req, res) {
 
     //Validamos cada dato
     const validate_result = validarFormRegistro({
-        name: form_nombre,
-        lastname: form_apellido,
-        birthday: form_fecha_nacimiento,
+        name: form_nombre.trim(),
+        lastname: form_apellido.trim(),
+        birthday: form_fecha_nacimiento.trim(),
         genre: form_genero,
-        mail: form_mail,
+        mail: form_mail.trim(),
         dni_type: form_tipodni,
-        dni_number: form_dni
+        dni_number: form_dni.trim()
     })
 
     const arr_errores = []
 
-    //Se construye un mensaje con una cadena de errores por cada dato no valido
+    //Creacion del mensaje con cadena de errores por cada dato no válido
     if (validate_result.success === false) {
 
         if (validate_result.errors.name) {
@@ -73,6 +73,7 @@ export async function validarRegistroPerfil(req, res) {
 
         //Vuelve a renderizar el formulario con el mensaje construido mostrandose debajo del formulario
         //Se envia un codigo 400
+        
         res.status(400).render("./registrer/registrer", {
             options_dni: options_dni,
             options_genre: options_genre,
@@ -86,6 +87,7 @@ export async function validarRegistroPerfil(req, res) {
             form_dni: form_dni,
             current_url: url
         })
+
         return
 
     }
@@ -120,6 +122,7 @@ export async function validarRegistroPerfil(req, res) {
         }
     }
 
+    //Creacion del perfil de persona
     try {
         const profile = await Persona.create({
             dni: form_dni,
@@ -130,14 +133,17 @@ export async function validarRegistroPerfil(req, res) {
             fecha_nacimiento: form_fecha_nacimiento,
             mail: form_mail
         })
+        req.session.idPersonaCreada = profile.id_persona
         res.status(200).render("./registrer/profileConfirm", { msg: `Perfil de ${profile.nombre} creado/a y guardado/a exitosamente`})
     } catch (error) {
         res.send(`Ocurrio un error al crear la persona -> ${error}`)
     }
-    //Si todos los datos son validos, se muestra un mensaje confirmando la creacion de los datos de la persona
+    //Si todos los datos son válidos, se muestra un mensaje confirmando la creacion de los datos de la persona
     
     //res.redirect("/registrarse/crearUsuario")
 }
+
+//==========================================================================CREACION DE USUARIOS===============================================================================================
 
 //Renderiza el formulario para crear un usuario
 export function usuarioFormulario(req, res) {
@@ -146,19 +152,19 @@ export function usuarioFormulario(req, res) {
 }
 
 //Validacion de los datos obtenido del formulario para la creacion del usuario
-export function validarRegistroUsuario(req, res) {
+export async function validarRegistroUsuario(req, res) {
     const url = req.originalUrl
-    const { form_nombre_usuario, form_contrasenia, form_mail } = req.body
+    let { form_nombre_usuario, form_contrasenia} = req.body
 
-    console.log(req.body)
-
-
+    form_nombre_usuario = form_nombre_usuario.trim()
+    form_contrasenia = form_contrasenia.trim()
+    
     const validate_result = validarFormRegistro2({
         username: form_nombre_usuario,
-        password: form_contrasenia,
-        mail: form_mail
+        password: form_contrasenia
     })
 
+    //Creacion del mensaje con cadena de errores por cada dato no válido
     if (validate_result.success === false) {
 
         const arr_errores = []
@@ -169,22 +175,25 @@ export function validarRegistroUsuario(req, res) {
         if (validate_result.errors.password) {
             arr_errores.push(validate_result.errors.password.toString())
         }
-        if (validate_result.errors.mail) {
-            arr_errores.push(validate_result.errors.mail.toString())
-        }
 
         res.status(400).render("./registrer/registrer2", {
             error: arr_errores,
             current_url: url,
             titulo: "Registrarse",
             form_user_name: form_nombre_usuario,
-            form_user_mail: form_mail
         })
         return
     }
 
-    //LOGICA PARA CREAR EL USUARIO
+    //Creacion del usuario
+    const user = await Usuario.create({
+        nombre_usuario: form_nombre_usuario,
+        contrasenia: form_contrasenia,
+        id_persona: req.session.idPersonaCreada
+    })
     res.status(200).send(`<h1 class="text-center"> SALIO BIEN </h1>`)
+
+    delete req.session.idPersonaCreada
 }
 
 export function personaMsg(req, res){

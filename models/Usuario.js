@@ -1,6 +1,7 @@
 import { Model, DataTypes } from "sequelize"
 import sequelize from "../db/config.js";
 import { Persona } from "./Persona.js";
+import bcrypt from "bcrypt"
 
 export class Usuario extends Model { }
 
@@ -22,7 +23,7 @@ Usuario.init(
         contrasenia: {
             type: DataTypes.STRING
         },
-        
+
         cant_publicaciones: {
             type: DataTypes.INTEGER,
             defaultValue: 0
@@ -51,12 +52,19 @@ Usuario.init(
             }
         }
     },
-    
+
     {
         sequelize,
         modelName: "Usuario",
         tableName: "usuario",
         createdAt: true,
         deletedAt: true,
+        hooks: {
+            beforeSave: async (usuario) => {
+                const salt = await bcrypt.genSalt(10)
+                const hashedPassword = await bcrypt.hash(usuario.contrasenia, salt)
+                usuario.contrasenia = hashedPassword
+            }
+        }
     }
 )

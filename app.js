@@ -1,4 +1,5 @@
 import express from "express"
+import session from "express-session";
 import 'dotenv/config';
 import IndexRoutes from "./routes/IndexRoutes/IndexRoutes.js"
 import loginRoutes from "./routes/loginRoutes/loginRoutes.js"
@@ -10,8 +11,22 @@ const app = express()
 const port = process.env.PORT || 3000
 
 app.use(express.urlencoded({ extended: true }));
+
 app.use(express.json({ limit: "50mb" }))
+
 app.use(express.static("public"))
+
+app.use(session({
+    secret: process.env.SESSION_KEY,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000, // 24 horas
+        httpOnly: true,
+        sameSite: "lax",
+    }
+}))
 
 app.set("view engine", "pug")
 app.set("views", "./views")
