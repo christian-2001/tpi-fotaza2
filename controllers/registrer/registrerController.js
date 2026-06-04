@@ -73,7 +73,7 @@ export async function validarRegistroPerfil(req, res) {
 
         //Vuelve a renderizar el formulario con el mensaje construido mostrandose debajo del formulario
         //Se envia un codigo 400
-        
+
         res.status(400).render("./registrer/registrer", {
             options_dni: options_dni,
             options_genre: options_genre,
@@ -93,17 +93,17 @@ export async function validarRegistroPerfil(req, res) {
     }
 
     //Comprobamos si ya existe una persona con el mismo dni
-    const query_dni = await Persona.findOne({ 
-        where: { 
-            '$Persona.dni$': form_dni 
-        } 
+    const query_dni = await Persona.findOne({
+        where: {
+            '$Persona.dni$': form_dni
+        }
     })
- 
-    if(query_dni){
-        if(form_dni === query_dni.dni){
-        
-            arr_errores.push({person_msg: `Ya existe la persona con el dni ${form_dni}`})
-            
+
+    if (query_dni) {
+        if (form_dni === query_dni.dni) {
+
+            arr_errores.push({ person_msg: `Ya existe la persona con el dni ${form_dni}` })
+
             res.status(400).render("./registrer/registrer", {
                 options_dni: options_dni,
                 options_genre: options_genre,
@@ -117,7 +117,7 @@ export async function validarRegistroPerfil(req, res) {
                 form_dni: form_dni,
                 current_url: url
             })
-    
+
             return
         }
     }
@@ -134,12 +134,12 @@ export async function validarRegistroPerfil(req, res) {
             mail: form_mail
         })
         req.session.idPersonaCreada = profile.id_persona
-        res.status(200).render("./registrer/profileConfirm", { msg: `Perfil de ${profile.nombre} creado/a y guardado/a exitosamente`})
+        res.status(200).render("./registrer/profileConfirm", { msg: `Perfil de ${profile.nombre} creado/a y guardado/a exitosamente` })
     } catch (error) {
-        res.send(`Ocurrio un error al crear la persona -> ${error}`)
+        res.send(`Ocurrio un error al crear el perfil de la persona -> ${error}`)
     }
     //Si todos los datos son válidos, se muestra un mensaje confirmando la creacion de los datos de la persona
-    
+
     //res.redirect("/registrarse/crearUsuario")
 }
 
@@ -154,11 +154,11 @@ export function usuarioFormulario(req, res) {
 //Validacion de los datos obtenido del formulario para la creacion del usuario
 export async function validarRegistroUsuario(req, res) {
     const url = req.originalUrl
-    let { form_nombre_usuario, form_contrasenia} = req.body
+    let { form_nombre_usuario, form_contrasenia } = req.body
 
     form_nombre_usuario = form_nombre_usuario.trim()
     form_contrasenia = form_contrasenia.trim()
-    
+
     const validate_result = validarFormRegistro2({
         username: form_nombre_usuario,
         password: form_contrasenia
@@ -186,16 +186,20 @@ export async function validarRegistroUsuario(req, res) {
     }
 
     //Creacion del usuario
-    const user = await Usuario.create({
-        nombre_usuario: form_nombre_usuario,
-        contrasenia: form_contrasenia,
-        id_persona: req.session.idPersonaCreada
-    })
-    res.status(200).send(`<h1 class="text-center"> SALIO BIEN </h1>`)
+    try {
+        const user = await Usuario.create({
+            nombre_usuario: form_nombre_usuario,
+            contrasenia: form_contrasenia,
+            id_persona: req.session.idPersonaCreada
+        })
 
-    delete req.session.idPersonaCreada
+        res.status(200).render(`./registrer/userConfirm`, { msg: `El/la usuario/a ${user.nombre_usuario} ha sido creado/a exitosamente!!`})
+        delete req.session.idPersonaCreada
+    } catch (error) {
+        res.send(`Ocurrio un error al crear el usuario/cuenta de la persona -> ${error}`)
+    }
 }
 
-export function personaMsg(req, res){
-    res.render("./registrer/profileConfirm")
+export function prueba(req, res) {
+    res.render("./registrer/userConfirm")
 }
