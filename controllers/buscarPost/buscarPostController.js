@@ -20,9 +20,9 @@ export async function buscarPost(req, res) {
         //Filtrar las publicaciones que contenga la etiqueta recibida
         try {
             const queryResult = await getPostTag(postTag)
-            res.status(200).render("index", { queryResult: queryResult, query: `#${postTag}` })
+            res.status(400).render("index", { queryResult: queryResult, query: `#${postTag}` })
         } catch (error) {
-            res.status(200).send("Ocurrio un error al mostrar las publicaciones")
+            res.status(400).send("Ocurrio un error al mostrar las publicaciones")
         }
 
         //Si el valor recibido desde la barra de busqueda es vacio o no tiene nada,
@@ -41,9 +41,9 @@ export async function buscarPost(req, res) {
         //Filtrar las publicaciones que coincidan con el valor obtenido en la barra de busqueda
         try {
             const queryResult = await getPostTag(postQuery)
-            res.status(200).render("index", { queryResult: queryResult, query: `#${postQuery}` })
+            res.status(400).render("index", { queryResult: queryResult, query: `#${postQuery}` })
         } catch (error) {
-            res.status(200).send("Ocurrio un error al mostrar las publicaciones")
+            res.status(400).send("Ocurrio un error al mostrar las publicaciones")
         }
 
         //Si el valor recibido proviene de la barra de busqueda y no empieza con almohadilla o hash(#)
@@ -52,9 +52,9 @@ export async function buscarPost(req, res) {
         //Funcion que obtiene el resultado de la consulta usando el valor obtenido de la barra de busqueda
         try {
             const queryResult = await getPostQuery(postQuery)
-            res.status(200).render("index", { queryResult: queryResult, query: postQuery })
+            res.status(400).render("index", { queryResult: queryResult, query: postQuery })
         } catch (error) {
-            res.status(200).send("Ocurrio un error al mostrar las publicaciones")
+            res.status(400).send("Ocurrio un error al mostrar las publicaciones")
         }
     }
 }

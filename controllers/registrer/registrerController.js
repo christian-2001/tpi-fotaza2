@@ -199,7 +199,3 @@ export async function validarRegistroUsuario(req, res) {
         res.send(`Ocurrio un error al crear el usuario/cuenta de la persona -> ${error}`)
     }
 }
-
-export function prueba(req, res) {
-    res.render("./registrer/userConfirm")
-}
