@@ -15,79 +15,83 @@ document.addEventListener("DOMContentLoaded", commentOptions)
 
 
 //Cada vez que se escriba en el textarea "comment_input", se ejecuta la funcion que valida el comentario
-comment_input.addEventListener("input", validarComentario_caracteres1)
+if(comment_input){
+    comment_input.addEventListener("input", validarComentario_caracteres1)
+}
 const comment_form = document.forms[0]
 
-comment_form.addEventListener("submit", async (e) => {
-    e.preventDefault()
-    console.log(comment_input.value)
-    //Usamos otra funcion que valida si el comentario enviado es o no vacio
-    const approved = validarComentario_caracteres2()
-    if(!approved){
-        return
-    }
-    //Guardamos el commentario quitando espacios sobrantes
-    const text = e.target[0].value.trim()
-    console.log(text)
-    console.log(comment_form.action)
-    const response = await fetch(comment_form.action, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ comment_text: text })
+if(comment_form){
+    comment_form.addEventListener("submit", async (e) => {
+        e.preventDefault()
+        console.log(comment_input.value)
+        //Usamos otra funcion que valida si el comentario enviado es o no vacio
+        const approved = validarComentario_caracteres2()
+        if(!approved){
+            return
+        }
+        //Guardamos el commentario quitando espacios sobrantes
+        const text = e.target[0].value.trim()
+        console.log(text)
+        console.log(comment_form.action)
+        const response = await fetch(comment_form.action, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ comment_text: text })
+        })
+    
+        const newComment = await response.json();
+        console.log(newComment)
+    
+        const div_comments_content = document.querySelector(".contenido")
+        const img_comments = document.querySelector(".comentarios")
+    
+        const div_comentario_usuario = document.createElement("div")
+        div_comentario_usuario.className = "comentario_usuario bg-blue-200 rounded-[1vw] mb-5 pl-3 pr-4 pt-2 pb-4 w-fit"
+    
+        const div_comment_options = document.createElement("div")
+        div_comment_options.className = "comment_options relative"
+    
+        const svg_tag = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+        svg_tag.classList.toggle("w-5")
+        svg_tag.classList.toggle("absolute")
+        svg_tag.classList.toggle("-right-4")
+        svg_tag.classList.toggle("hover:cursor-pointer")
+        svg_tag.classList.toggle("hover:w-6")
+        svg_tag.setAttribute("viewBox", "0 0 16 16")
+    
+        const path_tag = document.createElementNS("http://www.w3.org/2000/svg", "path")
+        path_tag.setAttribute("fill", "#4f46e5")
+        path_tag.setAttribute("d", "M9.5 13a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0")
+    
+        const h1_nombre_usuario = document.createElement("h1")
+        h1_nombre_usuario.className = "nombre_usuario font-bold"
+        h1_nombre_usuario.textContent = "tito2001"
+    
+        const h1_texto = document.createElement("h1")
+        h1_texto.className = "texto"
+        h1_texto.textContent = newComment.comment_text
+    
+        svg_tag.appendChild(path_tag)
+        div_comment_options.appendChild(svg_tag)
+        div_comentario_usuario.appendChild(div_comment_options)
+        div_comentario_usuario.appendChild(h1_nombre_usuario)
+        div_comentario_usuario.appendChild(h1_texto)
+        div_comments_content.appendChild(div_comentario_usuario)
+    
+        //Actualizamos las opciones disponibles en todos los comentarios incluyendo el nuevo
+        comments = document.querySelectorAll(".comment_options")
+        commentOptions()
+    
+    
+        if (div_comments_content.childNodes.length >= 6) {
+            img_comments.querySelector(".div_comment_submit").classList.replace("top-200", "bottom-0")
+        }
+    
+        document.querySelector(".comment_text #comment_input").value = ""
     })
-
-    const newComment = await response.json();
-    console.log(newComment)
-
-    const div_comments_content = document.querySelector(".contenido")
-    const img_comments = document.querySelector(".comentarios")
-
-    const div_comentario_usuario = document.createElement("div")
-    div_comentario_usuario.className = "comentario_usuario bg-blue-200 rounded-[1vw] mb-5 pl-3 pr-4 pt-2 pb-4 w-fit"
-
-    const div_comment_options = document.createElement("div")
-    div_comment_options.className = "comment_options relative"
-
-    const svg_tag = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-    svg_tag.classList.toggle("w-5")
-    svg_tag.classList.toggle("absolute")
-    svg_tag.classList.toggle("-right-4")
-    svg_tag.classList.toggle("hover:cursor-pointer")
-    svg_tag.classList.toggle("hover:w-6")
-    svg_tag.setAttribute("viewBox", "0 0 16 16")
-
-    const path_tag = document.createElementNS("http://www.w3.org/2000/svg", "path")
-    path_tag.setAttribute("fill", "#4f46e5")
-    path_tag.setAttribute("d", "M9.5 13a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0")
-
-    const h1_nombre_usuario = document.createElement("h1")
-    h1_nombre_usuario.className = "nombre_usuario font-bold"
-    h1_nombre_usuario.textContent = "tito2001"
-
-    const h1_texto = document.createElement("h1")
-    h1_texto.className = "texto"
-    h1_texto.textContent = newComment.comment_text
-
-    svg_tag.appendChild(path_tag)
-    div_comment_options.appendChild(svg_tag)
-    div_comentario_usuario.appendChild(div_comment_options)
-    div_comentario_usuario.appendChild(h1_nombre_usuario)
-    div_comentario_usuario.appendChild(h1_texto)
-    div_comments_content.appendChild(div_comentario_usuario)
-
-    //Actualizamos las opciones disponibles en todos los comentarios incluyendo el nuevo
-    comments = document.querySelectorAll(".comment_options")
-    commentOptions()
-
-
-    if (div_comments_content.childNodes.length >= 6) {
-        img_comments.querySelector(".div_comment_submit").classList.replace("top-200", "bottom-0")
-    }
-
-    document.querySelector(".comment_text #comment_input").value = ""
-})
+}
 
 //Funcion para validar un comentario
 function validarComentario_caracteres1() {

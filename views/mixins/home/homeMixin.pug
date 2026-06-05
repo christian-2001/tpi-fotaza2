@@ -5,14 +5,18 @@ mixin home(query = undefined)
                 p(class="cursor-pointer hover:font-bold") Home
                 
             form(action="/buscar", method="get" id="form_buscar") 
-                .buscador(class="ml-66 items-center")
+                .buscador(class="ml-56 items-center")
                     if query
                         input(class="bg-white text-[20px] p-2 mr-10 w-xl rounded-md focus:outline-orange-300" type="text" name="buscador" id="buscador" value=`${query}`) 
                     else
                         input(class="bg-white text-[20px] p-2 mr-10 w-xl rounded-md focus:outline-orange-300" type="text" name="buscador" id="buscador") 
                     button#btn_buscador(type="submit" class="bg-white py-2 px-8 text-[20px] rounded-md hover:bg-amber-400") Buscar
             .user(class="flex gap-10")
-                p(class="py-2") Notificaciones 
-                a(href="/login" class="py-2 hover:font-bold") 
-                    p Iniciar Sesion 
-           
+                if userSession
+                    a(href="/" class="py-2 hover:font-bold") 
+                        p= userSession.user_name
+                else
+                    a(href="/registrarse/crearPerfil" class="py-2 hover:font-bold") 
+                        p Registrarse
+                    a(href="/login" class="py-2 hover:font-bold") 
+                        p Iniciar Sesion

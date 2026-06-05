@@ -5,6 +5,7 @@ import IndexRoutes from "./routes/IndexRoutes/IndexRoutes.js"
 import loginRoutes from "./routes/loginRoutes/loginRoutes.js"
 import registrerRoutes from "./routes/registrer/registrer.js"
 import postRoutes from "./routes/postRoutes/postRoutes.js"
+import { authUserHome } from "./middleware/auth.js";
 import { db_conexion } from "./models/index.js";
 
 const app = express()
@@ -35,7 +36,7 @@ app.use("/login", loginRoutes)
 
 app.use("/registrarse", registrerRoutes)
 
-app.use("/", IndexRoutes)
+app.use("/", authUserHome, IndexRoutes)
 
 app.use("/subirPost", postRoutes)
 
