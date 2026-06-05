@@ -1,20 +1,26 @@
 extends ../layout.pug
+include ../mixins/login/loginMixins
 
 block metadata
-    link(rel="stylesheet", href="./style/output.css")
+    link(rel="stylesheet", href="../style/output.css")
     title Iniciar Sesion
 
 block content
     body
-        .login_content(class="bg-gray-200 flex flex-col items-center justify-center mx-110 mt-20")
+        .login_content(class="bg-gray-200 flex flex-col items-center justify-center mx-150 mt-20")
             p(class="text-4xl font-bold block mt-5") Accede a tu cuenta
     
-            form(action="", method="get")
-                div(class="flex flex-col mt-10 mb-10")
-                    input(type="text", name="mail_or_user" placeholder="Mail o nombre de usuario" class="text-2xl text-gray-400 font-bold pt-2 pb-2 pl-4 bg-white block w-200 mb-2")
-                    input(type="text", name="password" placeholder="Contraseña" class="text-2xl text-gray-400 font-bold pt-2 pb-2 pl-4 bg-white block w-200")
-                div(class="flex justify-center mb-5")
-                    a(href="/registrer" class="hover:text-orange-500") 
-                        p(class="text-2xl") Click aqui para crearse una cuenta
-                div(class="flex justify-center mb-5")
-                    button(type="submit" class="border-none pl-20 pr-20 pt-2 pb-2 text-3xl bg-white font-bold hover:bg-blue-500 hover:text-white") Acceder  
+            form(action="/login/auth", method="post" id="login_form" name="login_form")
+                    div(class="flex flex-col mt-10 mb-7")
+                
+                        label(for="mail" class="text-[25px]") Mail
+                        input(type="text", name="mail" id="mail" class="text-1xl text-gray-950 font-bold py-[5px] pl-2 bg-white block w-125 mb-4" value=formValues ? formValues.mail : "")
+                    
+                        label(for="contrasenia" class="text-[25px]") Contraseña
+                        input(type="password", name="contrasenia" id="contrasenia" class="text-1xl text-gray-950 font-bold  py-[5px] pl-2 bg-white block w-125 mb-4")
+
+                    div(class="flex justify-center mb-5")
+                        button(type="submit" class="border-none pl-20 pr-20 py-2 text-2xl bg-white font-bold hover:bg-orange-500 hover:text-white") Acceder
+        if error
+           +error_login(error)
+        

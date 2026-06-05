@@ -3,7 +3,11 @@ import sequelize from "../db/config.js";
 import { Persona } from "./Persona.js";
 import bcrypt from "bcrypt"
 
-export class Usuario extends Model { }
+export class Usuario extends Model {
+    validarContraseña(contrasenia) {
+        return bcrypt.compare(contrasenia, this.contrasenia)
+    }
+}
 
 Usuario.init(
     {
