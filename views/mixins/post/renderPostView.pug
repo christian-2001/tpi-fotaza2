@@ -9,7 +9,7 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, p
                     .img_content(class="bg-blue-400 relative inline-block") 
                         img(src=`${postImages[imgIndex].img_path}`, alt="img_prueba", class="size-full object-cover")
                         div(class="absolute bottom-0 w-full z-99 text-[20px] text-white")
-                            .img_desc(class="bg-black/85 flex justify-around")
+                            .img_desc1(class="bg-black/85 flex justify-around border-b-1")
                                 div(class="py-3")
                                     p Cantidad de valoriaciones
                                     if cant_valorizaciones > 0
@@ -26,6 +26,13 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, p
                                                 - n++
                                     else
                                         p(class=" text-center") Ninguna
+                            .img_desc2(class="bg-black/85 flex justify-around")
+                                div(class="py-3 text-center")
+                                    p Etiquetas: 
+                                    form(action="/buscar" method="get" name="form_img_tag") 
+                                        each tag in img_tags
+                                            label(for=`${tag.nom_etiqueta}`)
+                                            button(type="submit" name="img_etiqueta" id="img_etiqueta" class="cursor-pointer" value=`${tag.nom_etiqueta}`) ##{tag.nom_etiqueta}
                             .botones(class="bg-orange-600/85 py-5 px-20 flex justify-center")
                                 if userSession
                                     button.btn_valorizar(type="button" class="hover:font-bold") 
@@ -98,7 +105,7 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, p
                                         h1.nombre_usuario(class="font-bold") #{user_comment.Usuario.nombre_usuario} 
                                         h1.texto #{user_comment.texto}
                             else
-                                .no_msg_text(class="flex justify-center flex-col absolute inset-0 items-center text-3xl text-black/70")
+                                .no_msg_text(class="flex justify-center flex-col absolute inset-0 items-center text-3xl text-black")
                                     p No hay comentarios
                                     p Se el primero en comentar
                         .div_comment_submit(class="sticky top-200")
@@ -116,7 +123,7 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, p
                     .img_content(class="bg-blue-400 relative inline-block") 
                         img(src=`${postImages[0].img_path}`, alt="img_prueba", class="size-full object-cover")
                         div(class="absolute bottom-0 w-full z-99 text-[20px] text-white")
-                            .img_desc(class="bg-black/85 flex justify-around")
+                            .img_desc1(class="bg-black/85 flex justify-around")
                                 div(class="py-3")
                                     p Cantidad de valoriaciones
                                     if cant_valorizaciones > 0
@@ -133,6 +140,13 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, p
                                                 - n++
                                     else
                                         p(class=" text-center") Ninguna
+                            .img_desc2(class="bg-black/85 flex justify-around")
+                                div(class="py-3 text-center")
+                                    p Etiquetas: 
+                                    form(action="/buscar" method="get" name="form_img_tag") 
+                                        each tag in img_tags
+                                            label(for=`${tag.nom_etiqueta}`)
+                                            button(type="submit" name="img_etiqueta" id="img_etiqueta" value= `${tag.nom_etiqueta}` class="cursor-pointer") ##{tag.nom_etiqueta}
                             .botones(class="bg-orange-600/85 py-5 px-20 flex justify-center")
                                 if userSession
                                     button.btn_valorizar(type="button" class="hover:font-bold") 
@@ -182,7 +196,7 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, p
                                         h1.nombre_usuario(class="font-bold") #{user_comment.Usuario.nombre_usuario} 
                                         h1.texto #{user_comment.texto}
                             else
-                                .no_msg_text(class="flex justify-center flex-col absolute inset-0 items-center text-3xl text-black/70")
+                                .no_msg_text(class="flex justify-center flex-col absolute inset-0 items-center text-3xl text-black")
                                     p No hay comentarios
                                     p Se el primero en comentar
 
