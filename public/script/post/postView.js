@@ -25,6 +25,10 @@ if (comment_input) {
 let comment_form = document.forms.namedItem("comment_form")
 
 if (comment_form != undefined) {
+    subirComentario()
+}
+
+async function subirComentario() {
     comment_form.addEventListener("submit", async (e) => {
         e.preventDefault()
 
@@ -36,15 +40,33 @@ if (comment_form != undefined) {
         //Guardamos el commentario quitando espacios sobrantes
         const text = e.target[0].value.trim()
 
+        console.log(text)
+
+        //Peticion para envio del comentario al servidor
         const response = await fetch(comment_form.action, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ comment_text: text })
+
+            body: JSON.stringify({
+                comentario: {
+                    id_img: id_img,
+                    texto: text
+                }
+            })
         })
 
+        //Una vez recibido los datos desde el servidor via res.json, formatea y renderiza el nuevo comentario en la imagen de la publicacion
         const newComment = await response.json();
+
+        //Contenedor con texto predeterminado cuando una imagen no tiene comentarios
+        const no_msg_text = document.querySelector(".no_msg_text")
+
+        //En caso que el nuevo comentario sea el primero de la imagen de la publicacion, se elimina el texto predeterminado del contenedor
+        if(no_msg_text){
+            no_msg_text.textContent = ""
+        }
 
         const div_comments_content = document.querySelector(".contenido")
         const img_comments = document.querySelector(".comentarios")
@@ -69,7 +91,7 @@ if (comment_form != undefined) {
 
         const h1_nombre_usuario = document.createElement("h1")
         h1_nombre_usuario.className = "nombre_usuario font-bold"
-        h1_nombre_usuario.textContent = "tito2001"
+        h1_nombre_usuario.textContent = newComment.nombre_usuario
 
         const h1_texto = document.createElement("h1")
         h1_texto.className = "texto"

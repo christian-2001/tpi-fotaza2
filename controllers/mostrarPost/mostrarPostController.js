@@ -109,12 +109,9 @@ export async function actualizarImgPost(req, res) {
 
     const id = req.params.id_post
     let img = Number(req.params.img_index)
+    const id_usuario = req.user.id_usuario
 
     if (Object.hasOwn(req.body, "valorizacion")) {
-        const id_usuario = req.user.id_usuario
-
-        //let prom_valorizacion = 0
-        //let cant = 0
 
         try {
             const imgs = await Imagen.findAll({
@@ -211,9 +208,27 @@ export async function actualizarImgPost(req, res) {
             res.status(400).send(`Error al buscar imagenes ${error}`)
         }
 
-    }
+    //Si lo que viene en el cuerpo del request es un comentario, 
+    } else if (Object.hasOwn(req.body, "comentario")) {
+        
+        //Guardado del nuevo comentario proveniente del fetch en frontend y nombre del usuario en sesion
 
-    else if (Object.hasOwn(req.body, "comment_text")) {
+        const comentario_fetch = req.body.comentario.texto
+        const nombreUsuario_session = req.user.nombre_usuario
+
+        //Creacion y almacenamiento del nuevo comentario en la bd
+        try {
+            const nuevo_comentario = await Comentario.create({
+                texto: comentario_fetch,
+                id_img: req.body.comentario.id_img,
+                id_usuario: id_usuario
+            })
+        
+            //Envio de datos con res.json que contiene el nuevo comentario y el nombre del usuario en sesion quien lo comentó
+            res.json({ comment_text: nuevo_comentario.texto, nombre_usuario: nombreUsuario_session })
+        } catch (error) {
+            res.status(400).send(`Error al crear comentario ${error}`)
+        }
         //res.json({ comment_text: req.body.comment_text, nombre_usuario: "tito2001" })
     }
 }
