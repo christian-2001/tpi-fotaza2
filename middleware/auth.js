@@ -4,20 +4,21 @@ import { Usuario } from "../models/Usuario.js"
 
 export async function authUserHome(req, res, next){
     const userId = Number(req.session.userId)
-    console.log(userId)
+
     if(userId){
         try {   
 
             const usuario = await Usuario.findByPk(userId, {
-                attributes: ["nombre_usuario"],
+                attributes: ["id_usuario", "nombre_usuario"],
             })
 
-            console.log(usuario)
+            req.user = usuario
     
             if(usuario){
                 res.locals.userSession = {
+                    id: usuario.id_usuario,
                     user_name: usuario.nombre_usuario
-                }            
+                }             
             }
 
         } catch (error) {

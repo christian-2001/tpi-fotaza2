@@ -5,6 +5,9 @@ const btn_valorizar = document.querySelector(".btn_valorizar")
 const notas = document.querySelector(".notas")
 const stars = document.querySelectorAll(".stars")
 const comment_input = document.querySelector("#comment_input")
+const cant_valorizaciones = document.querySelector(".cant_valorizaciones")
+
+const prom_valorizacion = document.querySelector(".prom_valorizacion")
 
 //Variables globales que activan/desactivan clases para el textarea que contiene el comentario
 //y para activar/desactivar el mensaje cuando el comentario alcanza el limite de caracteres respectivamente
@@ -19,12 +22,12 @@ if (comment_input) {
     comment_input.addEventListener("input", validarComentario_caracteres1)
 }
 
-let comment_form = document.forms[1]
+let comment_form = document.forms.namedItem("comment_form")
 
 if (comment_form != undefined) {
     comment_form.addEventListener("submit", async (e) => {
         e.preventDefault()
-        console.log(comment_input.value)
+
         //Usamos otra funcion que valida si el comentario enviado es o no vacio
         const approved = validarComentario_caracteres2()
         if (!approved) {
@@ -32,8 +35,7 @@ if (comment_form != undefined) {
         }
         //Guardamos el commentario quitando espacios sobrantes
         const text = e.target[0].value.trim()
-        console.log(text)
-        console.log(comment_form.action)
+
         const response = await fetch(comment_form.action, {
             method: "POST",
             headers: {
@@ -43,7 +45,6 @@ if (comment_form != undefined) {
         })
 
         const newComment = await response.json();
-        console.log(newComment)
 
         const div_comments_content = document.querySelector(".contenido")
         const img_comments = document.querySelector(".comentarios")
@@ -177,10 +178,7 @@ stars.forEach((star, index) => {
     star.addEventListener("click", () => {
         selected = index + 1;
         pintarEstrellas(selected);
-        stars.forEach(s => s.classList.toggle("pointer-events-none"))
-        btn_valorizar.querySelector("p").textContent = "Imagen Valorizada"
-        btn_valorizar.classList.remove("hover:font-bold")
-        notas.classList.toggle("block")
+        enviarValorizacion(selected)
     });
 });
 
@@ -197,6 +195,37 @@ function pintarEstrellas(n) {
             svgRellena.classList.add("hidden");
         }
     });
+}
+
+function enviarValorizacion(stars) {
+
+    fetch(window.location.href, {
+        method: "post",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            valorizacion: {
+                id_img: id_img,
+                puntaje: stars
+            }
+        })
+    })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.cantValorizaciones) {
+                cant_valorizaciones.textContent = data.cantValorizaciones
+            }
+
+            prom_valorizacion.innerHTML = ""
+
+            for (let i = 0; i < Math.round(data.prom_valorizacion); i++) {
+                prom_valorizacion.textContent += "⭐"
+            }
+
+        })
+
 }
 
 /*
