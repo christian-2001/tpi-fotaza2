@@ -2,10 +2,10 @@ extends ../layout.pug
 include ../mixins/post/renderPostView
 
 block metadata
-    link(rel="stylesheet", href="../../style/output.css")    
+    link(rel="stylesheet", href="../../style/output.css")
     script.
         const id_img = !{JSON.stringify(postImages[imgIndex].id_img)}
     title Inicio
 
 block content
-    +imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, post_id, prev, next, comments, current_url)
+    +imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, img_index_aux, post_id, prev, next, comments, current_url)

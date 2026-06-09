@@ -6,7 +6,6 @@ const notas = document.querySelector(".notas")
 const stars = document.querySelectorAll(".stars")
 const comment_input = document.querySelector("#comment_input")
 const cant_valorizaciones = document.querySelector(".cant_valorizaciones")
-
 const prom_valorizacion = document.querySelector(".prom_valorizacion")
 
 //Variables globales que activan/desactivan clases para el textarea que contiene el comentario
@@ -14,7 +13,7 @@ const prom_valorizacion = document.querySelector(".prom_valorizacion")
 let limit_msg
 let textarea_styles
 
-document.addEventListener("DOMContentLoaded", commentOptions)
+//document.addEventListener("DOMContentLoaded", commentOptions)
 
 
 //Cada vez que se escriba en el textarea "comment_input", se ejecuta la funcion que valida el comentario
@@ -40,7 +39,6 @@ async function subirComentario() {
         //Guardamos el commentario quitando espacios sobrantes
         const text = e.target[0].value.trim()
 
-        console.log(text)
 
         //Peticion para envio del comentario al servidor
         const response = await fetch(comment_form.action, {
@@ -59,7 +57,6 @@ async function subirComentario() {
 
         //Una vez recibido los datos desde el servidor via res.json, formatea y renderiza el nuevo comentario en la imagen de la publicacion
         const newComment = await response.json();
-
         //Contenedor con texto predeterminado cuando una imagen no tiene comentarios
         const no_msg_text = document.querySelector(".no_msg_text")
 
@@ -105,8 +102,8 @@ async function subirComentario() {
         div_comments_content.appendChild(div_comentario_usuario)
 
         //Actualizamos las opciones disponibles en todos los comentarios incluyendo el nuevo
-        comments = document.querySelectorAll(".comment_options")
-        commentOptions()
+        //comments = document.querySelectorAll(".comment_options")
+        //commentOptions()
 
 
         if (div_comments_content.childNodes.length >= 6) {
@@ -115,6 +112,10 @@ async function subirComentario() {
 
         document.querySelector(".comment_text #comment_input").value = ""
     })
+}
+
+if (document.querySelector(".contenido").childNodes.length >= 6) {
+    document.querySelector(".comentarios").querySelector(".div_comment_submit").classList.replace("top-200", "bottom-0")
 }
 
 //Funcion para validar un comentario
@@ -178,9 +179,6 @@ function validarComentario_caracteres2() {
     }
 }
 
-/*
-    validarComentario_caracteres
-*/
 let selected = 0;
 
 stars.forEach((star, index) => {
@@ -235,7 +233,6 @@ function enviarValorizacion(stars) {
     })
         .then(res => res.json())
         .then(data => {
-
             if (data.cantValorizaciones) {
                 cant_valorizaciones.textContent = data.cantValorizaciones
             }
@@ -250,61 +247,6 @@ function enviarValorizacion(stars) {
 
 }
 
-/*
-console.log(stars)
-
-stars.forEach((star, index) => {
-
-    let star_elem = star.querySelectorAll("svg")
-    console.log(star_elem)
-    console.log(index)
-    star_elem[0].addEventListener("mouseover", () => {
-        //star_elem[0].classList.toggle("hidden")
-        pintarEstrella(stars, index)
-    })
-    
-    star_elem[1].addEventListener("mouseout", () =>{
-        //quitarRellenoEstrella(stars, index)
-    })
-
-})*/
-/*
-function pintarEstrella(stars, index){
-    
-    for(let i = 0; i < index; i++){
-        stars[i].querySelectorAll("svg")[0].classList.toggle("hidden")
-        stars[i].querySelectorAll("svg")[1].classList.replace("hidden", "block")
-        stars[i].querySelectorAll("svg")[1].classList.toggle("cursor-pointer")
-    }
-    }*/
-/*
-    star_elem[1].classList.replace("hidden", "block")
-    star_elem[1].classList.toggle("cursor-pointer")
-    console.log(stars[index].querySelectorAll("svg")[0])*/
-/*
-function quitarRellenoEstrella(stars, index){
-       for(let i = index; i > 0; i--){
-           stars[i].querySelectorAll("svg")[1].classList.replace("block", "hidden")
-           stars[i].querySelectorAll("svg")[0].classList.replace("hidden", "block")
-           stars[i].querySelectorAll("svg")[0].classList.toggle("cursor-pointer")
-       }
-}*/
-/*
-  star_elem[0].addEventListener("mouseover", () => {
-      star_elem[0].classList.toggle("hidden")
-      star_elem[1].classList.replace("hidden", "block")
-      star_elem[1].classList.toggle("cursor-pointer")
-      console.log(index)
-  })
-
-  star_elem[1].addEventListener("mouseout", () =>{
-      star_elem[1].classList.replace("block", "hidden")
-      star_elem[0].classList.replace("hidden", "block")
-      star_elem[0].classList.toggle("cursor-pointer")
-      console.log(index)
-  })
-      */
-
 //Renderizar las 5 estrellas para calificar una imagen al posicionarse sobre el texto "Valorizar"
 if (btn_valorizar) {
     btn_valorizar.addEventListener("mouseover", () => {
@@ -316,36 +258,54 @@ if (btn_valorizar) {
         notas.classList.replace("block", "hidden")
     })
 }
-//Funcion que despliega opciones disponibles para todos los comentarios
+//Funcion que despliega opciones disponibles para todos los comentarios(de momento denuncia) NO SE TENDRÁ EN CUENTA PARA LA ENTREGA PARCIAL 
+/*
 function commentOptions() {
-    for (const com of comments) {
-        if (!com.querySelector(".comment_options")) {
-            com.addEventListener("click", () => {
+    //if (!com.querySelector(".options")) {}
+    for (const com of comment_content) {
 
+        const id_comentario = com.id
+        const comment_options = com.querySelector(".comment_options")
+
+        comment_options.addEventListener("click", () => {
+            if (!comment_options.querySelector(".options")) {
                 const div_options = document.createElement("div")
-                div_options.classList.toggle("options")
-                div_options.classList.toggle("absolute")
-                div_options.classList.toggle("top-5")
-                div_options.classList.toggle("-right-4")
+                div_options.classList.add("options")
+                div_options.classList.add("absolute")
+                div_options.classList.add("top-5")
+                div_options.classList.add("-right-4")
 
-                div_options.classList.toggle("bg-white")
+                div_options.classList.add("bg-white")
 
-                const denunciar = document.createElement("div")
-                denunciar.classList.toggle("border-b-2")
-                denunciar.classList.toggle("p-[3px]")
-                denunciar.classList.toggle("border-gray-400")
+                const ul_options = document.createElement("ul")
+                const li = document.createElement("li")
+                ul_options.appendChild(li)
+
+                li.classList.add("border-b-2")
+                li.classList.add("p-[3px]")
+                li.classList.add("border-gray-400")
+
+                const anchor = document.createElement("a")
+                anchor.href = `/denuncia?idComentario=${id_comentario}`
 
                 const btn_denuncia = document.createElement("button")
                 btn_denuncia.type = "button"
-                btn_denuncia.classList.toggle("hover:cursor-pointer")
-                btn_denuncia.classList.toggle("hover:font-bold")
-                btn_denuncia.classList.toggle("hover:text-1xl")
+                btn_denuncia.classList.add("hover:cursor-pointer")
+                btn_denuncia.classList.add("hover:font-bold")
+                btn_denuncia.classList.add("hover:text-1xl")
                 btn_denuncia.textContent = "Denunciar comentario"
 
-                denunciar.appendChild(btn_denuncia)
-                div_options.appendChild(denunciar)
-                com.appendChild(div_options)
-            })
-        }
+
+                anchor.appendChild(btn_denuncia)
+                li.appendChild(anchor)
+
+                div_options.appendChild(ul_options)
+                comment_options.appendChild(div_options)
+
+            } else if (comment_options.querySelector(".options")) {
+                comment_options.querySelector(".options").remove()
+            }
+        })
+
     }
-}
+}*/

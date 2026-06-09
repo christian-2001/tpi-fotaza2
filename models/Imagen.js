@@ -52,15 +52,19 @@ Imagen.init(
                 model: Publicacion,
                 key: "id_post"
             }
+        },
+
+        comentarios_cerrados: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
         }
     },
 
     {
         sequelize,
+        timestamps: false,
         modelName: "Imagen",
         tableName: "imagen",
-        createdAt: "fh_subida",
-        updatedAt: true,
         deletedAt: true,
     }
 )
