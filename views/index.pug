@@ -11,7 +11,14 @@ block content
     if queryResult 
         +tagsQuery(queryResult)
     else
-        div(class="grid grid-cols-2 my-20 mx-60 gap-4")
+        div(class="flex justify-center mt-5")
+            if !userSession
+                a(href="/login")
+                    button(type="button" class="bg-white text-[20px] px-3 py-1 hover:bg-orange-400 hover:font-bold hover:text-white border-1 border-gray-400") Debes iniciar sesion para crear una publicación
+            else
+                a(href="/subirPost")
+                    button(type="button" class="bg-white text-[20px] px-3 py-1 hover:bg-orange-400 hover:font-bold hover:text-white border-1 border-gray-400") Crear publicación
+        div(class="grid grid-cols-2 my-10 mx-60 gap-4")
             each val in posts
                     .post(class="bg-white border-1 border-gray-400 rounded-[10px] p-2 hover:outline-3 hover:outline-orange-400 hover:opacity-80 h-fit") 
                         .post_usuario(class="text-center text-[20px]")

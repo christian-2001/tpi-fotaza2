@@ -2,9 +2,12 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, i
 
     body(class="fixed inset-0 bg-black/60")
     -let n = 0
+        div(class="flex justify-center my-2")
+            a(href="/") 
+                button(type="button" class="bg-white text-[20px] px-3 hover:bg-orange-400 hover:font-bold hover:text-white border-1 border-black")  Volver a Home
         div(class="flex justify-center items-center z-1 overflow-auto")
 
-            .post_content(class="flex flex-row mt-8 w-450 h-215")
+            .post_content(class="flex flex-row w-450 h-215")
 
                 if postImages.length > 1
                     .img_content(class="bg-blue-400 relative inline-block") 

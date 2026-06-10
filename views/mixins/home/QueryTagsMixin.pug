@@ -1,5 +1,8 @@
 mixin tagsQuery(queryResult = undefined)
-    div(class="flex justify-center mt-5 text-[35px] font-bold")
+    div(class="flex justify-center mt-10 mb-6")
+        a(href="/subirPost")
+            button(type="button" class="bg-white text-[20px] px-3 py-1 hover:bg-orange-400 hover:font-bold hover:text-white border-1 border-gray-400") Crear publicación
+    div(class="flex justify-center text-[35px] font-bold")
         p Resultados de Busqueda:
 
     if queryResult.length === 1
