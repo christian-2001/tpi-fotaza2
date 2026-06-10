@@ -391,21 +391,21 @@ async function seed() {
     // ─────────────────────────────────────────────
     await Seguidores.bulkCreate([
         // users[1] sigue a users[0]
-        { id_seguidor: users[1].id_usuario, id_seguido: users[0].id_usuario, id_usuario: users[1].id_usuario },
+        { id_seguidor: users[1].id_usuario, id_seguido: users[0].id_usuario },
         // users[2] sigue a users[0]
-        { id_seguidor: users[2].id_usuario, id_seguido: users[0].id_usuario, id_usuario: users[2].id_usuario },
+        { id_seguidor: users[2].id_usuario, id_seguido: users[0].id_usuario },
         // users[0] sigue a users[1]
-        { id_seguidor: users[0].id_usuario, id_seguido: users[1].id_usuario, id_usuario: users[0].id_usuario },
+        { id_seguidor: users[0].id_usuario, id_seguido: users[1].id_usuario },
         // users[3] sigue a users[0]
-        { id_seguidor: users[3].id_usuario, id_seguido: users[0].id_usuario, id_usuario: users[3].id_usuario },
+        { id_seguidor: users[3].id_usuario, id_seguido: users[0].id_usuario },
         // users[4] sigue a users[2]
-        { id_seguidor: users[4].id_usuario, id_seguido: users[2].id_usuario, id_usuario: users[4].id_usuario },
+        { id_seguidor: users[4].id_usuario, id_seguido: users[2].id_usuario },
         // users[5] sigue a users[3]
-        { id_seguidor: users[5].id_usuario, id_seguido: users[3].id_usuario, id_usuario: users[5].id_usuario },
+        { id_seguidor: users[5].id_usuario, id_seguido: users[3].id_usuario },
         // users[6] sigue a users[4]
-        { id_seguidor: users[6].id_usuario, id_seguido: users[4].id_usuario, id_usuario: users[6].id_usuario },
+        { id_seguidor: users[6].id_usuario, id_seguido: users[4].id_usuario },
         // users[7] sigue a users[5]
-        { id_seguidor: users[7].id_usuario, id_seguido: users[5].id_usuario, id_usuario: users[7].id_usuario },
+        { id_seguidor: users[7].id_usuario, id_seguido: users[5].id_usuario },
     ]);
 
 }

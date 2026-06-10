@@ -6,9 +6,16 @@ export class Seguidores extends Model { }
 
 Seguidores.init(
     {
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
+
         id_seguidor: {
             type: DataTypes.INTEGER,
             unique: "SeguidoresUnico",
+            allowNull: false,
             references: {
                 model: Usuario,
                 key: "id_usuario"
@@ -18,6 +25,7 @@ Seguidores.init(
         id_seguido: {
             type: DataTypes.INTEGER,
             unique: "SeguidoresUnico",
+            allowNull: false,
             references: {
                 model: Usuario,
                 key: "id_usuario"

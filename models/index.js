@@ -102,10 +102,20 @@ Imagen_Etiqueta.belongsTo(Imagen, { foreignKey: "id_img"})
 Etiqueta.hasMany(Imagen_Etiqueta, { foreignKey: "id_etiqueta"})
 Imagen_Etiqueta.belongsTo(Etiqueta, { foreignKey: "id_etiqueta"})
 
+Seguidores.belongsTo(Usuario, {
+    foreignKey: "id_seguidor",
+    as: "seguidor"
+})
 
-
+Seguidores.belongsTo(Usuario, {
+    foreignKey: "id_seguido",
+    as: "seguido"
+})
+/*
 Usuario.hasMany(Seguidores, { foreignKey: "id_usuario" })
 Seguidores.belongsTo(Usuario, { foreignKey: "id_usuario" })
+*/
+
 
 //-------------------------------------------------------------------------------------
 
