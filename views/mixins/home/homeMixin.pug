@@ -2,7 +2,7 @@ mixin home(query = undefined)
     body(class="bg-gray-200/70")
         .bar_naranja(class="bg-orange-400 px-10 text-2xl h-15 flex justify-between items-center")
             a(href="/") 
-                p(class="cursor-pointer hover:font-bold") Home
+                p(class="hover:font-bold cursor-pointer") Home
                 
             form(action="/buscar", method="get" id="form_buscar") 
                 .buscador(class="ml-56 items-center")

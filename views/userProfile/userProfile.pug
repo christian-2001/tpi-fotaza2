@@ -7,7 +7,7 @@ block content
     body(class="relative")
         div(class="flex justify-center my-5")
             a(href="/")
-                button(type="button" class="bg-white text-[20px] px-3 py-1 hover:bg-orange-400 hover:font-bold hover:text-white border-1 border-gray-400") Volver a Home
+                button(type="button" class="bg-white text-[20px] px-3 py-1 hover:bg-orange-400 hover:font-bold hover:text-white border-1 border-gray-400 cursor-pointer") Volver a Home
         .user_profile(class="flex flex-col justify-center bg-orange-100 py-5 mx-50 mb-10")
             if userSession
                 p(class="text-center text-[4rem] font-bold") #{userSession.user_name}
