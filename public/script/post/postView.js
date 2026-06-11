@@ -1,7 +1,7 @@
 const comment_content = document.querySelectorAll(".comentario_usuario")
 let comments = document.querySelectorAll(".comment_options")
 const post_content = document.querySelector(".post_content")
-const btn_valorizar = document.querySelector(".btn_valorizar")
+const text_valorizacion = document.querySelector(".text_valorizacion p")
 const notas = document.querySelector(".notas")
 const stars = document.querySelectorAll(".stars")
 const comment_input = document.querySelector("#comment_input")
@@ -14,7 +14,6 @@ let limit_msg
 let textarea_styles
 
 //document.addEventListener("DOMContentLoaded", commentOptions)
-
 
 //Cada vez que se escriba en el textarea "comment_input", se ejecuta la funcion que valida el comentario
 if (comment_input) {
@@ -179,7 +178,7 @@ function validarComentario_caracteres2() {
     }
 }
 
-let selected = 0;
+let selected = usuarioPuntaje;
 
 stars.forEach((star, index) => {
     const svgHueca = star.querySelectorAll("svg")[0];
@@ -199,6 +198,8 @@ stars.forEach((star, index) => {
         selected = index + 1;
         pintarEstrellas(selected);
         enviarValorizacion(selected)
+
+        text_valorizacion.textContent = "Imagen valorizada" 
     });
 });
 
@@ -247,17 +248,8 @@ function enviarValorizacion(stars) {
 
 }
 
-//Renderizar las 5 estrellas para calificar una imagen al posicionarse sobre el texto "Valorizar"
-if (btn_valorizar) {
-    btn_valorizar.addEventListener("mouseover", () => {
-        notas.classList.replace("hidden", "block")
-    })
 
-    //Al dejar de posicionarse en ese texto, desaparecen las estrellas
-    btn_valorizar.addEventListener("mouseout", () => {
-        notas.classList.replace("block", "hidden")
-    })
-}
+
 //Funcion que despliega opciones disponibles para todos los comentarios(de momento denuncia) NO SE TENDRÁ EN CUENTA PARA LA ENTREGA PARCIAL 
 /*
 function commentOptions() {

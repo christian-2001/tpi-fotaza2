@@ -14,115 +14,124 @@ export async function mostrarPost(req, res) {
 
     const current_url = req.originalUrl
 
-    const imgs = await Imagen.findAll({
+    try {
+        const imgs = await Imagen.findAll({
 
-        order: [['id_img', 'ASC']],
+            order: [['id_img', 'ASC']],
 
-        include: [
-            { model: Publicacion, required: true, where: { id_post: id } },
-            { model: Valorizacion }
-        ]
-    })
+            include: [
+                { model: Publicacion, required: true, where: { id_post: id } },
+                { model: Valorizacion }
+            ]
+        })
 
-    const post_user = await Publicacion.findOne({
-        where: {
-            id_post: id
-        },
+        const post_user = await Publicacion.findOne({
+            where: {
+                id_post: id
+            },
 
-        attributes: ["id_usuario"],
+            attributes: ["id_usuario"],
 
-        include: [
-            { model: Usuario, required: true, attributes: ["id_usuario"] }
-        ]
-    })
+            include: [
+                { model: Usuario, required: true, attributes: ["id_usuario"] }
+            ]
+        })
 
-    const img_coments = await Comentario.findAll({
+        const img_coments = await Comentario.findAll({
 
-        order: [["fh_comentario", "ASC"]],
+            order: [["fh_comentario", "ASC"]],
 
-        include: [
-            { model: Imagen, required: true, where: { id_img: imgs[img].id_img } },
-            { model: Usuario, required: true }
-        ]
-    })
+            include: [
+                { model: Imagen, required: true, where: { id_img: imgs[img].id_img } },
+                { model: Usuario, required: true }
+            ]
+        })
 
-    const tags = await Imagen_Etiqueta.findAll({
-        where: {
-            '$Imagen_Etiqueta.id_img$': {
-                [Op.eq]: imgs[img].id_img
+        const tags = await Imagen_Etiqueta.findAll({
+            where: {
+                '$Imagen_Etiqueta.id_img$': {
+                    [Op.eq]: imgs[img].id_img
+                }
             }
-        }
-    })
+        })
 
-    const img_tags = await Etiqueta.findAll({
-        where: {
-            '$Etiqueta.id_etiqueta$': {
-                [Op.eq]: tags[0].id_etiqueta
+        const img_tags = await Etiqueta.findAll({
+            where: {
+                '$Etiqueta.id_etiqueta$': {
+                    [Op.eq]: tags[0].id_etiqueta
+                }
+            },
+            attributes: ["nom_etiqueta"]
+        })
+
+        const cant = await Valorizacion.count({
+            where: {
+                id_img: imgs[img].id_img
             }
-        },
-        attributes: ["nom_etiqueta"]
-    })
+        })
 
-    const cant = await Valorizacion.count({
-        where: {
-            id_img: imgs[img].id_img
+        let prom = await Valorizacion.findAll({
+
+            where: {
+                id_img: imgs[img].id_img
+            },
+
+            attributes: [
+                [Sequelize.fn("AVG", Sequelize.col("puntaje")), "promedio"]
+            ]
+        })
+
+        const prom_valorizacion = Number(prom[0].dataValues.promedio)
+
+        let miValorizacion
+
+        if (req.user) {
+            miValorizacion = await Valorizacion.findOne({
+                where: {
+                    id_img: imgs[img].id_img,
+                    id_usuario: req.user.id_usuario
+                }
+            })
+
+            console.log(miValorizacion)
         }
-    })
 
-    let prom = await Valorizacion.findAll({
+        if (img > 0 && img < (imgs.length - 1)) {
+            const img_prev = img - 1
+            const img_next = img + 1
 
-        where: {
-            id_img: imgs[img].id_img
-        },
-
-        attributes: [
-            [Sequelize.fn("AVG", Sequelize.col("puntaje")), "promedio"]
-        ]
-    })
-
-    const prom_valorizacion = Number(prom[0].dataValues.promedio)
-    /*
-        let prom_valorizacion = 0
-        let cant = 0
-    
-        imgs[img].Valorizacions.forEach(i => {
-            prom_valorizacion += i.puntaje
-            cant++
-        })
-    
-        prom_valorizacion = Math.round(parseInt(prom_valorizacion / cant))
-    */
-    if (img > 0 && img < (imgs.length - 1)) {
-        const img_prev = img - 1
-        const img_next = img + 1
-
-        res.render("./post/postView", {
-            postImages: imgs,
-            post_id: id,
-            id_post_user: post_user.id_usuario,
-            prev: img_prev,
-            next: img_next,
-            imgIndex: img,
-            img_index_aux: img,
-            cant_valorizaciones: cant,
-            prom_valorizacion: prom_valorizacion,
-            img_tags: img_tags,
-            comments: img_coments,
-            current_url: current_url
-        })
-    } else {
-        res.render("./post/postView", {
-            postImages: imgs,
-            post_id: id,
-            id_post_user: post_user.id_usuario,
-            imgIndex: img,
-            img_index_aux: img,
-            cant_valorizaciones: cant,
-            prom_valorizacion: prom_valorizacion,
-            img_tags: img_tags,
-            comments: img_coments,
-            current_url: current_url
-        })
+            res.render("./post/postView", {
+                postImages: imgs,
+                post_id: id,
+                id_post_user: post_user.id_usuario,
+                prev: img_prev,
+                next: img_next,
+                imgIndex: img,
+                img_index_aux: img,
+                cant_valorizaciones: cant,
+                prom_valorizacion,
+                miValorizacion,
+                img_tags,
+                comments: img_coments,
+                current_url
+            })
+        } else {
+            res.render("./post/postView", {
+                postImages: imgs,
+                post_id: id,
+                id_post_user: post_user.id_usuario,
+                imgIndex: img,
+                img_index_aux: img,
+                cant_valorizaciones: cant,
+                prom_valorizacion,
+                miValorizacion,
+                img_tags,
+                comments: img_coments,
+                current_url
+            })
+        }
+    } catch (error) {
+        res.status(400).send(`Ocurrió un error ${error}`)
     }
 }
 
@@ -143,90 +152,52 @@ export async function actualizarImgPost(req, res) {
                 ]
             })
 
-            try {
-                const valorizacionQuery = await Valorizacion.findOne({
-                    where: {
-                        id_img: req.body.valorizacion.id_img,
-                        id_usuario: id_usuario,
-                        puntaje: req.body.valorizacion.puntaje
-                    }
+            const valorizacionQuery = await Valorizacion.findOne({
+                where: {
+                    id_img: req.body.valorizacion.id_img,
+                    id_usuario: id_usuario,
+                }
+            })
+
+            if (!valorizacionQuery) {
+
+                await Valorizacion.create({
+                    id_img: req.body.valorizacion.id_img,
+                    id_usuario: id_usuario,
+                    puntaje: req.body.valorizacion.puntaje
                 })
 
-                if (!valorizacionQuery) {
-                    try {
-                        const nueva_valorizacion = await Valorizacion.create({
+            } else if (valorizacionQuery) {
+
+                const updateValorizacion = await Valorizacion.update(
+                    { puntaje: req.body.valorizacion.puntaje },
+                    {
+                        where: {
                             id_img: req.body.valorizacion.id_img,
-                            id_usuario: id_usuario,
-                            puntaje: req.body.valorizacion.puntaje
-                        })
-                        try {
-                            const cant = await Valorizacion.count({
-                                where: {
-                                    id_img: req.body.valorizacion.id_img
-                                }
-                            })
-
-                            try {
-                                let prom = await Valorizacion.findAll({
-
-                                    where: {
-                                        id_img: req.body.valorizacion.id_img
-                                    },
-
-                                    attributes: [
-                                        [Sequelize.fn("AVG", Sequelize.col("puntaje")), "promedio"]
-                                    ]
-                                })
-
-                                const prom_aux = Number(prom[0].dataValues.promedio)
-
-                                res.json({ cantValorizaciones: cant, prom_valorizacion: prom_aux })
-                            } catch (error) {
-                                res.status(400).send(`Error en promedio de valorizaciones ${error}`)
-                            }
-                        } catch (error) {
-                            res.status(400).send(`Error en cantidad de valorizaciones ${error}`)
+                            id_usuario: id_usuario
                         }
-
-                    } catch (error) {
-                        res.status(400).send(`Error en guardado de valorizacion ${error}`)
                     }
-                } /*else { //ESTO NO SE TENDRÁ EN CUENTA PARA LA ENTREGA DEL TPI
-                    try {
-                        await Valorizacion.update(
-                            { puntaje: req.body.valorizacion.puntaje },
+                )
 
-                            {
-                                where: {
-                                    [Op.and]: [
-                                        {
-                                            id_img: valorizacionQuery.id_img
-                                        },
-                                        {
-                                            id_usuario: valorizacionQuery.id_usuario
-                                        }
-                                    ]
-                                }
-                            }
-                        )
-
-                        imgs[img].Valorizacions.forEach(i => {
-                            prom_valorizacion += i.puntaje
-                            cant++
-                        })
-
-                        prom_valorizacion = parseInt(prom_valorizacion / cant)
-
-                        res.json({ prom_valorizacion: prom_valorizacion })
-                    } catch (error) {
-                        res.status(400).send(`Error en actualizar la valorizacion ${error}`)
-                    }
-                }*/
-            } catch (error) {
-                res.status(400).send(`Error en encontrar la valorizacion ${error}`)
             }
+
+            const cant = await Valorizacion.count({
+                where: { id_img: req.body.valorizacion.id_img }
+            })
+
+            const prom = await Valorizacion.findAll({
+                where: { id_img: req.body.valorizacion.id_img },
+                attributes: [
+                    [Sequelize.fn("AVG", Sequelize.col("puntaje")), "promedio"]
+                ]
+            })
+
+            const prom_aux = Number(prom[0].dataValues.promedio)
+
+            res.json({ cantValorizaciones: cant, prom_valorizacion: prom_aux })
+
         } catch (error) {
-            res.status(400).send(`Error al buscar imagenes ${error}`)
+            res.status(400).send(`Error en valorizacion ${error}`)
         }
 
         //Si lo que viene en el cuerpo del request es un comentario, 
@@ -282,3 +253,34 @@ export async function cerrarComentarios(req, res) {
     }
 }
 
+/*else { //ESTO NO SE TENDRÁ EN CUENTA PARA LA ENTREGA DEL TPI
+                    try {
+                        await Valorizacion.update(
+                            { puntaje: req.body.valorizacion.puntaje },
+
+                            {
+                                where: {
+                                    [Op.and]: [
+                                        {
+                                            id_img: valorizacionQuery.id_img
+                                        },
+                                        {
+                                            id_usuario: valorizacionQuery.id_usuario
+                                        }
+                                    ]
+                                }
+                            }
+                        )
+
+                        imgs[img].Valorizacions.forEach(i => {
+                            prom_valorizacion += i.puntaje
+                            cant++
+                        })
+
+                        prom_valorizacion = parseInt(prom_valorizacion / cant)
+
+                        res.json({ prom_valorizacion: prom_valorizacion })
+                    } catch (error) {
+                        res.status(400).send(`Error en actualizar la valorizacion ${error}`)
+                    }
+                }*/

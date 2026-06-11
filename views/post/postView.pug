@@ -4,6 +4,7 @@ include ../mixins/post/renderPostView
 block metadata
     script.
         const id_img = !{JSON.stringify(postImages[imgIndex].id_img)}
+        const usuarioPuntaje = !{JSON.stringify(miValorizacion ? miValorizacion.puntaje : 0)}
     title Inicio
 
 block content

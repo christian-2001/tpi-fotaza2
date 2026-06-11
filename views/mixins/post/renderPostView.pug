@@ -2,6 +2,7 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, i
 
     body(class="fixed inset-0 bg-black/60")
     -let n = 0
+    -let num = 0
         div(class="flex justify-center my-2")
             a(href="/") 
                 button(type="button" class="bg-white text-[20px] px-3 hover:bg-orange-400 hover:font-bold hover:text-white border-1 border-black cursor-pointer")  Volver a Home
@@ -40,39 +41,18 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, i
                             .botones(class="bg-orange-600/85 py-5 px-20 flex justify-center")
                                 if userSession
                                     if !(userSession.id == id_post_user)
-                                        button.btn_valorizar(type="button" class="hover:font-bold") 
-                                            p Valorizar
-
-                                            .notas(class="hidden flex")
-                                                .stars(class=`${current_url}`)
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10"  viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class=`estrella_hueca` d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_rellena" id="1" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
-                                    
-                                                .stars                                    
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10"  viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_hueca" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_rellena" id="2" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
-                                    
-                                                .stars                                   
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10"  viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_hueca" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_rellena" id="3" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
-                                    
-                                                .stars                               
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10"  viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_hueca" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")                    
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_rellena" id="4" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
-                                    
-                                                .stars                                    
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10"  viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_hueca" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_rellena" id="5" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
+                                        .text_valorizacion(class="text-center")
+                                            if miValorizacion
+                                                p Imagen valorizada                         
+                                            else 
+                                                p Valorizar
+                                            .notas(class="flex")
+                                                each num in [1, 2, 3, 4, 5]
+                                                    .stars
+                                                        svg(xmlns="http://www.w3.org/2000/svg" class=`w-10 ${miValorizacion && num <= miValorizacion.puntaje ? 'hidden' : ''}` viewBox="0 0 512 512")
+                                                            path(fill="#eab308" fill-rule="evenodd" class="estrella_hueca" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
+                                                        svg(xmlns="http://www.w3.org/2000/svg" class=`w-10 ${miValorizacion && num <= miValorizacion.puntaje ? '' : 'hidden'}` viewBox="0 0 512 512")
+                                                            path(fill="#eab308" fill-rule="evenodd" class="estrella_rellena" id=`${num}` d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
                                 else
                                     a(href="/login") 
                                         p(class="text-center text-2xl hover:font-bold hover:text-blue-400") Debes iniciar sesion para valorizar una imagen
@@ -168,39 +148,18 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, i
                             .botones(class="bg-orange-600/85 py-5 px-20 flex justify-center")
                                 if userSession
                                     if !(userSession.id == id_post_user)
-                                        button.btn_valorizar(type="button" class="hover:font-bold") 
-                                            p Valorizar
-
-                                            .notas(class="hidden flex")
-                                                .stars(class=`${current_url}`)
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10"  viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class=`estrella_hueca` d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_rellena" id="1" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
-                                    
-                                                .stars                                    
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10"  viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_hueca" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_rellena" id="2" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
-                                    
-                                                .stars                                   
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10"  viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_hueca" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_rellena" id="3" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
-                                    
-                                                .stars                               
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10"  viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_hueca" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")                    
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_rellena" id="4" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
-                                    
-                                                .stars                                    
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10"  viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_hueca" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
-                                                    svg(xmlns="http://www.w3.org/2000/svg" class="w-10 hidden" viewBox="0 0 512 512")
-                                                        path(fill="#eab308" fill-rule="evenodd" class="estrella_rellena" id="5" d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
+                                        .text_valorizacion(class="text-center")
+                                            if miValorizacion
+                                                p Imagen valorizada                         
+                                            else 
+                                                p Valorizar
+                                            .notas(class="flex")
+                                                each num in [1, 2, 3, 4, 5]
+                                                    .stars
+                                                        svg(xmlns="http://www.w3.org/2000/svg" class=`w-10 ${miValorizacion && num <= miValorizacion.puntaje ? 'hidden' : ''}` viewBox="0 0 512 512")
+                                                            path(fill="#eab308" fill-rule="evenodd" class="estrella_hueca" d="m256 18.64l62.782 150.947l162.96 13.065l-124.158 106.355l37.932 159.021L256 362.812l-139.517 85.216l37.932-159.021L30.257 182.652l162.96-13.065zm33.395 191.395L256 129.728l-33.396 80.307l-86.69 6.946l66.05 56.576l-20.183 84.587L256 312.816l74.197 45.328l-20.162-84.587l66.029-56.576z")
+                                                        svg(xmlns="http://www.w3.org/2000/svg" class=`w-10 ${miValorizacion && num <= miValorizacion.puntaje ? '' : 'hidden'}` viewBox="0 0 512 512")
+                                                            path(fill="#eab308" fill-rule="evenodd" class="estrella_rellena" id=`${num}` d="m256 362.812l-139.517 85.216l37.933-159.021L30.257 182.652l162.96-13.065L256 18.64l62.782 150.947l162.961 13.065l-124.159 106.355l37.933 159.021z")
                                 else
                                     a(href="/login") 
                                         p(class="text-center text-2xl hover:font-bold hover:text-blue-400") Debes iniciar sesion para valorizar una imagen
