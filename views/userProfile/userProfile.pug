@@ -100,8 +100,7 @@ block content
                                         div(class="flex justify-between items-center py-2 px-6 border-b-1")
                                             p(class="font-medium") #{follower.seguidor.nombre_usuario}
                                             p(class="bg-green-800 text-white px-2 py-1")
-                                                span(class="font-bold") #{usuario.nombre_usuario}
-                                                |  te está siguiendo
+                                                span(class="font-bold") Tú sigues a #{usuario.nombre_usuario}
                                     else if seguido
                                         form(action=`/dejar-de-seguir/${follower.seguidor.id_usuario}/followers`, method="post")
                                             div(class="flex justify-between items-center py-2 px-6 border-b-1")
