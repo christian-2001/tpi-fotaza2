@@ -12,7 +12,7 @@ import { Comentario } from "../models/Comentario.js";
 import { Seguidores } from "../models/Seguidores.js";
 
 async function seed() {
-    await sequelize.sync({ alter: true, force: true});
+    await sequelize.sync({ alter: true, force: true });
 
     // ─────────────────────────────────────────────
     // PERSONA  (8 personas)
@@ -23,15 +23,15 @@ async function seed() {
         // personas[1]
         { dni: "12345678", tipo_dni: "DNI", sexo: "Masculino", nombre: "Nicky", apellido: "Bastidas", fecha_nacimiento: "2001-12-20", mail: "flojito123@gmail.com" },
         // personas[2]
-        { dni: "87654321", tipo_dni: "DNI", sexo: "Masculino", nombre: "Tomi", apellido: "Villegas", fecha_nacimiento: "2002-08-10", mail: "marisaosu@gmail.com" },
+        { dni: "2891034", tipo_dni: "Libreta de Enrolamiento(LE)", sexo: "Masculino", nombre: "Tomi", apellido: "Villegas", fecha_nacimiento: "1955-08-10", mail: "marisaosu@gmail.com" },
         // personas[3]
-        { dni: "11223344", tipo_dni: "DNI", sexo: "Femenino", nombre: "Valentina", apellido: "Sosa", fecha_nacimiento: "2000-03-25", mail: "valentinasosa@gmail.com" },
+        { dni: "1923847", tipo_dni: "Libreta Cívica(LC)", sexo: "Femenino", nombre: "Valentina", apellido: "Sosa", fecha_nacimiento: "1960-03-25", mail: "valentinasosa@gmail.com" },
         // personas[4]
-        { dni: "55667788", tipo_dni: "DNI", sexo: "Femenino", nombre: "Luciana", apellido: "Moreno", fecha_nacimiento: "1999-07-08", mail: "lucimoreno@gmail.com" },
+        { dni: "AAB293847", tipo_dni: "Pasaporte", sexo: "Femenino", nombre: "Luciana", apellido: "Moreno", fecha_nacimiento: "1999-07-08", mail: "lucimoreno@gmail.com" },
         // personas[5]
-        { dni: "99887766", tipo_dni: "DNI", sexo: "Masculino", nombre: "Mateo", apellido: "Ríos", fecha_nacimiento: "2003-11-30", mail: "mateoriosphotos@gmail.com" },
+        { dni: "55667788", tipo_dni: "DNI", sexo: "Masculino", nombre: "Mateo", apellido: "Ríos", fecha_nacimiento: "2003-11-30", mail: "mateoriosphotos@gmail.com" },
         // personas[6]
-        { dni: "33221100", tipo_dni: "DNI", sexo: "Femenino", nombre: "Camila", apellido: "Ferreira", fecha_nacimiento: "1998-05-17", mail: "camilaferreira@gmail.com" },
+        { dni: "8374621", tipo_dni: "Cédula de Identidad(CI)", sexo: "Femenino", nombre: "Camila", apellido: "Ferreira", fecha_nacimiento: "1998-05-17", mail: "camilaferreira@gmail.com" },
         // personas[7]
         { dni: "44556677", tipo_dni: "DNI", sexo: "Masculino", nombre: "Joaquín", apellido: "Mendoza", fecha_nacimiento: "2004-02-03", mail: "joaquinmendoza@gmail.com" },
     ]);
@@ -48,7 +48,7 @@ async function seed() {
         // users[2]  → Tomi
         { nombre_usuario: "nozye500", id_persona: personas[2].id_persona, contrasenia: "tomi@222" },
         // users[3]  → Valentina
-        { nombre_usuario: "vale.snap", id_persona: personas[3].id_persona, contrasenia: "vale@999"},
+        { nombre_usuario: "vale.snap", id_persona: personas[3].id_persona, contrasenia: "vale@999" },
         // users[4]  → Luciana
         { nombre_usuario: "luci_frames", id_persona: personas[4].id_persona, contrasenia: "luciframes@111" },
         // users[5]  → Mateo
