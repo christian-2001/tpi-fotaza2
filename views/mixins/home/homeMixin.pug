@@ -11,10 +11,12 @@ mixin home(query = undefined)
                     else
                         input(class="bg-white text-[20px] p-2 mr-10 w-xl rounded-md focus:outline-orange-300" type="text" name="buscador" id="buscador") 
                     button#btn_buscador(type="submit" class="bg-white py-2 px-8 text-[20px] rounded-md hover:bg-amber-400") Buscar
-            .user(class="flex gap-10")
+            .user(class="flex gap-10 items-center")
                 if userSession
                     a(href=`/usuarioPerfil/posts` class="py-2 hover:font-bold") 
                         p= userSession.user_name
+                    form(action="/cerrarSesion", method="post") 
+                        button(type="submit" class="bg-white px-6 py-1 hover:bg-red-500 hover:text-white cursor-pointer") Cerrar Sesión
                 else
                     a(href="/registrarse/crearPerfil" class="py-2 hover:font-bold") 
                         p Registrarse

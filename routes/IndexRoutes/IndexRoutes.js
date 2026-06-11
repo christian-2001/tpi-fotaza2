@@ -4,7 +4,7 @@ import { buscarPost } from "../../controllers/buscarPost/buscarPostController.js
 import { mostrarPost, actualizarImgPost, cerrarComentarios } from "../../controllers/mostrarPost/mostrarPostController.js"
 import { mostrarPerfilUsuario } from "../../controllers/userProfile/userProfileController.js"
 import { registrarFollow, eliminarFollow } from "../../controllers/follower/followerController.js"
-
+import { cerrarSesion } from "../../middleware/auth.js"
 const router = express.Router()
 
 router.get("/", pagIndex)
@@ -24,5 +24,7 @@ router.get("/usuarioPerfil/:id_usuario/:sección", mostrarPerfilUsuario)
 router.post("/seguir/:idUsuarioSeguido/:sección", registrarFollow)
 
 router.post("/dejar-de-seguir/:idUsuarioSeguido/:sección", eliminarFollow)
+
+router.post("/cerrarSesion", cerrarSesion)
 
 export default router

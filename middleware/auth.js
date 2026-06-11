@@ -27,3 +27,12 @@ export async function authUserHome(req, res, next){
     }
     next()
 }
+
+export async function cerrarSesion(req, res){
+    if(req.session){
+        await req.session.destroy()
+        res.clearCookie("connect.sid")
+        res.redirect("/login")
+        return
+    }
+}
