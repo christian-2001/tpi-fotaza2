@@ -1,41 +1,56 @@
 extends ../layout.pug 
 
 block metadata 
-    title Perfil de #{userSession.user_name}
+    if esDueño
+        title Perfil de #{userSession.user_name}
+    else
+        title Perfil de #{usuario.nombre_usuario}
 
 block content
     body(class="relative")
         div(class="flex justify-center my-5")
             a(href="/")
                 button(type="button" class="bg-white text-[20px] px-3 py-1 hover:bg-orange-400 hover:font-bold hover:text-white border-1 border-gray-400 cursor-pointer") Volver a Home
+
         .user_profile(class="flex flex-col justify-center bg-orange-100 py-5 mx-50 mb-10")
-            if userSession
+            if esDueño
                 p(class="text-center text-[4rem] font-bold") #{userSession.user_name}
-            div(class="text-center mt-3")
-                label(for="btn_logout")
-                button(type="button" name="btn_logout" id="btn_logout" class="bg-white px-6 py-1 hover:bg-red-500 hover:text-white") Cerrar Sesion 
+            else
+                p(class="text-center text-[4rem] font-bold") #{usuario.nombre_usuario}
+
+            if esDueño
+                div(class="text-center mt-3")
+                    button(type="button" class="bg-white px-6 py-1 hover:bg-red-500 hover:text-white") Cerrar Sesión
+            else if userSession
+                div(class="text-center mt-3")
+                    if yaEsSeguido
+                        form(action=`/dejar-de-seguir/${usuario.id_usuario}/posts`, method="post")
+                            button(type="submit" class="bg-red-700 hover:bg-red-800 text-violet-50 font-semibold px-5 py-1.5") Dejar de seguir
+                    else
+                        form(action=`/seguir/${usuario.id_usuario}/posts`, method="post")
+                            button(type="submit" class="bg-green-700 hover:bg-green-800 text-violet-50 font-semibold px-5 py-1.5") Seguir
+
             .user_content_options(class="mt-10 mx-10 grid grid-cols-3 text-center justify-around border-b-1 gap-2")
-                
-                a(href=`/usuarioPerfil/${(userSession ? userSession.id : "")}/posts`) 
-                    button(type="submit" name="btn_posts" id="btn_posts" class=( sección == "posts") ? "bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "cursor-pointer hover:font-bold") Publicaciones (#{posts.length})
-
-                a(href=`/usuarioPerfil/${(userSession ? userSession.id : "")}/followers`) 
-                    button(type="submit" name="btn_posts" id="btn_posts" class=( sección == "followers") ? "bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "cursor-pointer hover:font-bold") Seguidores (#{seguidores.length})
-
-                a(href=`/usuarioPerfil/${(userSession ? userSession.id : "")}/following`) 
-                    button(type="submit" name="btn_posts" id="btn_posts" class=( sección == "following") ? "bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "cursor-pointer hover:font-bold") Siguiendo (#{seguidos.length})
+                - const idPerfil = esDueño ? userSession.id : usuario.id_usuario
+                a(href=`/usuarioPerfil/${idPerfil}/posts`)
+                    button(type="button" class=(sección == "posts") ? "bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "cursor-pointer hover:font-bold") Publicaciones (#{posts.length})
+                a(href=`/usuarioPerfil/${idPerfil}/followers`)
+                    button(type="button" class=(sección == "followers") ? "bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "cursor-pointer hover:font-bold") Seguidores (#{seguidores.length})
+                a(href=`/usuarioPerfil/${idPerfil}/following`)
+                    button(type="button" class=(sección == "following") ? "bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "cursor-pointer hover:font-bold") Siguiendo (#{seguidos.length})
 
             .user_content
+
+                //- ==================== POSTS ====================
                 if sección == "posts"
                     p(class="text-center text-[2rem] my-5") Publicaciones
-
                     .user_posts(class="grid grid-cols-2 mx-20 gap-4")
                         each post in posts
                             .post(class="bg-white border-1 border-gray-400 rounded-[10px] p-2 hover:outline-3 hover:outline-orange-400 hover:opacity-80 h-fit")
                                 .post_usuario(class="text-center text-[20px]")
-                                    p 
+                                    p
                                     |   Publicado por  
-                                    a(href="" class="hover:font-bold") #{post.Usuario.nombre_usuario} 
+                                    a(href="" class="hover:font-bold") #{post.Usuario.nombre_usuario}
                                     |   - #{post.fh_publicacion.toLocaleDateString()} - #{post.fh_publicacion.toLocaleTimeString()}
                                 .post_titulo(class="mt-3 text-center text-3xl font-bold hover:text-black/50")
                                     a.url_post(href=`/post/${post.id_post}/${post.Imagens.length - post.Imagens.length}` class="cursor-pointer hover:text-3xl")
@@ -44,63 +59,96 @@ block content
                                     p #{post.descripcion}
                                 .post_etiquetas(class="mt-2")
                                     p Etiquetas:
-                                        form(action="/buscar" method="get") 
+                                        form(action="/buscar" method="get")
                                             each postTags in post.Etiqueta
                                                 label(for=`${postTags.nom_etiqueta}`)
-                                                    button(type="submit" name="etiqueta" id="etiqueta" value= `${postTags.nom_etiqueta}`  class="cursor-pointer hover:text-blue-500/50 font-bold text-blue-600 mr-[3px]") ##{postTags.nom_etiqueta}             
+                                                    button(type="submit" name="etiqueta" id="etiqueta" value=`${postTags.nom_etiqueta}` class="cursor-pointer hover:text-blue-500/50 font-bold text-blue-600 mr-[3px]") ##{postTags.nom_etiqueta}
                                 .post_imagenes(class="bg-gray-400 border-[1px] border-gray-400/50")
                                     if post.Imagens.length > 1
                                         .imagenes(class="grid grid-cols-2 gap-[1px]")
                                             each post_img in post.Imagens
-                                                .img_elem
-                                                    img(src=`${post_img.img_path}`)
+                                                img(src=`${post_img.img_path}`)
                                     else if post.Imagens.length == 1
                                         .imagenes(class="grid grid-cols-1")
                                             each post_img in post.Imagens
-                                                .img_elem
-                                                    img(src=`${post_img.img_path}`)
+                                                img(src=`${post_img.img_path}`)
+
+                //- ==================== FOLLOWERS ====================
                 else if sección == "followers"
-                    p(class="text-center text-[2rem] my-5") Usuarios que te siguen
+                    if esDueño
+                        p(class="text-center text-[2rem] my-5") Tus seguidores
+                    else
+                        p(class="text-center text-[2rem] my-5") Sus seguidores
 
                     div(class="bg-violet-100 py-8")
                         .seguidor(class="bg-violet-200 max-w-md mx-auto")
-                            if !seguidores
+                            if !seguidores || seguidores.length == 0
                                 div(class="flex justify-center items-center py-2 px-6")
-                                    p(class="font-medium text-center text-3xl") No tienes seguidores
+                                    if esDueño
+                                        p(class="font-medium text-center text-3xl") No tienes seguidores
+                                    else
+                                        p(class="font-medium text-center text-3xl") #{usuario.nombre_usuario} no tiene seguidores
                             else
                                 each follower in seguidores
-                                    -let seguido = false
-                                    each f2 in seguidos
-
-                                        if follower.seguidor.id_usuario === f2.seguido.id_usuario
+                                    - let seguido = false
+                                    each mf in misFollowing
+                                        if follower.seguidor.id_usuario === mf.seguido.id_usuario
                                             - seguido = true
-                                
-                                    if seguido
+
+                                    if userSession.id === follower.seguidor.id_usuario
+                                        //- Soy yo mismo en la lista
+                                        div(class="flex justify-between items-center py-2 px-6 border-b-1")
+                                            p(class="font-medium") #{follower.seguidor.nombre_usuario}
+                                            p(class="bg-green-800 text-white px-2 py-1")
+                                                span(class="font-bold") #{usuario.nombre_usuario}
+                                                |  te está siguiendo
+                                    else if seguido
                                         form(action=`/dejar-de-seguir/${follower.seguidor.id_usuario}/followers`, method="post")
                                             div(class="flex justify-between items-center py-2 px-6 border-b-1")
-                                                p(class="font-medium") #{follower.seguidor.nombre_usuario}                                                        
+                                                p(class="font-medium") #{follower.seguidor.nombre_usuario}
                                                 button(type="submit" name="btn_seguir" id="btn_seguir" class="bg-red-700 hover:bg-red-800 text-violet-50 font-semibold px-5 py-1.5") Dejar de seguir
                                     else
                                         form(action=`/seguir/${follower.seguidor.id_usuario}/followers`, method="post")
                                             div(class="flex justify-between items-center py-2 px-6 border-b-1")
                                                 p(class="font-medium") #{follower.seguidor.nombre_usuario}
                                                 button(type="submit" name="btn_seguir" id="btn_seguir" class="bg-green-700 hover:bg-green-800 text-violet-50 font-semibold px-5 py-1.5") Seguir
-                       
+
+                //- ==================== FOLLOWING ====================
                 else if sección == "following"
-                    p(class="text-center text-[2rem] my-5") Usuarios a quienes seguís
-                    
+                    if esDueño
+                        p(class="text-center text-[2rem] my-5") Usuarios a quienes seguís
+                    else
+                        p(class="text-center text-[2rem] my-5") Usuarios a quienes sigue #{usuario.nombre_usuario}
+
                     div(class="bg-violet-100 py-8")
                         .seguidos(class="bg-violet-200 max-w-md mx-auto")
-                            if !seguidores
+                            if !seguidos || seguidos.length == 0
                                 div(class="flex justify-center items-center py-2 px-6")
-                                    p(class="font-medium text-center text-3xl") No seguís a ningun usuario
+                                    if esDueño
+                                        p(class="font-medium text-center text-3xl") No seguís a ningún usuario
+                                    else
+                                        p(class="font-medium text-center text-3xl") #{usuario.nombre_usuario} no está siguiendo a otros usuarios
                             else
-                                each following in seguidos                       
-                                    form(action=`/dejar-de-seguir/${following.seguido.id_usuario}/following`, method="post")
+                                each following in seguidos
+                                    - let yoLoSigo = false
+                                    each mf in misFollowing
+                                        if mf.seguido.id_usuario === following.seguido.id_usuario
+                                            - yoLoSigo = true
+
+                                    if userSession.id === following.seguido.id_usuario
+                                        //- Soy yo mismo en la lista
                                         div(class="flex justify-between items-center py-2 px-6 border-b-1")
                                             p(class="font-medium") #{following.seguido.nombre_usuario}
-                                            button(type="submit" name="btn_seguir" id="btn_seguir" class="bg-red-700 hover:bg-red-800 text-violet-50 font-semibold px-5 py-1.5") Dejar de seguir
-
-
-    
-    script(src="/script/userProfile/userProfile_src.js" defer) 
+                                            p(class="bg-green-800 text-white px-2 py-1")
+                                                span(class="font-bold") #{usuario.nombre_usuario}
+                                                |  te está siguiendo
+                                    else if yoLoSigo
+                                        form(action=`/dejar-de-seguir/${following.seguido.id_usuario}/following`, method="post")
+                                            div(class="flex justify-between items-center py-2 px-6 border-b-1")
+                                                p(class="font-medium") #{following.seguido.nombre_usuario}
+                                                button(type="submit" name="btn_seguir" id="btn_seguir" class="bg-red-700 hover:bg-red-800 text-violet-50 font-semibold px-5 py-1.5") Dejar de seguir
+                                    else
+                                        form(action=`/seguir/${following.seguido.id_usuario}/following`, method="post")
+                                            div(class="flex justify-between items-center py-2 px-6 border-b-1")
+                                                p(class="font-medium") #{following.seguido.nombre_usuario}
+                                                button(type="submit" name="btn_seguir" id="btn_seguir" class="bg-green-700 hover:bg-green-800 text-violet-50 font-semibold px-5 py-1.5") Seguir

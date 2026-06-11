@@ -13,7 +13,7 @@ export async function registrarFollow(req, res) {
             id_seguido: id_usuario
         })
 
-        res.redirect(`/usuarioPerfil/${id_usuarioSession}/${sección}`)
+        res.redirect(req.headers.referer || "/")
     } catch (error) {
         res.status(400).send(`Error al guardar seguidor ${error}`)
     }
@@ -32,7 +32,7 @@ export async function eliminarFollow(req, res) {
             }
         })
 
-        res.redirect(`/usuarioPerfil/${id_usuarioSession}/${sección}`)
+        res.redirect(req.headers.referer || "/")
     } catch (error) {
         res.status(400).send(`Error al eliminar seguidor ${error}`)
     }

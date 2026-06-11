@@ -17,6 +17,8 @@ router.post("/post/:id_post/:img_index", actualizarImgPost)
 
 router.post("/post/:id_post/imagen/:id_img/cerrarComentarios", cerrarComentarios)
 
+router.get("/usuarioPerfil/:sección", mostrarPerfilUsuario)
+
 router.get("/usuarioPerfil/:id_usuario/:sección", mostrarPerfilUsuario)
 
 router.post("/seguir/:idUsuarioSeguido/:sección", registrarFollow)
