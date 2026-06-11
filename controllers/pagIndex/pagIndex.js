@@ -19,7 +19,8 @@ export async function pagIndex(req, res) {
             { model: Usuario },
             { model: Etiqueta },
             { model: Imagen, required: true },
-        ]
+        ],
+        order: [['fh_publicacion', 'DESC']]
     })
 /*
     const img_posts = await Imagen_Etiqueta.findAll({
