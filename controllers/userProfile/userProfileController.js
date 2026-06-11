@@ -10,6 +10,10 @@ export async function mostrarPerfilUsuario(req, res) {
     const id_usuario = req.params.id_usuario
     const current_url = req.originalUrl
 
+    if (!req.user) {
+        return res.redirect("/login");
+    }
+
     try {
 
         let usuarioPerfil
@@ -22,16 +26,13 @@ export async function mostrarPerfilUsuario(req, res) {
                 return res.status(404).send("Usuario no encontrado");
             }
 
-            if (req.user) {
-                esDueño = (usuarioPerfil.id_usuario === req.user.id_usuario) ? true : false
-            }
+            esDueño = usuarioPerfil.id_usuario === req.user.id_usuario
+            
         } else {
-            if (!req.user) {
-                return res.redirect("/login");
-            }
 
             usuarioPerfil = req.user
             esDueño = true
+            
         }
 
         const publicaciones = await getPosts(usuarioPerfil);
