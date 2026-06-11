@@ -3,7 +3,7 @@ import { validarFormRegistro2 } from "../../validations/registrerValidator/regis
 import { Persona } from "../../models/Persona.js"
 import { Usuario } from "../../models/Usuario.js"
 
-const options_dni = ["DNI", "Libreta Cívica(LC)", "Libreta de Enrolamiento (LE)", "Pasaporte", "Cédula de Identidad(CI)"]
+const options_dni = ["DNI", "Libreta Cívica(LC)", "Libreta de Enrolamiento(LE)", "Pasaporte", "Cédula de Identidad(CI)"]
 const options_genre = ["Masculino", "Femenino", "No especificar"]
 
 //Renderiza el formulario para ingresar datos personales del cliente y crear su perfil
@@ -21,126 +21,84 @@ export function registroIndex(req, res) {
 
 //Validacion de los datos obtenidos del formulario de creacion del perfil
 export async function validarRegistroPerfil(req, res) {
-    //url que contiene el formulario
-    let url = req.originalUrl
+    const url = req.originalUrl
 
-    //Guardamos todos los datos del formulario 
     const { form_nombre, form_apellido, form_fecha_nacimiento, form_genero, form_mail, form_tipodni, form_dni } = req.body
 
-    //Validamos cada dato
+    //Datos comunes para re-renderizar el formulario en caso de error
+    const form_data = {
+        options_dni: options_dni,
+        options_genre: options_genre,
+        form_name: form_nombre,
+        form_last_name: form_apellido,
+        form_birthday: form_fecha_nacimiento,
+        form_genre: form_genero,
+        form_mail: form_mail,
+        form_typedni: form_tipodni,
+        form_dni: form_dni,
+        current_url: url
+    }
+
+    //Validación con Zod
     const validate_result = validarFormRegistro({
-        name: form_nombre.trim(),
-        lastname: form_apellido.trim(),
-        birthday: form_fecha_nacimiento.trim(),
+        name: form_nombre?.trim(),
+        lastname: form_apellido?.trim(),
+        birthday: form_fecha_nacimiento?.trim(),
         genre: form_genero,
-        mail: form_mail.trim(),
+        mail: form_mail?.trim(),
         dni_type: form_tipodni,
-        dni_number: form_dni.trim()
+        dni_number: form_dni?.trim()
     })
 
-    const arr_errores = []
-
-    //Creacion del mensaje con cadena de errores por cada dato no válido
     if (validate_result.success === false) {
+        //flattenError ya devuelve arrays por campo, los juntamos en uno solo
+        const arr_errores = Object.values(validate_result.errors).flat()
 
-        if (validate_result.errors.name) {
-            arr_errores.push(validate_result.errors.name.toString())
-        }
+        console.log(form_data)
 
-        if (validate_result.errors.lastname) {
-            arr_errores.push(validate_result.errors.lastname.toString())
-        }
+        return res.status(400).render("./registrer/registrer", {
+            ...form_data,
+            error: arr_errores
+        })
+    }
 
-        if (validate_result.errors.birthday) {
-            arr_errores.push(validate_result.errors.birthday.toString())
-        }
-
-        if (validate_result.errors.genre) {
-            arr_errores.push(validate_result.errors.genre.toString())
-        }
-
-        if (validate_result.errors.mail) {
-            arr_errores.push(validate_result.errors.mail.toString())
-        }
-
-        if (validate_result.errors.dni_type) {
-            arr_errores.push(validate_result.errors.dni_type.toString())
-        }
-
-        if (validate_result.errors.dni_number) {
-            arr_errores.push(validate_result.errors.dni_number.toString())
-        }
-
-        //Vuelve a renderizar el formulario con el mensaje construido mostrandose debajo del formulario
-        //Se envia un codigo 400
-
-        res.status(400).render("./registrer/registrer", {
-            options_dni: options_dni,
-            options_genre: options_genre,
-            error: arr_errores,
-            form_name: form_nombre,
-            form_last_name: form_apellido,
-            form_birthday: form_fecha_nacimiento,
-            form_genre: form_genero,
-            form_mail: form_mail,
-            form_typedni: form_tipodni,
-            form_dni: form_dni,
-            current_url: url
+    //Verificar DNI duplicado en BD
+    try {
+        const persona_existente = await Persona.findOne({
+            where: { dni: form_dni.trim() }
         })
 
-        return
-
-    }
-
-    //Comprobamos si ya existe una persona con el mismo dni
-    const query_dni = await Persona.findOne({
-        where: {
-            '$Persona.dni$': form_dni
-        }
-    })
-
-    if (query_dni) {
-        if (form_dni === query_dni.dni) {
-
-            arr_errores.push({ person_msg: `Ya existe la persona con el dni ${form_dni}` })
-
-            res.status(400).render("./registrer/registrer", {
-                options_dni: options_dni,
-                options_genre: options_genre,
-                error: arr_errores,
-                form_name: form_nombre,
-                form_last_name: form_apellido,
-                form_birthday: form_fecha_nacimiento,
-                form_genre: form_genero,
-                form_mail: form_mail,
-                form_typedni: form_tipodni,
-                form_dni: form_dni,
-                current_url: url
+        if (persona_existente) {
+            return res.status(400).render("./registrer/registrer", {
+                ...form_data,
+                error: [`Ya existe una persona registrada con el DNI ${form_dni}`]
             })
-
-            return
         }
-    }
 
-    //Creacion del perfil de persona
-    try {
+        //Crear persona
         const profile = await Persona.create({
-            dni: form_dni,
+            dni: form_dni.trim(),
             tipo_dni: form_tipodni,
             sexo: form_genero,
-            nombre: form_nombre,
-            apellido: form_apellido,
-            fecha_nacimiento: form_fecha_nacimiento,
-            mail: form_mail
+            nombre: form_nombre.trim(),
+            apellido: form_apellido.trim(),
+            fecha_nacimiento: form_fecha_nacimiento.trim(),
+            mail: form_mail.trim()
         })
-        req.session.idPersonaCreada = profile.id_persona
-        res.status(200).render("./registrer/profileConfirm", { msg: `Perfil de ${profile.nombre} creado/a y guardado/a exitosamente` })
-    } catch (error) {
-        res.send(`Ocurrio un error al crear el perfil de la persona -> ${error}`)
-    }
-    //Si todos los datos son válidos, se muestra un mensaje confirmando la creacion de los datos de la persona
 
-    //res.redirect("/registrarse/crearUsuario")
+        req.session.idPersonaCreada = profile.id_persona
+
+        return res.status(200).render("./registrer/profileConfirm", {
+            msg: `Perfil de ${profile.nombre} creado/a y guardado/a exitosamente`
+        })
+
+    } catch (error) {
+        console.error("Error al registrar persona:", error)
+        return res.status(500).render("./registrer/registrer", {
+            ...form_data,
+            error: ["Ocurrió un error interno al guardar el perfil. Intentá de nuevo más tarde."]
+        })
+    }
 }
 
 //==========================================================================CREACION DE USUARIOS===============================================================================================
@@ -193,7 +151,7 @@ export async function validarRegistroUsuario(req, res) {
             id_persona: req.session.idPersonaCreada
         })
 
-        res.status(200).render(`./registrer/userConfirm`, { msg: `El/la usuario/a ${user.nombre_usuario} ha sido creado/a exitosamente!!`})
+        res.status(200).render(`./registrer/userConfirm`, { msg: `El/la usuario/a ${user.nombre_usuario} ha sido creado/a exitosamente!!` })
         delete req.session.idPersonaCreada
     } catch (error) {
         res.send(`Ocurrio un error al crear el usuario/cuenta de la persona -> ${error}`)
