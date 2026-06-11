@@ -13,7 +13,7 @@ Persona.init(
     },
 
     dni: {
-      type: DataTypes.STRING(8),
+      type: DataTypes.STRING(10),
       unique: "PersonaUnica"
       //primaryKey: true,
     },

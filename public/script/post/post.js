@@ -142,6 +142,11 @@ function enviarFormulario(event) {
             },
             body: JSON.stringify(bodyData)
         })
+        .then(() => {
+            window.location.assign("/")
+        }).catch((err) => {
+            console.error(err)
+        })
         /*
         .then(() => {
             window.location.assign("/")

@@ -38,7 +38,7 @@ app.use("/registrarse", registrerRoutes)
 
 app.use("/", authUserHome, IndexRoutes)
 
-app.use("/subirPost", postRoutes)
+app.use("/subirPost", authUserHome, postRoutes)
 
 
 

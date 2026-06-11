@@ -15,78 +15,61 @@ export async function subirPost(req, res) {
     const f_imagenes = req.body.formImages
     const f_post_etiquetas = req.body.formPostTags
 
-
-    await Publicacion.create({
-        titulo: f_titulo,
-        descripcion: f_descripcion,
-    })
-
-    for (const postTag of f_post_etiquetas) {
-        await Etiqueta.create({
-            nom_etiqueta: postTag
+    try {
+        //Crear publicacion
+        const nuevaPublicacion = await Publicacion.create({
+            titulo: f_titulo,
+            descripcion: f_descripcion,
+            id_usuario: req.user.id_usuario
         })
 
-        await Publicacion_Etiqueta.create({
-            id_post: await Publicacion.count(),
-            id_etiqueta: await Etiqueta.count(),
-        })
-    }
+        //Etiquetas del post
+        for (const postTag of f_post_etiquetas) {
+            const nuevaEtiqueta = await Etiqueta.create({ nom_etiqueta: postTag })
 
-    for (let img of f_imagenes) {
-        const textBase64 = img.img_src
-        const arregloBase64 = textBase64.split(",")
-        const imgBuffer = Buffer.from(arregloBase64[1], "base64")
-
-        try {
-            const uploadResult = await new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    {
-                        public_id: img.img_name
-                    }, (error, uploadResult) => {
-                        if (error) {
-                            return reject(error);
-                        }
-
-                        return resolve(uploadResult)
-                    }).end(imgBuffer);
-            });
-        } catch (error) {
-            return res.status(500).send({
-                msg: "subir imagen SALIO MAL",
-                err: error
+            await Publicacion_Etiqueta.create({
+                id_post: nuevaPublicacion.id_post,       
+                id_etiqueta: nuevaEtiqueta.id_etiqueta   
             })
         }
 
+        //Imagenes
+        for (const img of f_imagenes) {
+            const textBase64 = img.img_src
+            const imgBuffer = Buffer.from(textBase64.split(",")[1], "base64")
 
-        try {
-            const result = await cloudinary.api.resource(img.img_name);
-            await Imagen.create({
-                nombre_img: result.public_id,
-                img_path: result.secure_url,
-                extension: result.format,
-                id_post: await Publicacion.count()
+            // Subir a Cloudinary
+            const uploadResult = await new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream(
+                    { public_id: img.img_name },
+                    (error, result) => error ? reject(error) : resolve(result)
+                ).end(imgBuffer)
             })
 
-            for (const imgTags of img.img_tags) {
-                await Etiqueta.create({
-                    nom_etiqueta: imgTags
-                })
+            // Crear imagen en BD
+            const nuevaImagen = await Imagen.create({
+                nombre_img: uploadResult.public_id,
+                img_path: uploadResult.secure_url,
+                extension: uploadResult.format,
+                id_post: nuevaPublicacion.id_post   
+            })
+
+            // Etiquetas de la imagen
+            for (const imgTag of img.img_tags) {
+                const nuevaEtiqueta = await Etiqueta.create({ nom_etiqueta: imgTag })
 
                 await Imagen_Etiqueta.create({
-                    id_img: await Imagen.count(),
-                    id_etiqueta: await Etiqueta.count()
+                    id_img: nuevaImagen.id_img,          
+                    id_etiqueta: nuevaEtiqueta.id_etiqueta
                 })
             }
-        } catch (error) {
-            console.error(error);
         }
+
+        // Redirigir a Home
+        return res.redirect("/")
+
+    } catch (error) {
+        console.error("Error al subir post:", error)
+        return res.status(500).send({ msg: "Error al subir el post", err: error })
     }
-/*
-    const f_titulo = req.body.formTitle
-    const f_descripcion = req.body.formDescription
-    const f_imagenes = req.body.formImages
-    const f_post_etiquetas = req.body.formPostTags
-  */  
-     
-    return res.status(200).redirect("/")
 }
