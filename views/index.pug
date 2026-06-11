@@ -8,7 +8,25 @@ block metadata
 block content
     +home(query)
            
-    if queryResult 
+    - const queryStr = query || ""
+    - const params = postTag ? `etiqueta=${postTag}` : imgTag ? `img_etiqueta=${imgTag}` : `buscador=${queryStr}`
+    - const ordenArr = Array.isArray(orden) ? orden : (orden ? [orden] : [])
+    - const toggleOrden = (o) => { const arr = ordenArr.includes(o) ? ordenArr.filter(x => x !== o) : [...ordenArr, o]; return arr.length ? arr.map(x => `orden=${x}`).join('&') : '' }
+    - const buildUrl = (o) => { const t = toggleOrden(o); return `/buscar?${params}${t ? '&' + t : ''}` }
+
+    div(class="flex justify-center gap-2 mt-6 flex-wrap")
+        a(href=buildUrl('fecha_desc'))
+            button(type="button" class=ordenArr.includes('fecha_desc') ? "bg-orange-300 border-1 border-orange-400 px-4 py-1 font-semibold cursor-pointer" : "bg-white border-1 border-gray-400 px-4 py-1 hover:bg-orange-100 cursor-pointer") Más recientes
+        a(href=buildUrl('fecha_asc'))
+            button(type="button" class=ordenArr.includes('fecha_asc') ? "bg-orange-300 border-1 border-orange-400 px-4 py-1 font-semibold cursor-pointer" : "bg-white border-1 border-gray-400 px-4 py-1 hover:bg-orange-100 cursor-pointer") Más antiguos
+        a(href=buildUrl('titulo_asc'))
+            button(type="button" class=ordenArr.includes('titulo_asc') ? "bg-orange-300 border-1 border-orange-400 px-4 py-1 font-semibold cursor-pointer" : "bg-white border-1 border-gray-400 px-4 py-1 hover:bg-orange-100 cursor-pointer") Título A-Z
+        a(href=buildUrl('titulo_desc'))
+            button(type="button" class=ordenArr.includes('titulo_desc') ? "bg-orange-300 border-1 border-orange-400 px-4 py-1 font-semibold cursor-pointer" : "bg-white border-1 border-gray-400 px-4 py-1 hover:bg-orange-100 cursor-pointer") Título Z-A
+        a(href=buildUrl('usuario_asc'))
+            button(type="button" class=ordenArr.includes('usuario_asc') ? "bg-orange-300 border-1 border-orange-400 px-4 py-1 font-semibold cursor-pointer" : "bg-white border-1 border-gray-400 px-4 py-1 hover:bg-orange-100 cursor-pointer") Usuario A-Z
+
+    if queryResult
         +tagsQuery(queryResult)
     else
         div(class="flex justify-center mt-5")
@@ -20,33 +38,33 @@ block content
                     button(type="button" class="bg-white text-[20px] px-3 py-1 hover:bg-orange-400 hover:font-bold hover:text-white border-1 border-gray-400 cursor-pointer") Crear publicación
         div(class="grid grid-cols-2 my-10 mx-60 gap-4")
             each val in posts
-                    .post(class="bg-white border-1 border-gray-400 rounded-[10px] p-2 hover:outline-3 hover:outline-orange-400 hover:opacity-80 h-fit") 
-                        .post_usuario(class="text-center text-[20px]")
-                            p
-                                | Publicado por 
-                                a(href=`/usuarioPerfil/${val.Usuario.id_usuario}/posts` class="hover:font-bold") #{val.Usuario.nombre_usuario}
-                                |  - #{val.fh_publicacion.toLocaleDateString()} - #{val.fh_publicacion.toLocaleTimeString()}    
-                        .post_titulo(class="mt-3 text-center text-3xl font-bold hover:text-black/50")
-                            a.url_post(href=`/post/${val.id_post}/${val.Imagens.length - val.Imagens.length}` class="cursor-pointer hover:text-3xl") 
-                                h1 #{val.titulo}
-                        .post_descripcion(class="mt-5 text-1xl")
-                            p #{val.descripcion}
-                        .post_etiquetas(class="mt-2")
-                            p Etiquetas:
-                                form(action="/buscar" method="get") 
-                                    each val2 in val.Etiqueta
-                                        label(for=`${val2.nom_etiqueta}`)
-                                            button(type="submit" name="etiqueta" id="etiqueta" value= `${val2.nom_etiqueta}`  class="cursor-pointer hover:text-blue-500/50 font-bold text-blue-600 mr-[3px]") ##{val2.nom_etiqueta} 
-                        .post_imagenes(class="bg-gray-400 border-[1px] border-gray-400/50")
-                            if val.Imagens.length > 1
-                                .imagenes(class="grid grid-cols-2 gap-[1px]")
-                                    each post_img in val.Imagens
-                                        .img_elem
-                                            img(src=`${post_img.img_path}`)
-                            else if val.Imagens.length == 1
-                                .imagenes(class="grid grid-cols-1")
-                                    each post_img in val.Imagens
-                                        .img_elem
-                                            img(src=`${post_img.img_path}`)
+                .post(class="bg-white border-1 border-gray-400 rounded-[10px] p-2 hover:outline-3 hover:outline-orange-400 hover:opacity-80 h-fit") 
+                    .post_usuario(class="text-center text-[20px]")
+                        p
+                            | Publicado por 
+                            a(href=`/usuarioPerfil/${val.Usuario.id_usuario}/posts` class="hover:font-bold") #{val.Usuario.nombre_usuario}
+                            |  - #{val.fh_publicacion.toLocaleDateString()} - #{val.fh_publicacion.toLocaleTimeString()}    
+                    .post_titulo(class="mt-3 text-center text-3xl font-bold hover:text-black/50")
+                        a.url_post(href=`/post/${val.id_post}/${val.Imagens.length - val.Imagens.length}` class="cursor-pointer hover:text-3xl") 
+                            h1 #{val.titulo}
+                    .post_descripcion(class="mt-5 text-1xl")
+                        p #{val.descripcion}
+                    .post_etiquetas(class="mt-2")
+                        p Etiquetas:
+                            form(action="/buscar" method="get") 
+                                each val2 in val.Etiqueta
+                                    label(for=`${val2.nom_etiqueta}`)
+                                        button(type="submit" name="etiqueta" id="etiqueta" value=`${val2.nom_etiqueta}` class="cursor-pointer hover:text-blue-500/50 font-bold text-blue-600 mr-[3px]") ##{val2.nom_etiqueta} 
+                    .post_imagenes(class="bg-gray-400 border-[1px] border-gray-400/50")
+                        if val.Imagens.length > 1
+                            .imagenes(class="grid grid-cols-2 gap-[1px]")
+                                each post_img in val.Imagens
+                                    .img_elem
+                                        img(src=`${post_img.img_path}`)
+                        else if val.Imagens.length == 1
+                            .imagenes(class="grid grid-cols-1")
+                                each post_img in val.Imagens
+                                    .img_elem
+                                        img(src=`${post_img.img_path}`)
         
-    script(src="/script/index.js" defer) 
+    script(src="/script/index.js" defer)

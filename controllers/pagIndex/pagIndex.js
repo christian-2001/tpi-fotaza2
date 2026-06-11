@@ -31,7 +31,14 @@ export async function pagIndex(req, res) {
 
     console.log(img_posts[0].Etiquetum)
 */
-    res.render("index", { posts: posts })
+    res.render("index", {
+    posts,
+    queryResult: null,
+    orden: null,
+    postTag: "",
+    imgTag: "",
+    query: ""
+})
     
 
 //res.render("index", { posts: posts, img_posts: img_posts })
