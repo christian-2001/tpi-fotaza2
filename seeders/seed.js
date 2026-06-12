@@ -178,15 +178,12 @@ async function seed() {
         { id_img: imgs[1].id_img, id_usuario: users[3].id_usuario, puntaje: 5 },
 
         // imgs[2] — Ciudad niebla  (post de users[1])
-        { id_img: imgs[2].id_img, id_usuario: users[0].id_usuario, puntaje: 4 },
         { id_img: imgs[2].id_img, id_usuario: users[2].id_usuario, puntaje: 3 },
 
         // imgs[3] — Flores  (post de users[2])
-        { id_img: imgs[3].id_img, id_usuario: users[0].id_usuario, puntaje: 5 },
         { id_img: imgs[3].id_img, id_usuario: users[1].id_usuario, puntaje: 4 },
 
         // imgs[4] — Mar  (post de users[3])
-        { id_img: imgs[4].id_img, id_usuario: users[0].id_usuario, puntaje: 5 },
         { id_img: imgs[4].id_img, id_usuario: users[2].id_usuario, puntaje: 4 },
 
         // imgs[5] — Edificio moderno  (post de users[1])
