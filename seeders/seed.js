@@ -40,11 +40,11 @@ async function seed() {
         // users[0] → user00
         { nombre_usuario: "user00", id_persona: personas[0].id_persona, contrasenia: "user@1234" },
         // users[1] → user01
-        { nombre_usuario: "user01", id_persona: personas[1].id_persona, contrasenia: "user@1234" },
+        { nombre_usuario: "user01", id_persona: personas[1].id_persona, contrasenia: "user@4567" },
         // users[2] → user02
-        { nombre_usuario: "user02", id_persona: personas[2].id_persona, contrasenia: "user@1234" },
+        { nombre_usuario: "user02", id_persona: personas[2].id_persona, contrasenia: "user@8912" },
         // users[3] → user03
-        { nombre_usuario: "user03", id_persona: personas[3].id_persona, contrasenia: "user@1234" },
+        { nombre_usuario: "user03", id_persona: personas[3].id_persona, contrasenia: "user@3456" },
     ];
 
     // Generar hash para cada contraseña
