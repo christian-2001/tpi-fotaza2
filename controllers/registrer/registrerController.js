@@ -40,7 +40,7 @@ export async function validarRegistroPerfil(req, res) {
     }
 
     //Validación con Zod
-    const validate_result = validarFormRegistro({
+    /*const validate_result = validarFormRegistro({
         name: form_nombre?.trim(),
         lastname: form_apellido?.trim(),
         birthday: form_fecha_nacimiento?.trim(),
@@ -48,9 +48,9 @@ export async function validarRegistroPerfil(req, res) {
         mail: form_mail?.trim(),
         dni_type: form_tipodni,
         dni_number: form_dni?.trim()
-    })
+    })*/
 
-    if (validate_result.success === false) {
+    /*if (validate_result.success === false) {
         //flattenError ya devuelve arrays por campo, los juntamos en uno solo
         const arr_errores = Object.values(validate_result.errors).flat()
 
@@ -60,21 +60,24 @@ export async function validarRegistroPerfil(req, res) {
             ...form_data,
             error: arr_errores
         })
-    }
+    }*/
 
     //Verificar DNI duplicado en BD
     try {
+        /*
         const persona_existente = await Persona.findOne({
             where: { dni: form_dni.trim() }
         })
+*/
 
+        /*
         if (persona_existente) {
             return res.status(400).render("./registrer/registrer", {
                 ...form_data,
                 error: [`Ya existe una persona registrada con el DNI ${form_dni}`]
             })
         }
-
+*/
         //Crear persona
         const profile = await Persona.create({
             dni: form_dni.trim(),

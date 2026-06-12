@@ -11,11 +11,12 @@ export async function authLogin(req, res) {
 
     mail = mail.trim()
     contrasenia = contrasenia.trim()
-
+/*
     const validate_result = validarFormLogin({
         mail: mail
     })
-
+*/
+/*
     if (validate_result.success === false) {
         res.status(400).render("./login/login", {
             error: "Mail o contraseña incorrectos",
@@ -23,7 +24,7 @@ export async function authLogin(req, res) {
         })
         return
     }
-
+*/
     try {
         const perfil = await Persona.findOne({
             where: {
@@ -54,9 +55,9 @@ export async function authLogin(req, res) {
             })
             return
         }
-        console.log(user.id_usuario)
+
         req.session.userId = user.id_usuario
-        console.log(req.session.userId)
+
     } catch (error) {
         console.log(`Error al loguearse --> ${error}`)
 
