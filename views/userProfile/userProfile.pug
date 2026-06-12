@@ -8,15 +8,16 @@ block metadata
 
 block content
     body(class="relative")
+    - const idPerfil = esDueño ? userSession.id : usuario.id_usuario
         div(class="flex justify-center my-5")
             a(href="/")
                 button(type="button" class="bg-white text-[20px] px-3 py-1 hover:bg-orange-400 hover:font-bold hover:text-white border-1 border-gray-400 cursor-pointer") Volver a Home
 
         .user_profile(class="flex flex-col justify-center bg-orange-100 py-5 mx-50 mb-10")
             if esDueño
-                p(class="text-center text-[4rem] font-bold") #{userSession.user_name}
+                p(class="text-center text-[4rem] font-bold font-medium") #{userSession.user_name}
             else
-                p(class="text-center text-[4rem] font-bold") #{usuario.nombre_usuario}
+                p(class="text-center text-[4rem] font-bold font-medium") #{usuario.nombre_usuario}
 
             if esDueño
                 form(action="/cerrarSesion", method="post" class="text-center mt-3") 
@@ -29,9 +30,15 @@ block content
                     else
                         form(action=`/seguir/${usuario.id_usuario}/posts`, method="post")
                             button(type="submit" class="bg-green-700 hover:bg-green-800 text-violet-50 font-semibold px-5 py-1.5") Seguir
+            
+            .descripcion(class="bg-blue-200 grid grid-cols-1 gap-x-8 gap-y-2 p-3 mx-auto w-fit mt-5 font-medium")
+                p Nombre: #{perfilDescripción.nombre}
+                p Apellido: #{perfilDescripción.apellido}
+                p Fecha de Nacimiento: #{perfilDescripción.fecha_nacimiento}
+                p Género: #{perfilDescripción.sexo}
+                p Mail: #{perfilDescripción.mail}
 
-            .user_content_options(class="mt-10 mx-10 grid grid-cols-3 text-center justify-around border-b-1 gap-2")
-                - const idPerfil = esDueño ? userSession.id : usuario.id_usuario
+            .user_content_options(class="mt-10 mx-10 grid grid-cols-3 text-center justify-center border-b-1 gap-2")
                 a(href=`/usuarioPerfil/${idPerfil}/posts`)
                     button(type="button" class=(sección == "posts") ? "bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "cursor-pointer hover:font-bold") Publicaciones (#{posts.length})
                 a(href=`/usuarioPerfil/${idPerfil}/followers`)
@@ -43,7 +50,7 @@ block content
 
                 //- ==================== POSTS ====================
                 if sección == "posts"
-                    p(class="text-center text-[2rem] my-5") Publicaciones
+                    p(class="text-center text-[2rem] my-5 font-medium") Publicaciones
                     .user_posts(class="grid grid-cols-2 mx-20 gap-4")
                         each post in posts
                             .post(class="bg-white border-1 border-gray-400 rounded-[10px] p-2 hover:outline-3 hover:outline-orange-400 hover:opacity-80 h-fit")
@@ -76,9 +83,9 @@ block content
                 //- ==================== FOLLOWERS ====================
                 else if sección == "followers"
                     if esDueño
-                        p(class="text-center text-[2rem] my-5") Tus seguidores
+                        p(class="text-center text-[2rem] my-5 font-medium") Tus seguidores
                     else
-                        p(class="text-center text-[2rem] my-5") Sus seguidores
+                        p(class="text-center text-[2rem] my-5 font-medium") Sus seguidores
 
                     div(class="bg-violet-100 py-8")
                         .seguidor(class="bg-violet-200 max-w-md mx-auto")
@@ -115,9 +122,9 @@ block content
                 //- ==================== FOLLOWING ====================
                 else if sección == "following"
                     if esDueño
-                        p(class="text-center text-[2rem] my-5") Usuarios a quienes seguís
+                        p(class="text-center text-[2rem] my-5 font-medium") Usuarios a quienes seguís
                     else
-                        p(class="text-center text-[2rem] my-5") Usuarios a quienes sigue #{usuario.nombre_usuario}
+                        p(class="text-center text-[2rem] my-5 font-medium") Usuarios a quienes sigue #{usuario.nombre_usuario}
 
                     div(class="bg-violet-100 py-8")
                         .seguidos(class="bg-violet-200 max-w-md mx-auto")

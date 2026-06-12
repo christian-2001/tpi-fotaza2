@@ -1,4 +1,5 @@
 import { Publicacion } from "../../models/Publicacion.js"
+import { Persona } from "../../models/Persona.js"
 import { Usuario } from "../../models/Usuario.js"
 import { Etiqueta } from "../../models/Etiqueta.js"
 import { Imagen } from "../../models/Imagen.js"
@@ -27,13 +28,23 @@ export async function mostrarPerfilUsuario(req, res) {
             }
 
             esDueño = usuarioPerfil.id_usuario === req.user.id_usuario
-            
+
         } else {
 
             usuarioPerfil = req.user
             esDueño = true
-            
+
         }
+
+        const perfilDescripción = await Usuario.findOne({
+            where: {
+                id_usuario: usuarioPerfil.id_usuario
+            },
+
+            include: [
+                { model: Persona, required: true }
+            ]
+        })
 
         const publicaciones = await getPosts(usuarioPerfil);
         const seguidores = await getFollowers(usuarioPerfil);
@@ -60,6 +71,7 @@ export async function mostrarPerfilUsuario(req, res) {
         res.render("./userProfile/userProfile", {
             sección,
             usuario: usuarioPerfil,
+            perfilDescripción: perfilDescripción.Persona,
             esDueño,
             posts: publicaciones,
             seguidores,
@@ -72,7 +84,6 @@ export async function mostrarPerfilUsuario(req, res) {
         res.status(400).send(`Ocurrió un error ${error}`)
     }
 }
-
 
 async function getPosts(usuario) {
 
