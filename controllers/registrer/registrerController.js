@@ -119,14 +119,14 @@ export async function validarRegistroUsuario(req, res) {
 
     form_nombre_usuario = form_nombre_usuario.trim()
     form_contrasenia = form_contrasenia.trim()
-
+/*
     const validate_result = validarFormRegistro2({
         username: form_nombre_usuario,
         password: form_contrasenia
     })
-
+*/
     //Creacion del mensaje con cadena de errores por cada dato no válido
-    if (validate_result.success === false) {
+    /*if (validate_result.success === false) {
 
         const arr_errores = []
 
@@ -144,7 +144,7 @@ export async function validarRegistroUsuario(req, res) {
             form_user_name: form_nombre_usuario,
         })
         return
-    }
+    }*/
 
     //Creacion del usuario
     try {
