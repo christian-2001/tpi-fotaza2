@@ -9,7 +9,7 @@
     "dev": "node --watch app.js",
     "tailwind": "npx @tailwindcss/cli -i ./public/style/index.css -o ./public/style/output.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "seed": "node ./seeders/seed.js"
+    "db:init": "node ./seeders/seed.js"
   },
   "keywords": [],
   "author": "",
