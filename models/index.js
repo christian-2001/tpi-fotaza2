@@ -9,10 +9,12 @@ import { Usuario } from "./Usuario.js";
 import { Valorizacion } from "./Valorizacion.js";
 import { Seguidores } from "./Seguidores.js";
 import { Imagen_Etiqueta } from "./Imagen_Etiqueta.js";
-
+import { Colección } from "./Colección.js";
+import { Favoritos } from "./Favoritos.js";
+import { Publicacion_Favoritos } from "./Publicacion_Favoritos.js";
 /*
 ⁡⁢⁢⁢Relacion 1 a 1 con:
-    HasOne -> un modelo tiene una elemento de otro modelo
+    HasOne -> un modelo tiene un elemento de otro modelo
     BelongsTo  -> un modelo le pertenece a otro modelo⁡
 */
 
@@ -33,10 +35,19 @@ import { Imagen_Etiqueta } from "./Imagen_Etiqueta.js";
 //⁡⁢⁢⁢𝗥𝗲𝗹𝗮𝗰𝗶𝗼𝗻𝗲𝘀 𝟭 𝗮 𝟭⁡
 
 
+//Usuario.hasOne(Favoritos, { foreignKey: "id_usuario"})
+//Favoritos.BelongsTo(Usuario, { foreignKey: "id_usuario"})
+
+Usuario.hasOne(Favoritos)
+Favoritos.belongsTo(Usuario)
+
 //⁡⁣⁢⁣𝗥𝗲𝗹𝗮𝗰𝗶𝗼𝗻𝗲𝘀 𝟭 𝗮 𝗡⁡
 
 Usuario.hasMany(Publicacion, { foreignKey: "id_usuario" })
 Publicacion.belongsTo(Usuario, { foreignKey: "id_usuario" })
+
+Usuario.hasMany(Colección, { foreignKey: "id_usuario"})
+Colección.belongsTo(Usuario, { foreignKey: "id_usuario"})
 
 Persona.hasMany(Usuario, { foreignKey: "id_persona" })
 Usuario.belongsTo(Persona, { foreignKey: "id_persona" })
@@ -55,7 +66,6 @@ Valorizacion.belongsTo(Imagen, { foreignKey: "id_img"})
 
 Usuario.hasMany(Valorizacion, { foreignKey: "id_usuario"})
 Valorizacion.belongsTo(Usuario, { foreignKey: "id_usuario"})
-
 
 //⁡⁢⁣⁣𝗥𝗲𝗹𝗮𝗰𝗶𝗼𝗻𝗲𝘀 𝗡 𝗮 𝗡⁡
 
@@ -84,6 +94,8 @@ Publicacion_Etiqueta.belongsTo(Publicacion, { foreignKey: "id_post"})
 Etiqueta.hasMany(Publicacion_Etiqueta, { foreignKey: "id_etiqueta"})
 Publicacion_Etiqueta.belongsTo(Etiqueta, { foreignKey: "id_etiqueta"})
 
+
+
 Imagen.belongsToMany(Etiqueta, {
     through: Imagen_Etiqueta,
     foreignKey: "id_img",
@@ -111,6 +123,9 @@ Seguidores.belongsTo(Usuario, {
     foreignKey: "id_seguido",
     as: "seguido"
 })
+
+Publicacion.belongsToMany(Favoritos, { through: Publicacion_Favoritos })
+Favoritos.belongsToMany(Publicacion, { through: Publicacion_Favoritos })
 /*
 Usuario.hasMany(Seguidores, { foreignKey: "id_usuario" })
 Seguidores.belongsTo(Usuario, { foreignKey: "id_usuario" })
@@ -125,7 +140,7 @@ export async function db_conexion() {
         await sequelize.authenticate()
         console.log("Se conectó a la bd")
 
-        await sequelize.sync({ alter: true})
+        await sequelize.sync({ alter: true })
         console.log("Sincronizacion de los modelos...")
     } catch (error) {
         console.error("Error en la conexion a la base de datos", error)

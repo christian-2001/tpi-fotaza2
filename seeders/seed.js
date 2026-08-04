@@ -10,6 +10,8 @@ import { Usuario } from "../models/Usuario.js";
 import { Valorizacion } from "../models/Valorizacion.js";
 import { Comentario } from "../models/Comentario.js";
 import { Seguidores } from "../models/Seguidores.js";
+import { Favoritos } from "../models/Favoritos.js";
+import { Publicacion_Favoritos } from "../models/Publicacion_Favoritos.js";
 
 async function seed() {
     await sequelize.sync({ alter: true });
