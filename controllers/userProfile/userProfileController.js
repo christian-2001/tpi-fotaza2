@@ -6,6 +6,8 @@ import { Imagen } from "../../models/Imagen.js"
 import { Seguidores } from "../../models/Seguidores.js"
 import { Favoritos } from "../../models/Favoritos.js"
 import { Publicacion_Favoritos } from "../../models/Publicacion_Favoritos.js"
+import { Op } from "sequelize"
+
 
 export async function mostrarPerfilUsuario(req, res) {
 
@@ -145,15 +147,22 @@ async function getPostsFavoritos(usuario) {
 
     const publicaciones = await Publicacion.findAll({
 
+        where: {
+            '$Publicacion_Favoritos.id_favoritos$': {
+                [Op.eq]: id_userFavoritos.id_favoritos
+            }
+        },
+
         include: [
             { model: Usuario, required: true },
             { model: Etiqueta, required: true },
             { model: Imagen, required: true },
             { model: Publicacion_Favoritos, required: true },
-            { model: Favoritos }
         ]
 
     })
+
+    console.log(publicaciones)
 
     return publicaciones
 }
