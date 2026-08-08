@@ -163,7 +163,7 @@ block content
                                                 button(type="submit" name="btn_seguir" id="btn_seguir" class="bg-green-700 hover:bg-green-800 text-violet-50 font-semibold px-5 py-1.5") Seguir
                 //- ==================== FAVORTIOS ====================
                 else if sección == "favoritos"
-                    if favoritos
+                    if favoritos.length > 0
                         p(class="text-center text-[2rem] my-5 font-medium") Favoritos
                         .user_posts(class="grid grid-cols-2 mx-20 gap-4")
                             each post in favoritos
