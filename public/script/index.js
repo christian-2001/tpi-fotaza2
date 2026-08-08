@@ -1,5 +1,122 @@
 let img_container = document.querySelectorAll(".post_imagenes")
+let posts = document.querySelectorAll(".post")
+let post_menu_all = document.querySelectorAll(".opciones")
 
+//Iterar sobre todas las publicaciones
+for (const p of posts) {
+
+    //Lista de opciones disponibles en todas las publicaciones
+    let post_menu = p.querySelector(".opciones")
+
+    //Boton "..." visible en la esquina superior derecha, en todas las publicaciones, que muestra/oculta las opciones
+    let button_post = p.querySelector(".boton_opciones")
+
+    //Obtiene el formulario que permite guardar la publicación en "Favoritos"
+    let form_guardarFavoritos = p.querySelector("#guardarFavoritos")
+
+    //Obtiene el formulario que permite quitar la publicación de "Favoritos"
+    let form_quitarFavoritos = p.querySelector("#quitarFavoritos")
+
+    if (form_quitarFavoritos) { // --> Quitar publicación de la seccion "Favoritos" del usuario mediante Fetch
+
+        /*form_quitarFavoritos.addEventListener("submit", (e) => {
+            e.preventDefault()
+            console.log(form_quitarFavoritos.action)
+        })*/
+
+    } else if (form_guardarFavoritos) { // --> Guardar publicación en la seccion "Favoritos" del usuario mediante Fetch
+        let btn = form_guardarFavoritos.querySelector("#btn_favoritos")
+
+        form_guardarFavoritos.addEventListener("submit", async (event) => {
+            event.preventDefault()
+
+            guardarPublicación_favoritos(btn, form_guardarFavoritos)
+        })
+    }
+
+    //Los usuarios anonimos no tendran el boton para acceder a las opciones en cada publicación
+    //Los usuarios autenticados tendran disponibles dichas opciones
+    if (button_post !== null) {
+
+        //Mostrar y ocultar menu al clickear los puntos suspensivos (...)
+        //dentro de la publciación
+        button_post.addEventListener("click", () => {
+
+            if (post_menu.classList == "hidden") {
+                mostrarOpciones(post_menu)
+            } else {
+                ocultarOpciones(post_menu_all, post_menu)
+            }
+        })
+    }
+}
+
+function mostrarOpciones(post_menu) {
+
+    post_menu.classList.remove("hidden")
+    post_menu.classList.toggle("block")
+
+}
+
+function ocultarOpciones(post_menu_all, post_menu) {
+
+    for (const menu of post_menu_all) {
+        if (!menu.classList.contains("hidden") && menu.id !== post_menu.id) {
+            menu.classList.toggle("hidden")
+        }
+    }
+    post_menu.classList.remove("block")
+    post_menu.classList.toggle("hidden")
+
+}
+
+async function guardarPublicación_favoritos(btn, form_guardarFavoritos) {
+    //Enviar datos con Fetch usando POST
+    try {
+        const res = await fetch(form_guardarFavoritos.action, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+
+        })
+
+        //Una vez guardada la publicación, el texto del boton cambia a "Eliminar de Favoritos"
+        btn.innerHTML = ""
+        btn.textContent = "Eliminar de Favoritos"
+
+        //Creación del mensaje avisandole al usuario del guardado de la publicación
+
+        let div_msj = document.createElement("div")
+        let p_msj = document.createElement("p")
+        let posición_msj = document.body.querySelector(".msj")
+
+        div_msj.className = "mb-3 bg-green-600 px-5 py-2 font-bold"
+        p_msj.textContent = "Publicación guardada"
+
+        div_msj.appendChild(p_msj)
+
+        posición_msj.appendChild(div_msj)
+
+        let cont = 4
+
+        const msj_temporizador = setInterval(() => {
+
+            if (cont > 0) {
+                cont--;
+            } else {
+                clearInterval(msj_temporizador);
+
+                posición_msj.removeChild(div_msj)
+            }
+
+        }, 1000);
+    } catch (error) {
+        console.error(`ERROR AL GUARDAR PUBLICACIÓN --> ${error}`)
+    }
+}
+
+//Renderizar imagenes dentro de la publicación
 for (const i of img_container) {
 
     let images = i.querySelectorAll(".imagenes")[0]
@@ -39,6 +156,5 @@ for (const i of img_container) {
         images[3].appendChild(text_img)
     }
 }
-
 
 //link(rel="stylesheet", href="./style/output.css")

@@ -4,16 +4,15 @@ import { Publicacion_Etiqueta } from "../../models/Publicacion_Etiqueta.js"
 import { Imagen } from "../../models/Imagen.js"
 import { Imagen_Etiqueta } from "../../models/Imagen_Etiqueta.js"
 import { Etiqueta } from "../../models/Etiqueta.js"
+import { Favoritos } from "../../models/Favoritos.js"
+import { Publicacion_Favoritos } from "../../models/Publicacion_Favoritos.js"
 import { Op, Sequelize } from "sequelize"
 
 export async function pagIndex(req, res) {
-    //Publicaciones con :
-    //Titulo
-    //Descripcion
-    //Nombre del usuario
-    //Fecha y hora de publicacion
-    //Etiquetas
-    //Imagenes
+    let postsFavorito
+
+    //Publicaciones con: Titulo, Descripcion, Nombre del usuario, Fecha y hora de publicacion, Etiquetas, Imagenes
+    
     const posts = await Publicacion.findAll({
         include: [
             { model: Usuario },
@@ -22,57 +21,72 @@ export async function pagIndex(req, res) {
         ],
         order: [['fh_publicacion', 'DESC']]
     })
-/*
-    const img_posts = await Imagen_Etiqueta.findAll({
-        include: [
-            { model: Imagen },
-            { model: Etiqueta },
-        ]
-    })
 
-    console.log(img_posts[0].Etiquetum)
-*/
+    //Verificar en cada publicación si el usuario autenticado lo tiene guardado como favorito
+    //Primero se verifica que el usuario esté logueado
+    if (req.user) {
+        postsFavorito = await Publicacion_Favoritos.findAll({
+            where: {
+                id_favoritos: req.user.id_usuario
+            },
+
+            order: [["id_post", "ASC"]]
+        })
+    }
+
     res.render("index", {
-    posts,
-    queryResult: null,
-    orden: null,
-    postTag: "",
-    imgTag: "",
-    query: ""
-})
-    
-
-//res.render("index", { posts: posts, img_posts: img_posts })
-
-    /*
-        .post_imagenes(class="grid grid-cols-2 gap-3 bg-blue-500 mt-2")
-                        each post_img in val.Imagens
-                            img(src=`${post_img.img_path}`, alt="")
-    */ 
-
-    /*
-        const prueba = posts[0].Imagens[0]
-        const base64 = prueba.img_path.toString("base64")
-    
-        const dataUrl = `data:image/${prueba.extension};base64,${base64}`
-        console.log(dataUrl)
-    */
-
-    /*
-    const img_posts = await Imagen.findAll({
-        include:
-        { model: Publicacion }
+        posts,
+        queryResult: null,
+        orden: null,
+        postTag: "",
+        imgTag: "",
+        query: "",
+        postsFavorito
     })
-    */
 
-    //let prueba = posts[0].Imagens[0].img_path
+}
 
-    //const img_src = `data:image/jpg;base64,${base64}`
+//Guardar publicación en la seccion Favortios del usuario
+export async function guardarPost_favoritos(req, res) {
 
-    //res.send(`<img src="${prueba}" width=100></img>`)
-    /*
-    const base64 = imagen.img_buffer.toString("base64");
-    
-    const dataUrl = `data:image/jpg;base64,${base64}`;
-    */
+    //Verifica si la publicación ya se enceuntra en la sección "Favoritos" del usuario
+    let esFavorito = false
+
+    //Guardar id de la publicación que quiero guardar
+    let id_post = req.params.id_post
+
+    try {
+        //Hallar la publicación mediante id guardado
+        const post = await Publicacion.findByPk(id_post)
+
+        //Obtener id de la sección Favoritos del usuario en sesion
+        const id_fav = await Favoritos.findByPk(req.user.id_usuario)
+
+        //Verificar que exista la publicación en "Favoritos" del usuario
+        esFavorito = await Publicacion_Favoritos.findOne({
+            where: {
+                id_post: post.id_post,
+                id_favoritos: id_fav.id_favoritos
+            }
+        })
+
+        //Guardar publicación en Favoritos 
+        if (!esFavorito) {
+
+            //Si no está en la sección lo guardamos
+            await Publicacion_Favoritos.create({
+                id_post: post.id_post,
+                id_favoritos: id_fav.id_favoritos
+            })
+            console.log("PUBLICACION GUARDADA EN FAVORITOS!!!!")
+        } else {
+            //En caso contrario, indica al usuario de la publicación perviamente guardada
+            console.log("YA GUARDASTE LA PUBLICACIÓN COMO FAVORITO")
+        }
+
+        res.status(200).send({ msj: "PUBLICACION GUARDADA EN FAVORITOS!!!!" })
+
+    } catch (error) {
+        res.status(400).send(`Error al guardar publicación ${error}`)
+    }
 }
