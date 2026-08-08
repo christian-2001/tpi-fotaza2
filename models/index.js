@@ -34,12 +34,7 @@ import { Publicacion_Favoritos } from "./Publicacion_Favoritos.js";
 //-------------------------------------------------------------------------------------
 //⁡⁢⁢⁢𝗥𝗲𝗹𝗮𝗰𝗶𝗼𝗻𝗲𝘀 𝟭 𝗮 𝟭⁡
 
-
-//Usuario.hasOne(Favoritos, { foreignKey: "id_usuario"})
-//Favoritos.BelongsTo(Usuario, { foreignKey: "id_usuario"})
-
-Usuario.hasOne(Favoritos)
-Favoritos.belongsTo(Usuario)
+Usuario.hasOne(Favoritos, { foreignKey: "id_usuario"})
 
 //⁡⁣⁢⁣𝗥𝗲𝗹𝗮𝗰𝗶𝗼𝗻𝗲𝘀 𝟭 𝗮 𝗡⁡
 
