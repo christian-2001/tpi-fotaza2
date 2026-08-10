@@ -24,7 +24,7 @@ for (const p of posts) {
         form_quitarFavoritos.addEventListener("submit", (e) => {
             e.preventDefault()
 
-            quitarPublicación_favoritos(post_menu, p, btn, form_quitarFavoritos)
+            quitarPublicación_favoritos(post_menu, p, form_quitarFavoritos)
         })
 
     } else if (form_guardarFavoritos) { // --> Guardar publicación en la seccion "Favoritos" del usuario mediante Fetch
@@ -33,7 +33,7 @@ for (const p of posts) {
         form_guardarFavoritos.addEventListener("submit", async (event) => {
             event.preventDefault()
 
-            guardarPublicación_favoritos(btn, form_guardarFavoritos)
+            guardarPublicación_favoritos(post_menu, p, form_guardarFavoritos)
         })
     }
 
@@ -73,7 +73,7 @@ function ocultarOpciones(post_menu_all, post_menu) {
 
 }
 
-async function guardarPublicación_favoritos(btn, form_guardarFavoritos) {
+async function guardarPublicación_favoritos(post_menu, post, form_guardarFavoritos) {
     //Enviar datos con Fetch usando POST
     try {
         const res = await fetch(form_guardarFavoritos.action, {
@@ -83,14 +83,10 @@ async function guardarPublicación_favoritos(btn, form_guardarFavoritos) {
             }
         })
 
-        //Una vez guardada la publicación, el texto del boton cambia a "Eliminar de Favoritos"
-        btn.innerHTML = ""
-        btn.textContent = "Eliminar de Favoritos"
-
         //Creación del mensaje avisandole al usuario del guardado de la publicación
         let div_msj = document.createElement("div")
         let p_msj = document.createElement("p")
-        let posición_msj = document.body.querySelector(".msj_esFavorito")
+        let posición_msj = document.body.querySelector(".msj")
 
         div_msj.className = "mb-3 bg-green-600 px-5 py-2 font-bold"
         p_msj.textContent = "Publicación guardada en Favoritos"
@@ -113,12 +109,51 @@ async function guardarPublicación_favoritos(btn, form_guardarFavoritos) {
             }
 
         }, 1000);
+
+        //Al guardar la publicación como favorito, el boton cambia de estado teniendo como texto "Eliminar de Favoritos"
+        //Ademas cambia de formulario al de quitar la publicación como favorito
+
+        //Recrear nodo padre y el resto de nodos hijo para la funcion de quitar publicación como favorito
+        let li_guardarPost = post.querySelector("#agregar-a-favoritos")
+
+        let li_eliminarPost = document.createElement("li")
+        li_eliminarPost.id = "quitar-de-favoritos"
+
+        let form_quitarFavoritos = document.createElement("form")
+        let id_post = form_guardarFavoritos.action.substring(form_guardarFavoritos.action.length - 1)
+        
+        form_quitarFavoritos.action = `/quitar-de-favoritos/${id_post}`
+        form_quitarFavoritos.method = "post"
+        form_quitarFavoritos.name = "quitarFavoritos"
+        form_guardarFavoritos.id = "quitarFavoritos"
+
+        let label = document.createElement("label")
+        label.for = "btn_quitarFavoritos"
+
+        let button = document.createElement("button")
+        button.className = "px-5 py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer"
+        button.id = "btn_quitarFavoritos"
+        button.textContent = "Eliminar de Favoritos"
+
+        li_eliminarPost.appendChild(form_quitarFavoritos)
+        form_quitarFavoritos.appendChild(label)
+        label.appendChild(button)
+
+        post_menu.replaceChild(li_eliminarPost, li_guardarPost)
+
+        form_quitarFavoritos.addEventListener("submit", (e) => {
+            e.preventDefault()
+
+            console.log("ELIMINANDO POST.....")
+            quitarPublicación_favoritos(post_menu, post, form_quitarFavoritos)
+        })
+
     } catch (error) {
         console.error(`ERROR AL GUARDAR PUBLICACIÓN --> ${error}`)
     }
 }
 
-async function quitarPublicación_favoritos(post_menu, post, btn, form_quitarFavoritos) {
+async function quitarPublicación_favoritos(post_menu, post, form_quitarFavoritos) {
     //Enviar datos con Fetch usando POST
     try {
         const res = await fetch(form_quitarFavoritos.action, {
@@ -131,7 +166,7 @@ async function quitarPublicación_favoritos(post_menu, post, btn, form_quitarFav
         //Creación del mensaje al momento de quitar una publicación como favorito
         let div_msj = document.createElement("div")
         let p_msj = document.createElement("p")
-        let posición_msj = document.body.querySelector(".msj_noEsFavorito")
+        let posición_msj = document.body.querySelector(".msj")
 
         console.log(posición_msj)
 
@@ -160,7 +195,7 @@ async function quitarPublicación_favoritos(post_menu, post, btn, form_quitarFav
         //Al quitar la publicación como favorito, el boton vuelve a cambiar de estado teniendo como texto "Guardar en Favoritos"
         //Ademas cambia de formulario al de guardar la publicación como favorito
 
-        //Recrear nodos y el resto de nodos hijo para la funcion de guardar publciación como favorito
+        //Recrear nodo padre y el resto de nodos hijo para la funcion de guardar publicación como favorito
         let li_eliminarPost = post.querySelector("#quitar-de-favoritos")
 
         let li_guardarPost = document.createElement("li")
@@ -175,7 +210,7 @@ async function quitarPublicación_favoritos(post_menu, post, btn, form_quitarFav
         form_guardarFavoritos.id = "guardarFavoritos"
 
         let label = document.createElement("label")
-        label.id = "btn_favoritos"
+        label.for = "btn_favoritos"
 
         let button = document.createElement("button")
         button.className = "px-5 py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer"
@@ -188,6 +223,11 @@ async function quitarPublicación_favoritos(post_menu, post, btn, form_quitarFav
 
         post_menu.replaceChild(li_guardarPost, li_eliminarPost)
 
+        form_guardarFavoritos.addEventListener("submit", async (event) => {
+            event.preventDefault()
+
+            guardarPublicación_favoritos(post_menu, post, form_guardarFavoritos)
+        })
     } catch (error) {
         console.error(`ERROR AL QUITAR LA PUBLICACIÓN --> ${error}`)
     }

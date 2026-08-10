@@ -84,7 +84,7 @@ export async function guardarPost_favoritos(req, res) {
             console.log("YA GUARDASTE LA PUBLICACIÓN COMO FAVORITO")
         }
 
-        res.status(200).send({ msj: "PUBLICACION GUARDADA EN FAVORITOS!!!!" })
+        res.status(200).send("PUBLICACION GUARDADA EN FAVORITOS!!!!")
 
     } catch (error) {
         res.status(400).send(`Error al guardar la publicación ${error}`)
