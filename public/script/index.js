@@ -16,13 +16,16 @@ for (const p of posts) {
 
     //Obtiene el formulario que permite quitar la publicación de "Favoritos"
     let form_quitarFavoritos = p.querySelector("#quitarFavoritos")
-
+    
     if (form_quitarFavoritos) { // --> Quitar publicación de la seccion "Favoritos" del usuario mediante Fetch
 
-        /*form_quitarFavoritos.addEventListener("submit", (e) => {
+        let btn = form_quitarFavoritos.querySelector("#btn_quitarFavoritos")
+
+        form_quitarFavoritos.addEventListener("submit", (e) => {
             e.preventDefault()
-            console.log(form_quitarFavoritos.action)
-        })*/
+
+            quitarPublicación_favoritos(post_menu, p, btn, form_quitarFavoritos)
+        })
 
     } else if (form_guardarFavoritos) { // --> Guardar publicación en la seccion "Favoritos" del usuario mediante Fetch
         let btn = form_guardarFavoritos.querySelector("#btn_favoritos")
@@ -78,7 +81,6 @@ async function guardarPublicación_favoritos(btn, form_guardarFavoritos) {
             headers: {
                 "Content-Type": "application/json"
             }
-
         })
 
         //Una vez guardada la publicación, el texto del boton cambia a "Eliminar de Favoritos"
@@ -86,18 +88,18 @@ async function guardarPublicación_favoritos(btn, form_guardarFavoritos) {
         btn.textContent = "Eliminar de Favoritos"
 
         //Creación del mensaje avisandole al usuario del guardado de la publicación
-
         let div_msj = document.createElement("div")
         let p_msj = document.createElement("p")
-        let posición_msj = document.body.querySelector(".msj")
+        let posición_msj = document.body.querySelector(".msj_esFavorito")
 
         div_msj.className = "mb-3 bg-green-600 px-5 py-2 font-bold"
-        p_msj.textContent = "Publicación guardada"
+        p_msj.textContent = "Publicación guardada en Favoritos"
 
         div_msj.appendChild(p_msj)
 
         posición_msj.appendChild(div_msj)
 
+        //Dispara el mensaje creado y desaparece luego de 4 segundos
         let cont = 4
 
         const msj_temporizador = setInterval(() => {
@@ -113,6 +115,81 @@ async function guardarPublicación_favoritos(btn, form_guardarFavoritos) {
         }, 1000);
     } catch (error) {
         console.error(`ERROR AL GUARDAR PUBLICACIÓN --> ${error}`)
+    }
+}
+
+async function quitarPublicación_favoritos(post_menu, post, btn, form_quitarFavoritos) {
+    //Enviar datos con Fetch usando POST
+    try {
+        const res = await fetch(form_quitarFavoritos.action, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        })
+
+        //Creación del mensaje al momento de quitar una publicación como favorito
+        let div_msj = document.createElement("div")
+        let p_msj = document.createElement("p")
+        let posición_msj = document.body.querySelector(".msj_noEsFavorito")
+
+        console.log(posición_msj)
+
+        div_msj.className = "mb-3 bg-red-600 px-5 py-2 font-bold"
+        p_msj.textContent = "Publicación removida de Favoritos"
+
+        div_msj.appendChild(p_msj)
+
+        posición_msj.appendChild(div_msj)
+
+        //Dispara el mensaje creado y desaparece luego de 4 segundos
+        let cont = 4
+
+        const msj_temporizador = setInterval(() => {
+
+            if (cont > 0) {
+                cont--;
+            } else {
+                clearInterval(msj_temporizador);
+
+                posición_msj.removeChild(div_msj)
+            }
+
+        }, 1000);
+
+        //Al quitar la publicación como favorito, el boton vuelve a cambiar de estado teniendo como texto "Guardar en Favoritos"
+        //Ademas cambia de formulario al de guardar la publicación como favorito
+
+        //Recrear nodos y el resto de nodos hijo para la funcion de guardar publciación como favorito
+        let li_eliminarPost = post.querySelector("#quitar-de-favoritos")
+
+        let li_guardarPost = document.createElement("li")
+        li_guardarPost.id = "agregar-a-favoritos"
+
+        let form_guardarFavoritos = document.createElement("form")
+        let id_post = form_quitarFavoritos.action.substring(form_quitarFavoritos.action.length - 1)
+        
+        form_guardarFavoritos.action = `/favoritos/${id_post}`
+        form_guardarFavoritos.method = "post"
+        form_guardarFavoritos.name = "guardarFavoritos"
+        form_guardarFavoritos.id = "guardarFavoritos"
+
+        let label = document.createElement("label")
+        label.id = "btn_favoritos"
+
+        let button = document.createElement("button")
+        button.className = "px-5 py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer"
+        button.id = "btn_favoritos"
+        button.textContent = "Guardar en Favoritos"
+
+        li_guardarPost.appendChild(form_guardarFavoritos)
+        form_guardarFavoritos.appendChild(label)
+        label.appendChild(button)
+
+        post_menu.replaceChild(li_guardarPost, li_eliminarPost)
+
+    } catch (error) {
+        console.error(`ERROR AL QUITAR LA PUBLICACIÓN --> ${error}`)
     }
 }
 
