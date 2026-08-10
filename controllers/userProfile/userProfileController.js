@@ -153,16 +153,18 @@ async function getPostsFavoritos(usuario) {
             }
         },
 
+        
         include: [
             { model: Usuario, required: true },
             { model: Etiqueta, required: true },
             { model: Imagen, required: true },
             { model: Publicacion_Favoritos, required: true },
-        ]
-
+        ],
+        
     })
-
-    console.log(publicaciones)
+    
+    //Ordenar de forma descendente las publicaciones favoritas según fecha y hora de guardado
+    publicaciones.sort((a,b) => b.Publicacion_Favoritos[0].fh_guardado - a.Publicacion_Favoritos[0].fh_guardado)
 
     return publicaciones
 }

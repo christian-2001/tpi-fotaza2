@@ -8,26 +8,31 @@ export class Publicacion_Favoritos extends Model { }
 Publicacion_Favoritos.init(
   {
     id_post: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Publicacion,
-            key: "id_post",
-        },
+      type: DataTypes.INTEGER,
+      references: {
+        model: Publicacion,
+        key: "id_post",
+      },
     },
 
     id_favoritos: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Favoritos,
-            key: "id_favoritos"
-        }
-    }
+      type: DataTypes.INTEGER,
+      references: {
+        model: Favoritos,
+        key: "id_favoritos"
+      }
+    },
+
+    fh_guardado: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     sequelize,
     modelName: "Publicacion_Favoritos",
     tableName: "publicacion_favoritos",
-    createdAt: true,
+    createdAt: "fh_guardado",
     deletedAt: true,
   },
 )
