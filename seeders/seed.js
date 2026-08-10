@@ -12,7 +12,7 @@ import { Comentario } from "../models/Comentario.js";
 import { Seguidores } from "../models/Seguidores.js";
 
 async function seed() {
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: true, force: true });
 
     // ─────────────────────────────────────────────
     // PERSONA  (4 personas)
@@ -58,6 +58,44 @@ async function seed() {
     const users = await Usuario.bulkCreate(usuariosHasheados);
 
     // ─────────────────────────────────────────────
+    // FAVORITOS(4)
+    // ─────────────────────────────────────────────
+
+    const fav = await Favoritos.bulkCreate([
+        // fav[0] → user00
+        { id_usuario: users[0].id_usuario },
+        // fav[1] → user01
+        { id_usuario: users[1].id_usuario },
+        // fav[2] → user02
+        { id_usuario: users[2].id_usuario },
+        // fav[3] → user03
+        { id_usuario: users[3].id_usuario }
+    ])
+
+    // ─────────────────────────────────────────────
+    // PUBLICACION  (5 posts)
+    // ─────────────────────────────────────────────
+    const posts = await Publicacion.bulkCreate([
+        // posts[0] → user00
+        { titulo: "Atardecer en la costa", descripcion: "Un atardecer que no se puede describir con palabras.", id_usuario: users[0].id_usuario },
+        // posts[1] → user01
+        { titulo: "Ciudad entre niebla", descripcion: "La ciudad nunca duerme, pero a veces se esconde.", id_usuario: users[1].id_usuario },
+        // posts[2] → user02
+        { titulo: "Flores de primavera", descripcion: "La naturaleza en su mejor versión.", id_usuario: users[2].id_usuario },
+        // posts[3] → user03
+        { titulo: "Mar de fondo", descripcion: "El sonido del mar siempre calma.", id_usuario: users[3].id_usuario },
+        // posts[4] → user01
+        { titulo: "Arquitectura moderna", descripcion: "Líneas, formas y mucha luz.", id_usuario: users[1].id_usuario },
+    ]);
+/*
+    const post_fav = await Publicacion_Favoritos.bulkCreate([
+        //post_fav[0]
+        { id_post: posts[3].id_post, id_favoritos: fav[0].id_favoritos },
+        //post_fav[1]
+        { id_post: posts[2].id_post, id_favoritos: fav[0].id_favoritos },
+    ])
+*/
+    // ─────────────────────────────────────────────
     // ETIQUETA  (6 tags)
     // ─────────────────────────────────────────────
     const tags = await Etiqueta.bulkCreate([
@@ -75,21 +113,7 @@ async function seed() {
         { nom_etiqueta: "arquitectura" },
     ]);
 
-    // ─────────────────────────────────────────────
-    // PUBLICACION  (5 posts)
-    // ─────────────────────────────────────────────
-    const posts = await Publicacion.bulkCreate([
-        // posts[0] → user00
-        { titulo: "Atardecer en la costa", descripcion: "Un atardecer que no se puede describir con palabras.", id_usuario: users[0].id_usuario },
-        // posts[1] → user01
-        { titulo: "Ciudad entre niebla", descripcion: "La ciudad nunca duerme, pero a veces se esconde.", id_usuario: users[1].id_usuario },
-        // posts[2] → user02
-        { titulo: "Flores de primavera", descripcion: "La naturaleza en su mejor versión.", id_usuario: users[2].id_usuario },
-        // posts[3] → user03
-        { titulo: "Mar de fondo", descripcion: "El sonido del mar siempre calma.", id_usuario: users[3].id_usuario },
-        // posts[4] → user01
-        { titulo: "Arquitectura moderna", descripcion: "Líneas, formas y mucha luz.", id_usuario: users[1].id_usuario },
-    ]);
+
 
     // ─────────────────────────────────────────────
     // PUBLICACION_ETIQUETA  (7 relaciones)
