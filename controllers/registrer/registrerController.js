@@ -2,6 +2,7 @@ import { validarFormRegistro } from "../../validations/registrerValidator/regist
 import { validarFormRegistro2 } from "../../validations/registrerValidator/registerValidator2.js"
 import { Persona } from "../../models/Persona.js"
 import { Usuario } from "../../models/Usuario.js"
+import { Favoritos } from "../../models/Favoritos.js"
 
 const options_dni = ["DNI", "Libreta Cívica(LC)", "Libreta de Enrolamiento(LE)", "Pasaporte", "Cédula de Identidad(CI)"]
 const options_genre = ["Masculino", "Femenino", "No especificar"]
@@ -119,12 +120,12 @@ export async function validarRegistroUsuario(req, res) {
 
     form_nombre_usuario = form_nombre_usuario.trim()
     form_contrasenia = form_contrasenia.trim()
-/*
-    const validate_result = validarFormRegistro2({
-        username: form_nombre_usuario,
-        password: form_contrasenia
-    })
-*/
+    /*
+        const validate_result = validarFormRegistro2({
+            username: form_nombre_usuario,
+            password: form_contrasenia
+        })
+    */
     //Creacion del mensaje con cadena de errores por cada dato no válido
     /*if (validate_result.success === false) {
 
@@ -153,6 +154,14 @@ export async function validarRegistroUsuario(req, res) {
             contrasenia: form_contrasenia,
             id_persona: req.session.idPersonaCreada
         })
+
+        //Creacion de la sección Favoritos para el usuario ya creado
+        const user_favoritos = await Favoritos.create({
+
+            id_usuario: user.id_usuario
+
+        })
+        
 
         res.status(200).render(`./registrer/userConfirm`, { msg: `El/la usuario/a ${user.nombre_usuario} ha sido creado/a exitosamente!!` })
         delete req.session.idPersonaCreada

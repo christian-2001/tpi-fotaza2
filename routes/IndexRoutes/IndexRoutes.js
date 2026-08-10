@@ -1,5 +1,6 @@
 import express from "express"
 import { pagIndex } from "../../controllers/pagIndex/pagIndex.js"
+import { guardarPost_favoritos } from "../../controllers/pagIndex/pagIndex.js"
 import { buscarPost } from "../../controllers/buscarPost/buscarPostController.js"
 import { mostrarPost, actualizarImgPost, cerrarComentarios } from "../../controllers/mostrarPost/mostrarPostController.js"
 import { mostrarPerfilUsuario } from "../../controllers/userProfile/userProfileController.js"
@@ -8,6 +9,8 @@ import { cerrarSesion } from "../../middleware/auth.js"
 const router = express.Router()
 
 router.get("/", pagIndex)
+
+router.post("/favoritos/:id_post", guardarPost_favoritos)
 
 router.get("/buscar", buscarPost)
 

@@ -4,6 +4,10 @@ import { Usuario } from "../../models/Usuario.js"
 import { Etiqueta } from "../../models/Etiqueta.js"
 import { Imagen } from "../../models/Imagen.js"
 import { Seguidores } from "../../models/Seguidores.js"
+import { Favoritos } from "../../models/Favoritos.js"
+import { Publicacion_Favoritos } from "../../models/Publicacion_Favoritos.js"
+import { Op } from "sequelize"
+
 
 export async function mostrarPerfilUsuario(req, res) {
 
@@ -49,6 +53,7 @@ export async function mostrarPerfilUsuario(req, res) {
         const publicaciones = await getPosts(usuarioPerfil);
         const seguidores = await getFollowers(usuarioPerfil);
         const seguidos = await getFollowing(usuarioPerfil);
+        const favoritos = await getPostsFavoritos(usuarioPerfil)
 
         let yaEsSeguido = false;
 
@@ -78,6 +83,7 @@ export async function mostrarPerfilUsuario(req, res) {
             seguidos,
             yaEsSeguido,
             misFollowing,
+            favoritos,
             current_url
         });
     } catch (error) {
@@ -133,4 +139,32 @@ async function getFollowing(usuario) {
     })
 
     return seguidos
+}
+
+async function getPostsFavoritos(usuario) {
+
+    const id_userFavoritos = await Favoritos.findByPk(usuario.id_usuario)
+
+    const publicaciones = await Publicacion.findAll({
+
+        where: {
+            '$Publicacion_Favoritos.id_favoritos$': {
+                [Op.eq]: id_userFavoritos.id_favoritos
+            }
+        },
+
+        
+        include: [
+            { model: Usuario, required: true },
+            { model: Etiqueta, required: true },
+            { model: Imagen, required: true },
+            { model: Publicacion_Favoritos, required: true },
+        ],
+        
+    })
+    
+    //Ordenar de forma descendente las publicaciones favoritas según fecha y hora de guardado
+    publicaciones.sort((a,b) => b.Publicacion_Favoritos[0].fh_guardado - a.Publicacion_Favoritos[0].fh_guardado)
+
+    return publicaciones
 }
