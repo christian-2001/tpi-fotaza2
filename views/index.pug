@@ -48,14 +48,14 @@ block content
                                 - esFavorito = false
                                 each postFav in postsFavorito
                                     if (val.id_post === postFav.id_post) 
-                                        li
+                                        li(id="quitar-de-favoritos")
                                             form(action=`/quitar-de-favoritos/${val.id_post}`, method="post", name="quitarFavoritos", id="quitarFavoritos") 
                                                 label(for="btn_quitarFavoritos") 
                                                     button(class="px-5 py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer", id="btn_quitarFavoritos") Eliminar de Favoritos
                                                     - esFavorito = true
        
                                 if esFavorito === false
-                                    li
+                                    li(id="agregar-a-favoritos")
                                         form(action=`/favoritos/${val.id_post}`, method="post", name="guardarFavoritos", id="guardarFavoritos") 
                                             label(for="btn_favoritos") 
                                                 button(class="px-5 py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer", id="btn_favoritos") Guardar en Favoritos

@@ -12,7 +12,7 @@ export async function pagIndex(req, res) {
     let postsFavorito
 
     //Publicaciones con: Titulo, Descripcion, Nombre del usuario, Fecha y hora de publicacion, Etiquetas, Imagenes
-    
+
     const posts = await Publicacion.findAll({
         include: [
             { model: Usuario },
@@ -84,9 +84,40 @@ export async function guardarPost_favoritos(req, res) {
             console.log("YA GUARDASTE LA PUBLICACIÓN COMO FAVORITO")
         }
 
-        res.status(200).send({ msj: "PUBLICACION GUARDADA EN FAVORITOS!!!!" })
+        res.status(200).send("PUBLICACION GUARDADA EN FAVORITOS!!!!")
 
     } catch (error) {
-        res.status(400).send(`Error al guardar publicación ${error}`)
+        res.status(400).send(`Error al guardar la publicación ${error}`)
+    }
+}
+
+export async function quitarPost_favoritos(req, res) {
+
+    //id de la publicación 
+    let post_id = req.params.id_post
+
+    
+    //Quitar la publicación de "Favoritos"
+    try {
+   
+        //Obtener id de la sección Favoritos del usuario en sesion
+        const id_fav = await Favoritos.findByPk(req.user.id_usuario)
+        
+        console.log(id_fav)
+        //Hallar la publicación guardada
+        const postFavorito = await Publicacion_Favoritos.findOne({
+            where: {
+                id_post: post_id,
+                id_favoritos: id_fav.id_favoritos
+            }
+        })
+
+        //Quitar publicación de la base de datos
+        postFavorito.destroy()
+
+        res.status(200).send("PUBLICACIÓN ELIMINADA DE FAVORITOS")
+
+    } catch (error) {
+        res.status(400).send(`Error al quitar la publicación ${error}`)
     }
 }
