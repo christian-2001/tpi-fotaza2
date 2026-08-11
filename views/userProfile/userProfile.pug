@@ -38,17 +38,17 @@ block content
                 p Género: #{perfilDescripción.sexo}
                 p Mail: #{perfilDescripción.mail}
 
-            //.user_content_options(class="mt-10 mx-10 grid grid-cols-2 text-center")
             .user_content_options(class="mt-10 mx-10 grid-row-3 text-center justify-center border-b-1 gap-2 px-5")
             
                 a(href=`/usuarioPerfil/${idPerfil}/posts`)
-                    button(type="button" class=(sección == "posts") ? "bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "cursor-pointer hover:font-bold mx-5") Publicaciones (#{posts.length})
+                    button(type="button" class=(sección == "posts") ? "posts bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "posts cursor-pointer hover:font-bold mx-5") Publicaciones (#{posts.length})
                 a(href=`/usuarioPerfil/${idPerfil}/followers`)
-                    button(type="button" class=(sección == "followers") ? "bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "cursor-pointer hover:font-bold mx-5") Seguidores (#{seguidores.length})
+                    button(type="button" class=(sección == "followers") ? "followers bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "followers cursor-pointer hover:font-bold mx-5") Seguidores (#{seguidores.length})
                 a(href=`/usuarioPerfil/${idPerfil}/following`)
-                    button(type="button" class=(sección == "following") ? "bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "cursor-pointer hover:font-bold mx-5") Siguiendo (#{seguidos.length})
+                    button(type="button" class=(sección == "following") ? "following bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "following cursor-pointer hover:font-bold mx-5") Siguiendo (#{seguidos.length})
                 a(href=`/usuarioPerfil/${idPerfil}/favoritos`)
-                    button(type="button" class=(sección == "favoritos") ? "bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "cursor-pointer hover:font-bold mx-5") Favoritos (#{favoritos.length})
+                    button(type="button" class=(sección == "favoritos") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "favoritos cursor-pointer hover:font-bold mx-5") Favoritos (#{favoritos.length})
+            
             .user_content
 
                 //- ==================== POSTS ====================
@@ -167,7 +167,16 @@ block content
                         p(class="text-center text-[2rem] my-5 font-medium") Favoritos
                         .user_posts(class="grid grid-cols-2 mx-20 gap-4")
                             each post in favoritos
-                                .post(class="bg-white border-1 border-gray-400 rounded-[10px] p-2 hover:outline-3 hover:outline-orange-400 hover:opacity-80 h-fit")
+                                .post(class="relative bg-white border-1 border-gray-400 rounded-[10px] p-2 hover:outline-3 hover:outline-orange-400 hover:opacity-80 h-fit")
+                                    .post_opciones(class="absolute z-1 right-2 top-[-20px]") 
+                                        button(type="button" class="boton_opciones text-5xl hover:text-gray-300 cursor-pointer") ...
+                                    div
+                                        ul(class="opciones hidden absolute bg-gray-200 top-7 right-2 mt-2 z-10", id=`post${post.id_post}`)
+                                            li(id="quitar-de-favoritos")
+                                                form(action=`/quitar-de-favoritos/${post.id_post}`, method="post", name="quitarFavoritos", id="quitarFavoritos") 
+                                                    label(for="btn_quitarFavoritos") 
+                                                        button(class="px-5 py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer", id="btn_quitarFavoritos") Eliminar de Favoritos
+                          
                                     .post_usuario(class="text-center text-[20px]")
                                         p
                                         |   Publicado por  
@@ -195,4 +204,7 @@ block content
                                                     img(src=`${post_img.img_path}`)
                     else
                         p(class="text-center text-[2rem] my-5 font-medium") Nada de momento, explora publicaciones y guárdalos en tu perfil
+                    
+                    div(class="msj fixed bottom-0 right-10 mb-10 z-20 text-white text-2xl")
 
+    script(src="/script/userProfile/userProfile.js" defer) 
