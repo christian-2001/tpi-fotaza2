@@ -5,14 +5,15 @@ import { Imagen } from "../../models/Imagen.js"
 import { Imagen_Etiqueta } from "../../models/Imagen_Etiqueta.js"
 import { Etiqueta } from "../../models/Etiqueta.js"
 import { Favoritos } from "../../models/Favoritos.js"
+import { Colección } from "../../models/Colección.js" 
 import { Publicacion_Favoritos } from "../../models/Publicacion_Favoritos.js"
 import { Op, Sequelize } from "sequelize"
 
 export async function pagIndex(req, res) {
     let postsFavorito
+    let user_colecciones
 
     //Publicaciones con: Titulo, Descripcion, Nombre del usuario, Fecha y hora de publicacion, Etiquetas, Imagenes
-
     const posts = await Publicacion.findAll({
         include: [
             { model: Usuario },
@@ -32,6 +33,14 @@ export async function pagIndex(req, res) {
 
             order: [["id_post", "ASC"]]
         })
+
+        user_colecciones = await Colección.findAll({
+            where: {
+                id_usuario: req.user.id_usuario
+            }
+        })
+    
+        console.log(user_colecciones.length)
     }
 
     res.render("index", {
@@ -41,7 +50,8 @@ export async function pagIndex(req, res) {
         postTag: "",
         imgTag: "",
         query: "",
-        postsFavorito
+        postsFavorito,
+        user_colecciones
     })
 
 }
