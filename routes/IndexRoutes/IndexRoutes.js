@@ -1,5 +1,6 @@
 import express from "express"
-import { pagIndex, guardarPost_favoritos, quitarPost_favoritos } from "../../controllers/pagIndex/pagIndex.js"
+import { pagIndex } from "../../controllers/pagIndex/pagIndex.js"
+import { guardarPost_favoritos, quitarPost_favoritos } from "../../controllers/pagIndex/pagIndex.js"
 import { buscarPost } from "../../controllers/buscarPost/buscarPostController.js"
 import { mostrarPost, actualizarImgPost, cerrarComentarios } from "../../controllers/mostrarPost/mostrarPostController.js"
 import { mostrarPerfilUsuario } from "../../controllers/userProfile/userProfileController.js"
