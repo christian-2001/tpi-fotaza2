@@ -12,6 +12,7 @@ import { Imagen_Etiqueta } from "./Imagen_Etiqueta.js";
 import { Colección } from "./Colección.js";
 import { Favoritos } from "./Favoritos.js";
 import { Publicacion_Favoritos } from "./Publicacion_Favoritos.js";
+import { Publicacion_Colecciones } from "./Publicacion_Colecciones.js";
 /*
 ⁡⁢⁢⁢Relacion 1 a 1 con:
     HasOne -> un modelo tiene un elemento de otro modelo
@@ -97,6 +98,15 @@ Publicacion_Favoritos.belongsTo(Publicacion, { foreignKey: "id_post"})
 
 Favoritos.hasMany(Publicacion_Favoritos, { foreignKey: "id_favoritos"})
 Publicacion_Favoritos.belongsTo(Favoritos, { foreignKey: "id_favoritos"})
+
+Publicacion.belongsToMany(Colección, { through: Publicacion_Colecciones, foreignKey: "id_post", otherKey: "id_colección"})
+Colección.belongsToMany(Publicacion, { through: Publicacion_Colecciones, foreignKey: "id_colección", otherKey: "id_post" })
+
+Publicacion.hasMany(Publicacion_Colecciones, { foreignKey: "id_post"})
+Publicacion_Colecciones.belongsTo(Publicacion, { foreignKey: "id_post"})
+
+Colección.hasMany(Publicacion_Colecciones, { foreignKey: "id_colección"})
+Publicacion_Colecciones.belongsTo(Favoritos, { foreignKey: "id_colección"})
 
 /*
 Usuario.hasMany(Seguidores, { foreignKey: "id_usuario" })

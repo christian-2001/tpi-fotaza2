@@ -12,6 +12,7 @@ import { Comentario } from "../models/Comentario.js";
 import { Seguidores } from "../models/Seguidores.js";
 import { Favoritos } from "../models/Favoritos.js";
 import { Publicacion_Favoritos } from "../models/Publicacion_Favoritos.js";
+import { Publicacion_Colecciones } from "../models/Publicacion_Colecciones.js";
 
 async function seed() {
     await sequelize.sync({ alter: true });
@@ -58,6 +59,22 @@ async function seed() {
     );
 
     const users = await Usuario.bulkCreate(usuariosHasheados);
+
+    // ─────────────────────────────────────────────
+    // FAVORITOS(4)
+    // ─────────────────────────────────────────────
+
+    const fav = await Favoritos.bulkCreate([
+        // fav[0] → user00
+        { id_usuario: users[0].id_usuario },
+        // fav[1] → user01
+        { id_usuario: users[1].id_usuario },
+        // fav[2] → user02
+        { id_usuario: users[2].id_usuario },
+        // fav[3] → user03
+        { id_usuario: users[3].id_usuario }
+    ])
+
 
     // ─────────────────────────────────────────────
     // ETIQUETA  (6 tags)
