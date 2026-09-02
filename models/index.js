@@ -106,13 +106,7 @@ Publicacion.hasMany(Publicacion_Colecciones, { foreignKey: "id_post"})
 Publicacion_Colecciones.belongsTo(Publicacion, { foreignKey: "id_post"})
 
 Colección.hasMany(Publicacion_Colecciones, { foreignKey: "id_colección"})
-Publicacion_Colecciones.belongsTo(Favoritos, { foreignKey: "id_colección"})
-
-/*
-Usuario.hasMany(Seguidores, { foreignKey: "id_usuario" })
-Seguidores.belongsTo(Usuario, { foreignKey: "id_usuario" })
-*/
-
+Publicacion_Colecciones.belongsTo(Colección, { foreignKey: "id_colección"})
 
 //-------------------------------------------------------------------------------------
 

@@ -41,9 +41,11 @@ for (const p of posts) {
     }
 
     if (btn_colección) {
+
         btn_colección.addEventListener("click", (e) => {
-            guardarPublicación_colección(btn_colección, post_menu, button_post, p)
+            div_colecciones(btn_colección, post_menu, button_post, p)
         })
+
     }
 
     //Los usuarios anonimos no tendran el botón para acceder a las opciones en cada publicación
@@ -231,8 +233,9 @@ async function quitarPublicación_favoritos(post_menu, post, form_quitarFavorito
     }
 }
 
-async function guardarPublicación_colección(btn_colección, post_menu, button_post, post) {
+async function div_colecciones(btn_colección, post_menu, button_post, post) {
 
+    //Renderizar boton que permite crear una nueva colección
     let opciones = post_menu.querySelectorAll("li")
 
     for (const i of opciones) {
@@ -241,41 +244,44 @@ async function guardarPublicación_colección(btn_colección, post_menu, button_
 
     let idPost = parseInt(post.querySelector("ul").id.match(/\d+/))
 
-    if (colecciones.length === 0) {
-        /*
-                let form = document.createElement("form")
-                form.action = `/post${idPost}`
-                form.method = "post"
-        */
+    let li = document.createElement("li")
+    li.className = "border-black border-b-2"
 
-        let li = document.createElement("li")
-        li.className = "hover:font-bold hover:bg-blue-700"
+    let div_crearColeccion = document.createElement("div")
+    div_crearColeccion.className = "flex justify-center items-center py-1"
 
-        let label = document.createElement("label")
-        label.for = "crearColeccion"
+    let label = document.createElement("label")
+    label.for = "crearColeccion"
 
-        let button = document.createElement("button")
-        button.className = "w-45 text-center text-blue-700 hover:text-white py-[3px] border-b-1 border-black cursor-pointer"
-        button.id = "crearColeccion"
-        button.textContent = "+ Crear colección"
+    let button = document.createElement("button")
+    button.className = "w-45 text-center text-blue-700 hover:font-bold cursor-pointer"
+    button.id = "crearColeccion"
+    button.textContent = "+ Crear colección"
 
-        li.appendChild(label)
-        label.appendChild(button)
-        post_menu.appendChild(li)
+    li.appendChild(div_crearColeccion)
+    div_crearColeccion.appendChild(label)
+    label.appendChild(button)
+    post_menu.appendChild(li)
 
-        button.addEventListener("click", (e) => {
-            vista_crearColeccion()
-        })
+    //Al clickear en el boton, renderiza en la home de la pagina el contenido que incluye la función para crear una colección
+    button.addEventListener("click", (e) => {
+        vista_crearColeccion(post_menu, post)
+    })
 
-        button_post.addEventListener("click", () => {
+    //Al clickear en el icono "...", vuelvo a renderizar los botones "Guardar/Quitar de Favoritos" y "Guardar en Colección"
+    button_post.addEventListener("click", () => {
 
-            post_menu.innerHTML = ""
-            for (const i of opciones) {
-                post_menu.appendChild(i)
-            }
+        post_menu.innerHTML = ""
+        for (const i of opciones) {
+            post_menu.appendChild(i)
+        }
 
-        })
-    }
+    })
+
+    //Si hay una o más colecciones creadas, se renderizan junto con un texto/icono a la derecha permitiendo al usuario
+    //Guardar la publicación en una o más de una colección
+    botonesColección(post_menu, post)
+
 }
 
 function postOpciones(button_post, post_menu_all, post_menu) {
@@ -290,14 +296,15 @@ function postOpciones(button_post, post_menu_all, post_menu) {
     })
 }
 
-async function vista_crearColeccion(form) {
+//Renderizar div que contiene la funcion para crear una colección
+async function vista_crearColeccion(post_menu, post) {
     let pag_body = document.querySelector("body")
-    
+
     let div_crearColección = document.createElement("div")
     div_crearColección.className = "div_crearColeccion fixed bg-black/50 flex items-center justify-center z-30 inset-0"
 
     let div_content = document.createElement("div")
-    div_content.className = "border bg-white p-6"
+    div_content.className = "div_content border bg-white p-6"
 
     let div_btnVolver = document.createElement("div")
     div_btnVolver.className = "flex justify-center mb-3"
@@ -308,42 +315,275 @@ async function vista_crearColeccion(form) {
     flecha.className = "hover:bg-orange-400 hover:rounded-full w-fit p-1 font-bold cursor-pointer"
     flecha.textContent = "<--"
 
-    let p_texto = document.createElement("p")
-    p_texto.className = "text-lg mb-[5px]"
-    p_texto.textContent = "Ingrese el nombre para su nueva colección"
+    let form_crearColección = document.createElement("form")
+    form_crearColección.action = "/crearColeccion"
+    form_crearColección.method = "post"
+    form_crearColección.name = "form_crearColeccion"
+    form_crearColección.id = "form_crearColeccion"
+
+    let label_Input = document.createElement("label")
+    label_Input.for = "nombreColeccion"
+    label_Input.className = "text-lg mb-[5px]"
+    label_Input.textContent = "Ingrese el nombre para su nueva colección"
 
     let input_colección = document.createElement("input")
     input_colección.name = "nombreColeccion"
+    input_colección.id = "nombreColeccion"
     input_colección.size = 50
     input_colección.maxLength = 50
     input_colección.type = "text"
-    input_colección.className = "w-fit p-1 border focus:ring-3 focus:ring-orange-500 focus:outline-none focus:border-none"
+    input_colección.className = "block w-fit p-1 border focus:ring-3 focus:ring-orange-500 focus:outline-none focus:border-none"
 
     let div_btnConfirmar = document.createElement("div")
     div_btnConfirmar.className = "confirmar flex justify-center mt-6"
     let label_btnConfirmar = document.createElement("label")
     label_btnConfirmar.for = "btn_confirmar"
     let btnConfirmar = document.createElement("button")
-    btnConfirmar.type = "button"
+    btnConfirmar.type = "submit"
     btnConfirmar.className = "px-5 py-1 hover:bg-blue-500 hover:text-white hover:font-bold cursor-pointer border"
     btnConfirmar.id = "btn_confirmar"
     btnConfirmar.textContent = "Confirmar"
 
-    div_crearColección.appendChild(div_content) 
-    div_content.appendChild(div_btnVolver)  
+    div_crearColección.appendChild(div_content)
+    div_content.appendChild(div_btnVolver)
     div_btnVolver.appendChild(btn_volver)
     btn_volver.appendChild(flecha)
-    div_content.appendChild(p_texto)
-    div_content.appendChild(input_colección)
-    div_content.appendChild(div_btnConfirmar)
+    div_content.appendChild(form_crearColección)
+    form_crearColección.appendChild(label_Input)
+    label_Input.appendChild(input_colección)
+
+    form_crearColección.appendChild(div_btnConfirmar)
     div_btnConfirmar.appendChild(label_btnConfirmar)
-    div_btnConfirmar.appendChild(btnConfirmar)
+    label_btnConfirmar.appendChild(btnConfirmar)
 
     flecha.addEventListener("click", () => {
         pag_body.removeChild(div_crearColección)
     })
 
     pag_body.appendChild(div_crearColección)
+
+    form_crearColección.addEventListener("submit", async (e) => {
+        e.preventDefault()
+
+        nuevaColección(form_crearColección, post_menu, post, div_crearColección, div_content)
+    })
+}
+
+async function botonesColección(post_menu, post) {
+    if (colecciones.length > 0) {
+        for (const i of colecciones) {
+
+            let li_colección = document.createElement("li")
+            li_colección.className = "border-b-1 border-black"
+            let div_colección = document.createElement("div")
+            div_colección.className = "flex justify-between items-center p-2"
+
+            let nombre_colección = document.createElement("p")
+            nombre_colección.className = "mr-10"
+            nombre_colección.textContent = i.nombre_colección
+
+            let form_colección = document.createElement("form")
+            form_colección.className = "ml-10"
+            form_colección.action = `/guardar-en-coleccion`
+            form_colección.method = "post"
+            form_colección.name = i.nombre_colección
+            form_colección.id = i.nombre_colección
+
+            let label_colección = document.createElement("label")
+            label_colección.for = "btn_guardarPublicación"
+
+            let btn_colección = document.createElement("button")
+            btn_colección.className = " cursor-pointer px-2 py-1"
+            btn_colección.type = "submit"
+            btn_colección.id = "btn_colección"
+            btn_colección.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
+                </svg>
+            `
+
+            btn_colección.addEventListener('mouseenter', () => {
+                btn_colección.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
+                </svg>`
+            });
+
+            btn_colección.addEventListener('mouseleave', () => {
+                btn_colección.innerHTML = `
+               <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
+                </svg>`
+            });
+
+            li_colección.appendChild(div_colección)
+            div_colección.appendChild(nombre_colección)
+            div_colección.appendChild(form_colección)
+            form_colección.appendChild(label_colección)
+            label_colección.appendChild(btn_colección)
+
+            post_menu.appendChild(li_colección)
+
+            form_colección.addEventListener("submit", (e) => {
+                e.preventDefault()
+
+                guardarPublicación_colección(form_colección, post)
+            })
+        }
+    }
+}
+
+async function nuevaColección(form_crearColección, post_menu, post, div_crearColección, div_content) {
+
+    const data = form_crearColección.querySelector("#nombreColeccion").value
+
+    try {
+        const res = await fetch(form_crearColección.action, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({ data })
+        })
+
+        const result = await res.json()
+        div_content.innerHTML = ""
+        div_content.innerHTML = `
+        <p class="p-3 text-3xl"> Se ha creado la colección exitosamente </p>
+        <div class="flex justify-center items-center text-2xl pt-2"> 
+            <label for="btn_salir"> 
+                <button type="button" class="cursor-pointer hover:font-bold" id="btn_salir"> Salir </button>
+            </label>
+        </div>
+        `
+        colecciones = result.user_colecciones
+
+        document.querySelector("#btn_salir").addEventListener("click", () => {
+
+            let li_colección = document.createElement("li")
+            li_colección.className = "border-b-1 border-black"
+            let div_colección = document.createElement("div")
+            div_colección.className = "flex justify-between items-center p-2"
+
+            let nombre_colección = document.createElement("p")
+            nombre_colección.className = "mr-10"
+            nombre_colección.textContent = result.nueva_colección.nombre_colección
+
+            let form_colección = document.createElement("form")
+            form_colección.className = "ml-10"
+            form_colección.action = `/guardar-en-coleccion`
+            form_colección.method = "post"
+            form_colección.name = result.nueva_colección.nombre_colección
+            form_colección.id = result.nueva_colección.nombre_colección
+
+            let label_colección = document.createElement("label")
+            label_colección.for = "btn_guardarPublicación"
+
+            let btn_colección = document.createElement("button")
+            btn_colección.className = " cursor-pointer px-2 py-1"
+            btn_colección.type = "submit"
+            btn_colección.id = "btn_colección"
+            btn_colección.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
+                </svg>
+            `
+
+            btn_colección.addEventListener('mouseenter', () => {
+                btn_colección.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
+                </svg>`
+            });
+
+            btn_colección.addEventListener('mouseleave', () => {
+                btn_colección.innerHTML = `
+               <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
+                </svg>`
+            });
+
+            li_colección.appendChild(div_colección)
+            div_colección.appendChild(nombre_colección)
+            div_colección.appendChild(form_colección)
+            form_colección.appendChild(label_colección)
+            label_colección.appendChild(btn_colección)
+
+            post_menu.appendChild(li_colección)
+
+            form_colección.addEventListener("submit", (e) => {
+                e.preventDefault()
+
+                guardarPublicación_colección(form_colección, post)
+            })
+
+            div_crearColección.remove()
+        })
+
+    } catch (error) {
+        console.error(`Ocurrió un error inesperado ${error}`)
+    }
+
+}
+
+async function guardarPublicación_colección(form_colección, post) {
+
+    const data = {
+        postTitulo: post.querySelector(".post_titulo").textContent.trim(),
+        nombreColección: form_colección.name
+    }
+
+    try {
+
+        let res = await fetch(form_colección.action, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+
+        let div_msj_coleccion = document.createElement("div")
+        const posición_msj_coleccion = document.querySelector(".msj")
+
+        div_msj_coleccion.className = "mb-3 bg-blue-600 px-5 py-2 font-bold"
+        div_msj_coleccion.textContent = `Publicación guardada en "${data.nombreColección}"`
+
+        posición_msj_coleccion.appendChild(div_msj_coleccion)
+
+        let cont = 4
+
+        const msj_temporizador_coleccion = setInterval(() => {
+
+            if (cont > 0) {
+                cont--;
+            } else {
+                clearInterval(msj_temporizador_coleccion);
+
+                posición_msj_coleccion.removeChild(div_msj_coleccion)
+            }
+
+        }, 1000);
+
+
+        let btn = form_colección.querySelector("button")
+        let new_btn = document.createElement("button")
+        new_btn.className = " cursor-pointer px-2 py-1"
+        new_btn.type = "submit"
+        new_btn.id = "btn_colección"
+
+        new_btn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
+        </svg>
+        `
+
+        btn.replaceWith(new_btn)
+
+    } catch (error) {
+        console.error(`Ocurrió un error inesperado ${error}`)
+    }
 }
 
 //Renderizar imagenes dentro de la publicación

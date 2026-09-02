@@ -1,6 +1,7 @@
 import express from "express"
 import { pagIndex } from "../../controllers/pagIndex/pagIndex.js"
 import { guardarPost_favoritos, quitarPost_favoritos } from "../../controllers/pagIndex/pagIndex.js"
+import { crearColección, guardar_en_colección } from "../../controllers/pagIndex/pagIndex.js"
 import { buscarPost } from "../../controllers/buscarPost/buscarPostController.js"
 import { mostrarPost, actualizarImgPost, cerrarComentarios } from "../../controllers/mostrarPost/mostrarPostController.js"
 import { mostrarPerfilUsuario } from "../../controllers/userProfile/userProfileController.js"
@@ -13,6 +14,10 @@ router.get("/", pagIndex)
 router.post("/favoritos/:id_post", guardarPost_favoritos)
 
 router.post("/quitar-de-favoritos/:id_post", quitarPost_favoritos)
+
+router.post("/crearColeccion", crearColección)
+
+router.post("/guardar-en-coleccion", guardar_en_colección)
 
 router.get("/buscar", buscarPost)
 

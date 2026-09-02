@@ -4,7 +4,7 @@ include mixins/home/QueryTagsMixin
 
 block metadata
     script.
-        const colecciones = !{JSON.stringify(user_colecciones ? user_colecciones : 0)}
+        let colecciones = !{JSON.stringify(user_colecciones ? user_colecciones : 0)}
     title Inicio
 
 block content

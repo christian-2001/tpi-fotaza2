@@ -5,14 +5,14 @@ import { Imagen } from "../../models/Imagen.js"
 import { Imagen_Etiqueta } from "../../models/Imagen_Etiqueta.js"
 import { Etiqueta } from "../../models/Etiqueta.js"
 import { Favoritos } from "../../models/Favoritos.js"
-import { Colección } from "../../models/Colección.js" 
+import { Colección } from "../../models/Colección.js"
 import { Publicacion_Favoritos } from "../../models/Publicacion_Favoritos.js"
 import { Op, Sequelize } from "sequelize"
+import { Publicacion_Colecciones } from "../../models/Publicacion_Colecciones.js"
 
 export async function pagIndex(req, res) {
     let postsFavorito
     let user_colecciones
-
     //Publicaciones con: Titulo, Descripcion, Nombre del usuario, Fecha y hora de publicacion, Etiquetas, Imagenes
     const posts = await Publicacion.findAll({
         include: [
@@ -39,8 +39,7 @@ export async function pagIndex(req, res) {
                 id_usuario: req.user.id_usuario
             }
         })
-    
-        console.log(user_colecciones.length)
+
     }
 
     res.render("index", {
@@ -106,14 +105,12 @@ export async function quitarPost_favoritos(req, res) {
     //id de la publicación 
     let post_id = req.params.id_post
 
-    
     //Quitar la publicación de "Favoritos"
     try {
-   
+
         //Obtener id de la sección Favoritos del usuario en sesion
         const id_fav = await Favoritos.findByPk(req.user.id_usuario)
-        
-        console.log(id_fav)
+
         //Hallar la publicación guardada
         const postFavorito = await Publicacion_Favoritos.findOne({
             where: {
@@ -130,4 +127,65 @@ export async function quitarPost_favoritos(req, res) {
     } catch (error) {
         res.status(400).send(`Error al quitar la publicación ${error}`)
     }
+}
+
+export async function crearColección(req, res) {
+    const n_colección = req.body.data
+
+    const id_userSession = req.user.id_usuario
+
+    try {
+        const nueva_colección = await Colección.create({
+            nombre_colección: n_colección,
+            id_usuario: id_userSession
+        })
+
+        const user_colecciones = await Colección.findAll({
+            where: {
+                id_usuario: req.user.id_usuario
+            }
+        })
+
+        res.status(200).json({ nueva_colección, user_colecciones })
+    } catch (error) {
+        res.status(400).send(`Error al crear colección ${error}`)
+    }
+
+}
+
+export async function guardar_en_colección(req, res) {
+
+    const { nombreColección, postTitulo } = req.body
+
+    try {
+
+        const colección = await Colección.findOne({
+            where: {
+                nombre_colección: nombreColección
+            },
+
+            attributes: ["id_colección"]
+        })
+
+        const post = await Publicacion.findOne({
+            where: {
+                titulo: postTitulo
+            },
+
+            attributes: ["id_post"]
+        })   
+
+        const result = await Publicacion_Colecciones.create({
+            id_colección: colección.id_colección,
+            id_post: post.id_post
+        })
+
+        const sas = await Publicacion_Colecciones.findAll()
+
+        res.status(200).send(`PUBLICACIÓN GUARDADA EN ${nombreColección}`)
+
+    } catch (error) {
+        res.status(400).send(`Error al guardar publicación ${error}`)
+    }
+
 }
