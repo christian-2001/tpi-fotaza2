@@ -478,7 +478,7 @@ async function nuevaColección(form_crearColección, post_menu, post, div_crearC
             form_colección.id = result.nueva_colección.nombre_colección
 
             let label_colección = document.createElement("label")
-            label_colección.for = "btn_guardarPublicación"
+            label_colección.for = "btn_colección"
 
             let btn_colección = document.createElement("button")
             btn_colección.className = " cursor-pointer px-2 py-1"
@@ -529,7 +529,7 @@ async function nuevaColección(form_crearColección, post_menu, post, div_crearC
 
 async function guardarPublicación_colección(form_colección, post) {
 
-    const data = {
+    const data_guardar = {
         postTitulo: post.querySelector(".post_titulo").textContent.trim(),
         nombreColección: form_colección.name
     }
@@ -541,14 +541,14 @@ async function guardarPublicación_colección(form_colección, post) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data_guardar)
         })
 
         let div_msj_coleccion = document.createElement("div")
         const posición_msj_coleccion = document.querySelector(".msj")
 
         div_msj_coleccion.className = "mb-3 bg-blue-600 px-5 py-2 font-bold"
-        div_msj_coleccion.textContent = `Publicación guardada en "${data.nombreColección}"`
+        div_msj_coleccion.textContent = `Publicación guardada en "${data_guardar.nombreColección}"`
 
         posición_msj_coleccion.appendChild(div_msj_coleccion)
 
@@ -566,21 +566,97 @@ async function guardarPublicación_colección(form_colección, post) {
 
         }, 1000);
 
+        let form_quitarPublicacion = document.createElement("form")
+        form_quitarPublicacion.className = "ml-10"
+        form_quitarPublicacion.action = "/quitar-de-coleccion"
+        form_quitarPublicacion.method = "post"
+        form_quitarPublicacion.name = form_colección.name
+        form_quitarPublicacion.id = form_colección.id
 
-        let btn = form_colección.querySelector("button")
-        let new_btn = document.createElement("button")
-        new_btn.className = " cursor-pointer px-2 py-1"
-        new_btn.type = "submit"
-        new_btn.id = "btn_colección"
-
-        new_btn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-            <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
-        </svg>
+        form_quitarPublicacion.innerHTML = `
+            <label for="btn_colección_guardado">
+                <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección_guardado">
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
+                    </svg>
+                </button>
+            </label>
         `
+        form_colección.replaceWith(form_quitarPublicacion)
 
-        btn.replaceWith(new_btn)
+        form_quitarPublicacion.addEventListener("submit", (e) => {
+            e.preventDefault()
 
+            quitarPublicación_colección(form_quitarPublicacion, post)
+        })
+
+    } catch (error) {
+        console.error(`Ocurrió un error inesperado ${error}`)
+    }
+}
+
+async function quitarPublicación_colección(form_quitarPublicacion, post) {
+
+    const data_quitar = {
+        postTitulo: post.querySelector(".post_titulo").textContent.trim(),
+        nombreColección: form_quitarPublicacion.name
+    }
+
+    try {
+        let res = await fetch(form_quitarPublicacion.action, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data_quitar)
+        })
+
+        let div_msj_coleccion = document.createElement("div")
+        const posición_msj_coleccion = document.querySelector(".msj")
+
+        div_msj_coleccion.className = "mb-3 bg-red-600 px-5 py-2 font-bold"
+        div_msj_coleccion.textContent = `Publicación removida"`
+
+        posición_msj_coleccion.appendChild(div_msj_coleccion)
+
+        let cont = 4
+
+        const msj_temporizador_coleccion = setInterval(() => {
+
+            if (cont > 0) {
+                cont--;
+            } else {
+                clearInterval(msj_temporizador_coleccion);
+
+                posición_msj_coleccion.removeChild(div_msj_coleccion)
+            }
+
+        }, 1000);
+
+        let form_guardarPublicacion = document.createElement("form")
+        form_guardarPublicacion.className = "ml-10"
+        form_guardarPublicacion.action = "/guardar-en-coleccion"
+        form_guardarPublicacion.method = "post"
+        form_guardarPublicacion.name = form_quitarPublicacion.name
+        form_guardarPublicacion.id = form_quitarPublicacion.id
+
+        form_guardarPublicacion.innerHTML = `
+            <label for="btn_colección">
+                <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección">
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
+                    </svg>
+                </button>
+            </label>
+            
+        `
+        form_quitarPublicacion.replaceWith(form_guardarPublicacion)
+
+        form_guardarPublicacion.addEventListener("submit", (e) => {
+            e.preventDefault()
+
+            guardarPublicación_colección(form_guardarPublicacion, post)
+        })
     } catch (error) {
         console.error(`Ocurrió un error inesperado ${error}`)
     }

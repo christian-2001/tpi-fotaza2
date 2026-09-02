@@ -180,12 +180,54 @@ export async function guardar_en_colección(req, res) {
             id_post: post.id_post
         })
 
-        const sas = await Publicacion_Colecciones.findAll()
-
         res.status(200).send(`PUBLICACIÓN GUARDADA EN ${nombreColección}`)
 
     } catch (error) {
         res.status(400).send(`Error al guardar publicación ${error}`)
     }
 
+}
+
+export async function quitar_de_colección(req, res){
+    const { nombreColección, postTitulo } = req.body
+
+        try {
+
+        const colección = await Colección.findOne({
+            where: {
+                nombre_colección: nombreColección
+            },
+
+            attributes: ["id_colección"]
+        })
+
+        const post = await Publicacion.findOne({
+            where: {
+                titulo: postTitulo
+            },
+
+            attributes: ["id_post"]
+        })   
+
+        const post_guardado = await Publicacion_Colecciones.findOne({
+            where: {
+                id_post: post.id_post,
+                id_colección: colección.id_colección
+            }
+        })
+
+        if(post_guardado){
+            const result = await Publicacion_Colecciones.destroy({
+                where: {
+                    id_post: post.id_post,
+                    id_colección: colección.id_colección
+                }
+            })
+
+            res.status(200).send(`PUBLICACIÓN REMOVIDA`)
+        }
+
+    } catch (error) {
+        res.status(400).send(`Error al quitar publicación ${error}`)
+    }
 }
