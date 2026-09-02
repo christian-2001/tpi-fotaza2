@@ -1,6 +1,12 @@
+//Capturar todos los div que contiene una o más imagenes en todas las publicaciones
 let img_container = document.querySelectorAll(".post_imagenes")
+
+//Guarda todas las publicaciones
 let posts = document.querySelectorAll(".post")
+
+//Guarda todos los nodos que contiene "..." en todas las publiaciones
 let post_menu_all = document.querySelectorAll(".opciones")
+
 
 //Iterar sobre todas las publicaciones
 for (const p of posts) {
@@ -20,7 +26,8 @@ for (const p of posts) {
     //Boton que permite guardar una publicación en una colección
     let btn_colección = p.querySelector("#btn_coleccion")
 
-    if (form_quitarFavoritos) { // --> Quitar publicación de la seccion "Favoritos" del usuario mediante Fetch
+    //Quitar publicación de la seccion "Favoritos" del usuario mediante Fetch
+    if (form_quitarFavoritos) {
 
         let btn = form_quitarFavoritos.querySelector("#btn_quitarFavoritos")
 
@@ -30,9 +37,11 @@ for (const p of posts) {
             quitarPublicación_favoritos(post_menu, p, form_quitarFavoritos)
         })
 
-    } else if (form_guardarFavoritos) { // --> Guardar publicación en la seccion "Favoritos" del usuario mediante Fetch
+    //Guardar publicación en la seccion "Favoritos" del usuario mediante Fetch
+    } else if (form_guardarFavoritos) {
         let btn = form_guardarFavoritos.querySelector("#btn_favoritos")
 
+        //Ejecuta la Función que guarda publicación como favorito al enviar formulario
         form_guardarFavoritos.addEventListener("submit", async (event) => {
             event.preventDefault()
 
@@ -40,6 +49,7 @@ for (const p of posts) {
         })
     }
 
+    //Oculta los botones "Guardar en Favoritos" y "Guardar en Colección" renderizando el boton para crear colección y el listado de colecciones creados por el usuario
     if (btn_colección) {
 
         btn_colección.addEventListener("click", (e) => {
@@ -58,6 +68,7 @@ for (const p of posts) {
     }
 }
 
+//Función que muestra/oculta menu de opciones disponibles en todas las publicaciones
 function mostrarOpciones(post_menu) {
 
     post_menu.classList.remove("hidden")
@@ -65,6 +76,7 @@ function mostrarOpciones(post_menu) {
 
 }
 
+//Función que oculta el menu de opciones de una publicación al clickear en "..." de otra publicación
 function ocultarOpciones(post_menu_all, post_menu) {
     for (const menu of post_menu_all) {
         if (!menu.classList.contains("hidden") && menu.id !== post_menu.id) {
@@ -76,6 +88,7 @@ function ocultarOpciones(post_menu_all, post_menu) {
 
 }
 
+//Función que guarda publicación como favorito
 async function guardarPublicación_favoritos(post_menu, post, form_guardarFavoritos) {
     //Enviar datos con Fetch usando POST
     try {
@@ -87,43 +100,21 @@ async function guardarPublicación_favoritos(post_menu, post, form_guardarFavori
         })
 
         //Creación del mensaje avisandole al usuario del guardado de la publicación
-        let div_msj = document.createElement("div")
-        let p_msj = document.createElement("p")
-        let posición_msj = document.body.querySelector(".msj")
-
-        div_msj.className = "mb-3 bg-green-600 px-5 py-2 font-bold"
-        p_msj.textContent = "Publicación guardada en Favoritos"
-
-        div_msj.appendChild(p_msj)
-
-        posición_msj.appendChild(div_msj)
-
-        //Dispara el mensaje creado y desaparece luego de 4 segundos
-        let cont = 4
-
-        const msj_temporizador = setInterval(() => {
-
-            if (cont > 0) {
-                cont--;
-            } else {
-                clearInterval(msj_temporizador);
-
-                posición_msj.removeChild(div_msj)
-            }
-
-        }, 1000);
+        const tipo_msj = "guardar_publicación_favoritos"
+        display_msj(tipo_msj)
 
         //Al guardar la publicación como favorito, el botón cambia de estado teniendo como texto "Eliminar de Favoritos"
         //Ademas cambia de formulario al de quitar la publicación como favorito
 
-        //Recrear nodo padre y el resto de nodos hijo para la funcion de quitar publicación como favorito
+        //Recrear nodo padre y el resto de nodos hijo para la Función de quitar publicación como favorito
         let li_guardarPost = post.querySelector("#agregar-a-favoritos")
 
         let li_eliminarPost = document.createElement("li")
         li_eliminarPost.id = "quitar-de-favoritos"
 
         let form_quitarFavoritos = document.createElement("form")
-        let id_post = form_guardarFavoritos.action.substring(form_guardarFavoritos.action.length - 1)
+
+        let id_post = parseInt(post.querySelector("ul").id.match(/\d+/))
 
         form_quitarFavoritos.action = `/quitar-de-favoritos/${id_post}`
         form_quitarFavoritos.method = "post"
@@ -155,6 +146,7 @@ async function guardarPublicación_favoritos(post_menu, post, form_guardarFavori
     }
 }
 
+//Función que quita publicación como favorito
 async function quitarPublicación_favoritos(post_menu, post, form_quitarFavoritos) {
     //Enviar datos con Fetch usando POST
     try {
@@ -165,44 +157,21 @@ async function quitarPublicación_favoritos(post_menu, post, form_quitarFavorito
             },
         })
 
-        //Creación del mensaje al momento de quitar una publicación como favorito
-        let div_msj = document.createElement("div")
-        let p_msj = document.createElement("p")
-        let posición_msj = document.body.querySelector(".msj")
-
-        div_msj.className = "mb-3 bg-red-600 px-5 py-2 font-bold"
-        p_msj.textContent = "Publicación removida de Favoritos"
-
-        div_msj.appendChild(p_msj)
-
-        posición_msj.appendChild(div_msj)
-
-        //Dispara el mensaje creado y desaparece luego de 4 segundos
-        let cont = 4
-
-        const msj_temporizador = setInterval(() => {
-
-            if (cont > 0) {
-                cont--;
-            } else {
-                clearInterval(msj_temporizador);
-
-                posición_msj.removeChild(div_msj)
-            }
-
-        }, 1000);
+        //Creación del mensaje al quitar publicación como favorito
+        const tipo_msj = "quitar_publicación_favoritos"
+        display_msj(tipo_msj)
 
         //Al quitar la publicación como favorito, el botón vuelve a cambiar de estado teniendo como texto "Guardar en Favoritos"
         //Ademas cambia de formulario al de guardar la publicación como favorito
 
-        //Recrear nodo padre y el resto de nodos hijo para la funcion de guardar publicación como favorito
+        //Recrear nodo padre y el resto de nodos hijo para la Función de guardar publicación como favorito
         let li_eliminarPost = post.querySelector("#quitar-de-favoritos")
 
         let li_guardarPost = document.createElement("li")
         li_guardarPost.id = "agregar-a-favoritos"
 
         let form_guardarFavoritos = document.createElement("form")
-        let id_post = form_quitarFavoritos.action.substring(form_quitarFavoritos.action.length - 1)
+        let id_post = parseInt(post.querySelector("ul").id.match(/\d+/))
 
         form_guardarFavoritos.action = `/favoritos/${id_post}`
         form_guardarFavoritos.method = "post"
@@ -226,6 +195,7 @@ async function quitarPublicación_favoritos(post_menu, post, form_quitarFavorito
         form_guardarFavoritos.addEventListener("submit", async (event) => {
             event.preventDefault()
 
+            //Ejecuta la Función que guarda publicación como favorito al enviar formulario
             guardarPublicación_favoritos(post_menu, post, form_guardarFavoritos)
         })
     } catch (error) {
@@ -233,6 +203,7 @@ async function quitarPublicación_favoritos(post_menu, post, form_quitarFavorito
     }
 }
 
+//Función que culta los botones "Guardar en Favoritos" y "Guardar en Colección" renderizando el boton para crear colección y el listado de colecciones creados por el usuario
 async function div_colecciones(btn_colección, post_menu, button_post, post) {
 
     //Renderizar boton que permite crear una nueva colección
@@ -284,6 +255,7 @@ async function div_colecciones(btn_colección, post_menu, button_post, post) {
 
 }
 
+//Agrupa las funciones para mostrar/ocultar menu de opciones en todas las publicaciones
 function postOpciones(button_post, post_menu_all, post_menu) {
 
     button_post.addEventListener("click", () => {
@@ -296,7 +268,7 @@ function postOpciones(button_post, post_menu_all, post_menu) {
     })
 }
 
-//Renderizar div que contiene la funcion para crear una colección
+//Renderizar div que contiene la Función para crear una colección
 async function vista_crearColeccion(post_menu, post) {
     let pag_body = document.querySelector("body")
 
@@ -313,7 +285,12 @@ async function vista_crearColeccion(post_menu, post) {
     btn_volver.title = "Volver"
     let flecha = document.createElement("p")
     flecha.className = "hover:bg-orange-400 hover:rounded-full w-fit p-1 font-bold cursor-pointer"
-    flecha.textContent = "<--"
+    flecha.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5" />
+            <path d="M12 19l-7-7 7-7" />
+        </svg>
+    `
 
     let form_crearColección = document.createElement("form")
     form_crearColección.action = "/crearColeccion"
@@ -369,6 +346,7 @@ async function vista_crearColeccion(post_menu, post) {
     })
 }
 
+//Renderiza listado de colecciones con bookmark funcional asociado que guarda/quita una publicación de esa colección
 async function botonesColección(post_menu, post) {
     if (colecciones.length > 0) {
         for (const i of colecciones) {
@@ -381,7 +359,7 @@ async function botonesColección(post_menu, post) {
             let nombre_colección = document.createElement("p")
             nombre_colección.className = "mr-10"
             nombre_colección.textContent = i.nombre_colección
-
+            
             let form_colección = document.createElement("form")
             form_colección.className = "ml-10"
             form_colección.action = `/guardar-en-coleccion`
@@ -424,6 +402,7 @@ async function botonesColección(post_menu, post) {
 
             post_menu.appendChild(li_colección)
 
+            //Ejecuta la Función que guarda publicación en una colección al enviar formulario
             form_colección.addEventListener("submit", (e) => {
                 e.preventDefault()
 
@@ -433,10 +412,13 @@ async function botonesColección(post_menu, post) {
     }
 }
 
+//Función que crea una nueva colección con un bookmark funcional asociado
 async function nuevaColección(form_crearColección, post_menu, post, div_crearColección, div_content) {
 
+    //Dato a enviar en la peticion POST
     const data = form_crearColección.querySelector("#nombreColeccion").value
 
+    //Fetch con POST
     try {
         const res = await fetch(form_crearColección.action, {
             method: "POST",
@@ -448,6 +430,8 @@ async function nuevaColección(form_crearColección, post_menu, post, div_crearC
         })
 
         const result = await res.json()
+
+        //Mensaje confirmando creación de la colección
         div_content.innerHTML = ""
         div_content.innerHTML = `
         <p class="p-3 text-3xl"> Se ha creado la colección exitosamente </p>
@@ -459,6 +443,7 @@ async function nuevaColección(form_crearColección, post_menu, post, div_crearC
         `
         colecciones = result.user_colecciones
 
+        //Rendeiza listado de colecciones en el menu de opciones de la publicación al tocar el boton para salir del div que crea una colección
         document.querySelector("#btn_salir").addEventListener("click", () => {
 
             let li_colección = document.createElement("li")
@@ -512,6 +497,7 @@ async function nuevaColección(form_crearColección, post_menu, post, div_crearC
 
             post_menu.appendChild(li_colección)
 
+            //Ejecuta la Función que guarda publicación en una colección al enviar formulario
             form_colección.addEventListener("submit", (e) => {
                 e.preventDefault()
 
@@ -527,13 +513,16 @@ async function nuevaColección(form_crearColección, post_menu, post, div_crearC
 
 }
 
+//Función para guardar publicación de una colección
 async function guardarPublicación_colección(form_colección, post) {
-
-    const data_guardar = {
+    
+    //Datos a enviar en la peticion POST
+    const data = {
         postTitulo: post.querySelector(".post_titulo").textContent.trim(),
         nombreColección: form_colección.name
     }
 
+    //Fetch con POST
     try {
 
         let res = await fetch(form_colección.action, {
@@ -541,31 +530,14 @@ async function guardarPublicación_colección(form_colección, post) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(data_guardar)
+            body: JSON.stringify(data)
         })
 
-        let div_msj_coleccion = document.createElement("div")
-        const posición_msj_coleccion = document.querySelector(".msj")
+        //Creación del mensaje al guardar publicación en una colección
+        const tipo_msj = "guardar_publicación_colección"
+        display_msj(tipo_msj, data)
 
-        div_msj_coleccion.className = "mb-3 bg-blue-600 px-5 py-2 font-bold"
-        div_msj_coleccion.textContent = `Publicación guardada en "${data_guardar.nombreColección}"`
-
-        posición_msj_coleccion.appendChild(div_msj_coleccion)
-
-        let cont = 4
-
-        const msj_temporizador_coleccion = setInterval(() => {
-
-            if (cont > 0) {
-                cont--;
-            } else {
-                clearInterval(msj_temporizador_coleccion);
-
-                posición_msj_coleccion.removeChild(div_msj_coleccion)
-            }
-
-        }, 1000);
-
+        //Al guardar la publicación, reemplaza el formulario para guardar publicación de una colección por uno para quitarlo
         let form_quitarPublicacion = document.createElement("form")
         form_quitarPublicacion.className = "ml-10"
         form_quitarPublicacion.action = "/quitar-de-coleccion"
@@ -584,6 +556,7 @@ async function guardarPublicación_colección(form_colección, post) {
         `
         form_colección.replaceWith(form_quitarPublicacion)
 
+        //Ejecuta la Función para quitar publicación de una colección al enviar formulario
         form_quitarPublicacion.addEventListener("submit", (e) => {
             e.preventDefault()
 
@@ -595,44 +568,30 @@ async function guardarPublicación_colección(form_colección, post) {
     }
 }
 
+//Función para quitar publicación de una colección
 async function quitarPublicación_colección(form_quitarPublicacion, post) {
 
-    const data_quitar = {
+    //Datos a enviar en la peticion POST
+    const data = {
         postTitulo: post.querySelector(".post_titulo").textContent.trim(),
         nombreColección: form_quitarPublicacion.name
     }
 
+    //Fetch con POST
     try {
         let res = await fetch(form_quitarPublicacion.action, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(data_quitar)
+            body: JSON.stringify(data)
         })
 
-        let div_msj_coleccion = document.createElement("div")
-        const posición_msj_coleccion = document.querySelector(".msj")
+        //Creación del mensaje al quitar publicación en una colección
+        const tipo_msj = "quitar_publicación_colección"
+        display_msj(tipo_msj, data)
 
-        div_msj_coleccion.className = "mb-3 bg-red-600 px-5 py-2 font-bold"
-        div_msj_coleccion.textContent = `Publicación removida"`
-
-        posición_msj_coleccion.appendChild(div_msj_coleccion)
-
-        let cont = 4
-
-        const msj_temporizador_coleccion = setInterval(() => {
-
-            if (cont > 0) {
-                cont--;
-            } else {
-                clearInterval(msj_temporizador_coleccion);
-
-                posición_msj_coleccion.removeChild(div_msj_coleccion)
-            }
-
-        }, 1000);
-
+        //Al quitar la publicación, reemplaza el formulario para quitar publicación de una colección por uno para guardarlo
         let form_guardarPublicacion = document.createElement("form")
         form_guardarPublicacion.className = "ml-10"
         form_guardarPublicacion.action = "/guardar-en-coleccion"
@@ -652,6 +611,7 @@ async function quitarPublicación_colección(form_quitarPublicacion, post) {
         `
         form_quitarPublicacion.replaceWith(form_guardarPublicacion)
 
+        //Ejecuta la Función que guarda publicación en una colección al enviar formulario
         form_guardarPublicacion.addEventListener("submit", (e) => {
             e.preventDefault()
 
@@ -660,6 +620,52 @@ async function quitarPublicación_colección(form_quitarPublicacion, post) {
     } catch (error) {
         console.error(`Ocurrió un error inesperado ${error}`)
     }
+}
+
+//Función que dispara un mensaje temporal personalizado, al guardar/quitar publicación como favorito/en una colección
+function display_msj(tipo_msj, data = undefined) {
+    let div_msj = document.createElement("div")
+
+    if (tipo_msj === "guardar_publicación_favoritos") {
+
+        div_msj.className = "mb-3 bg-green-600 px-5 py-2 font-bold"
+        div_msj.textContent = "Publicación guardada en Favoritos"
+
+    } else if (tipo_msj === "quitar_publicación_favoritos") {
+
+        div_msj.className = "mb-3 bg-red-600 px-5 py-2 font-bold"
+        div_msj.textContent = "Publicación removida de Favoritos"
+
+    } else if (tipo_msj === "guardar_publicación_colección") {
+
+        div_msj.className = "mb-3 bg-blue-600 px-5 py-2 font-bold"
+        div_msj.textContent = `Publicación guardada en ${data.nombreColección}`
+
+    } else if (tipo_msj === "quitar_publicación_colección") {
+
+        div_msj.className = "mb-3 bg-red-600 px-5 py-2 font-bold"
+        div_msj.textContent = `Publicación removida de ${data.nombreColección}`
+
+    }
+
+    let posición_msj = document.body.querySelector(".msj")
+
+    posición_msj.appendChild(div_msj)
+
+    //Dispara el mensaje creado y desaparece luego de 4 segundos
+    let cont = 4
+
+    const msj_temporizador = setInterval(() => {
+
+        if (cont > 0) {
+            cont--;
+        } else {
+            clearInterval(msj_temporizador);
+
+            posición_msj.removeChild(div_msj)
+        }
+
+    }, 1000);
 }
 
 //Renderizar imagenes dentro de la publicación
