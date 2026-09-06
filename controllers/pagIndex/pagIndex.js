@@ -12,7 +12,8 @@ import { Publicacion_Colecciones } from "../../models/Publicacion_Colecciones.js
 
 export async function pagIndex(req, res) {
     let postsFavorito
-    let user_colecciones
+    let userColecciones
+    let postsColecciones
     //Publicaciones con: Titulo, Descripcion, Nombre del usuario, Fecha y hora de publicacion, Etiquetas, Imagenes
     const posts = await Publicacion.findAll({
         include: [
@@ -26,6 +27,8 @@ export async function pagIndex(req, res) {
     //Verificar en cada publicación si el usuario autenticado lo tiene guardado como favorito
     //Primero se verifica que el usuario esté logueado
     if (req.user) {
+
+        //Publicaciones guardadas en favoritos del usuario autenticado
         postsFavorito = await Publicacion_Favoritos.findAll({
             where: {
                 id_favoritos: req.user.id_usuario
@@ -34,12 +37,24 @@ export async function pagIndex(req, res) {
             order: [["id_post", "ASC"]]
         })
 
-        user_colecciones = await Colección.findAll({
+        //Colecciones creadas por el usuario autenticado
+        userColecciones = await Colección.findAll({
             where: {
                 id_usuario: req.user.id_usuario
             }
         })
 
+        //Ids de las colecciones obtenidas de la consulta anterior
+        const mapidsColecciones = userColecciones.map(colección => colección.id_colección)
+
+        //Publicaciones guardadas en las colecciones creadas por el usuario autenticado
+        postsColecciones = await Publicacion_Colecciones.findAll({
+            where: {
+                id_colección: {
+                    [Op.in]: mapidsColecciones
+                }
+            }
+        })
     }
 
     res.render("index", {
@@ -50,7 +65,8 @@ export async function pagIndex(req, res) {
         imgTag: "",
         query: "",
         postsFavorito,
-        user_colecciones
+        userColecciones,
+        postsColecciones
     })
 
 }
@@ -140,13 +156,24 @@ export async function crearColección(req, res) {
             id_usuario: id_userSession
         })
 
-        const user_colecciones = await Colección.findAll({
+        const userColecciones = await Colección.findAll({
             where: {
                 id_usuario: req.user.id_usuario
             }
         })
 
-        res.status(200).json({ nueva_colección, user_colecciones })
+        //Ids de las colecciones obtenidas de la consulta anterior
+        const mapidsColecciones = userColecciones.map(colección => colección.id_colección)
+
+        //Publicaciones guardadas en las colecciones creadas por el usuario autenticado
+        const postsColecciones = await Publicacion_Colecciones.findAll({
+            where: {
+                id_colección: {
+                    [Op.in]: mapidsColecciones
+                }
+            }
+        })
+        res.status(200).json({ nueva_colección, userColecciones, postsColecciones })
     } catch (error) {
         res.status(400).send(`Error al crear colección ${error}`)
     }
@@ -173,14 +200,32 @@ export async function guardar_en_colección(req, res) {
             },
 
             attributes: ["id_post"]
-        })   
+        })
 
         const result = await Publicacion_Colecciones.create({
             id_colección: colección.id_colección,
             id_post: post.id_post
         })
 
-        res.status(200).send(`PUBLICACIÓN GUARDADA EN ${nombreColección}`)
+        const userColecciones = await Colección.findAll({
+            where: {
+                id_usuario: req.user.id_usuario
+            }
+        })
+
+        //Ids de las colecciones obtenidas de la consulta anterior
+        const mapidsColecciones = userColecciones.map(colección => colección.id_colección)
+
+        //Publicaciones guardadas en las colecciones creadas por el usuario autenticado
+        const postsColecciones = await Publicacion_Colecciones.findAll({
+            where: {
+                id_colección: {
+                    [Op.in]: mapidsColecciones
+                }
+            }
+        })
+
+        res.status(200).json({ postsColecciones })
 
     } catch (error) {
         res.status(400).send(`Error al guardar publicación ${error}`)
@@ -188,10 +233,10 @@ export async function guardar_en_colección(req, res) {
 
 }
 
-export async function quitar_de_colección(req, res){
+export async function quitar_de_colección(req, res) {
     const { nombreColección, postTitulo } = req.body
 
-        try {
+    try {
 
         const colección = await Colección.findOne({
             where: {
@@ -207,7 +252,7 @@ export async function quitar_de_colección(req, res){
             },
 
             attributes: ["id_post"]
-        })   
+        })
 
         const post_guardado = await Publicacion_Colecciones.findOne({
             where: {
@@ -216,7 +261,7 @@ export async function quitar_de_colección(req, res){
             }
         })
 
-        if(post_guardado){
+        if (post_guardado) {
             const result = await Publicacion_Colecciones.destroy({
                 where: {
                     id_post: post.id_post,
@@ -224,7 +269,25 @@ export async function quitar_de_colección(req, res){
                 }
             })
 
-            res.status(200).send(`PUBLICACIÓN REMOVIDA`)
+            const userColecciones = await Colección.findAll({
+                where: {
+                    id_usuario: req.user.id_usuario
+                }
+            })
+
+            //Ids de las colecciones obtenidas de la consulta anterior
+            const mapidsColecciones = userColecciones.map(colección => colección.id_colección)
+
+            //Publicaciones guardadas en las colecciones creadas por el usuario autenticado
+            const postsColecciones = await Publicacion_Colecciones.findAll({
+                where: {
+                    id_colección: {
+                        [Op.in]: mapidsColecciones
+                    }
+                }
+            })
+
+            res.status(200).json({ postsColecciones })
         }
 
     } catch (error) {
