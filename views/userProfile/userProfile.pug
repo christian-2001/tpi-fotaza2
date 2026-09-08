@@ -1,6 +1,9 @@
 extends ../layout.pug 
 
-block metadata 
+block metadata
+    script.
+        let colecciones = !{JSON.stringify(userColecciones ? userColecciones : 0)}
+        let postsColecciones = !{JSON.stringify(postsColecciones ? postsColecciones : 0)} 
     if esDueño
         title Perfil de #{userSession.user_name}
     else

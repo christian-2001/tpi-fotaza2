@@ -7,6 +7,8 @@ import { Seguidores } from "../../models/Seguidores.js"
 import { Favoritos } from "../../models/Favoritos.js"
 import { Publicacion_Favoritos } from "../../models/Publicacion_Favoritos.js"
 import { Op } from "sequelize"
+import { Publicacion_Colecciones } from "../../models/Publicacion_Colecciones.js"
+import { Colección } from "../../models/Colección.js"
 
 
 export async function mostrarPerfilUsuario(req, res) {
@@ -14,6 +16,8 @@ export async function mostrarPerfilUsuario(req, res) {
     const sección = req.params.sección
     const id_usuario = req.params.id_usuario
     const current_url = req.originalUrl
+    let userColecciones
+    let postsColecciones
 
     if (!req.user) {
         return res.redirect("/login");
@@ -68,10 +72,33 @@ export async function mostrarPerfilUsuario(req, res) {
             misFollowing = await getFollowing(usuarioSesion);
         }
 
+        console.log(usuarioPerfil)
+
         misFollowing = await Seguidores.findAll({
             where: { id_seguidor: req.user.id_usuario },
             include: [{ model: Usuario, as: 'seguido' }],
         });
+
+        if (req.user) {
+            //Colecciones creadas por el usuario autenticado
+            userColecciones = await Colección.findAll({
+                where: {
+                    id_usuario: req.user.id_usuario
+                }
+            })
+
+            //Ids de las colecciones obtenidas de la consulta anterior
+            const mapidsColecciones = userColecciones.map(colección => colección.id_colección)
+
+            //Publicaciones guardadas en las colecciones creadas por el usuario autenticado
+            postsColecciones = await Publicacion_Colecciones.findAll({
+                where: {
+                    id_colección: {
+                        [Op.in]: mapidsColecciones
+                    }
+                }
+            })
+        }
 
         res.render("./userProfile/userProfile", {
             sección,
@@ -84,7 +111,9 @@ export async function mostrarPerfilUsuario(req, res) {
             yaEsSeguido,
             misFollowing,
             favoritos,
-            current_url
+            current_url,
+            userColecciones,
+            postsColecciones
         });
     } catch (error) {
         res.status(400).send(`Ocurrió un error ${error}`)
@@ -153,18 +182,18 @@ async function getPostsFavoritos(usuario) {
             }
         },
 
-        
+
         include: [
             { model: Usuario, required: true },
             { model: Etiqueta, required: true },
             { model: Imagen, required: true },
             { model: Publicacion_Favoritos, required: true },
         ],
-        
+
     })
-    
+
     //Ordenar de forma descendente las publicaciones favoritas según fecha y hora de guardado
-    publicaciones.sort((a,b) => b.Publicacion_Favoritos[0].fh_guardado - a.Publicacion_Favoritos[0].fh_guardado)
+    publicaciones.sort((a, b) => b.Publicacion_Favoritos[0].fh_guardado - a.Publicacion_Favoritos[0].fh_guardado)
 
     return publicaciones
 }
