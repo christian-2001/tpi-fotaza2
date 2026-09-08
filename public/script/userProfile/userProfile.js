@@ -14,16 +14,39 @@ for (const p of posts) {
     //Boton que permite guardar una publicación en una colección
     let btn_colección = p.querySelector("#btn_colección")
 
+    //Obtiene el formulario que permite guardar la publicación en "Favoritos"
+    let form_guardarFavoritos = p.querySelector("#guardarFavoritos")
+
     //Obtiene el formulario que permite quitar la publicación de "Favoritos"
-    let form_quitarFavoritos = p.querySelector("#quitarFavoritos")
+    let form_quitarFavoritos_duenio = p.querySelector("#quitarFavoritos_duenio")
+
+    //Obtiene el formulario que permite quitar la publicación de "Favoritos"
+    let form_quitarFavoritos_noduenio = p.querySelector("#quitarFavoritos_noduenio")
 
 
-    if (form_quitarFavoritos) {
+    if (form_quitarFavoritos_duenio) {
 
-        form_quitarFavoritos.addEventListener("submit", (e) => {
+        form_quitarFavoritos_duenio.addEventListener("submit", (e) => {
             e.preventDefault()
 
-            quitarPublicación_favoritos(post_menu, p, form_quitarFavoritos)
+            quitarPublicación_favoritos(post_menu, p, form_quitarFavoritos_duenio)
+        })
+    } else if (form_quitarFavoritos_noduenio) {
+
+        form_quitarFavoritos_noduenio.addEventListener("submit", (e) => {
+            e.preventDefault()
+
+            quitarPublicación_favoritos(post_menu, p, form_quitarFavoritos_noduenio)
+        })
+
+    } else if (form_guardarFavoritos) {
+        let btn = form_guardarFavoritos.querySelector("#btn_favoritos")
+
+        //Ejecuta la Función que guarda publicación como favorito al enviar formulario
+        form_guardarFavoritos.addEventListener("submit", async (event) => {
+            event.preventDefault()
+
+            guardarPublicación_favoritos(post_menu, p, form_guardarFavoritos)
         })
     }
 
@@ -72,20 +95,213 @@ function ocultarOpciones(post_menu_all, post_menu) {
 
 }
 
+//Función que guarda publicación como favorito
+async function guardarPublicación_favoritos(post_menu, post, form_guardarFavoritos) {
+    //Enviar datos con Fetch usando POST
+    try {
+        const res = await fetch(form_guardarFavoritos.action, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        //Creación del mensaje avisandole al usuario del guardado de la publicación
+        const tipo_msj = "guardar_publicación_favoritos"
+        display_msj(tipo_msj)
+
+        //Al guardar la publicación como favorito, el botón cambia de estado teniendo como texto "Eliminar de Favoritos"
+        //Ademas cambia de formulario al de quitar la publicación como favorito
+
+        //Recrear nodo padre y el resto de nodos hijo para la Función de quitar publicación como favorito
+        let li_guardarPost = post.querySelector("#agregar-a-favoritos")
+
+        let li_eliminarPost = document.createElement("li")
+        li_eliminarPost.id = "quitar-de-favoritos"
+
+        let form_quitarFavoritos_noduenio = document.createElement("form")
+
+        let id_post = parseInt(post.querySelector("ul").id.match(/\d+/))
+
+        form_quitarFavoritos_noduenio.action = `/quitar-de-favoritos/${id_post}`
+        form_quitarFavoritos_noduenio.method = "post"
+        form_quitarFavoritos_noduenio.name = "quitarFavoritos_noduenio"
+        form_quitarFavoritos_noduenio.id = "quitarFavoritos_noduenio"
+        form_guardarFavoritos.id = "quitarFavoritos_noduenio"
+
+        let label = document.createElement("label")
+        label.for = "btn_quitarFavoritos"
+
+        let button = document.createElement("button")
+        button.className = "w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer"
+        button.id = "btn_quitarFavoritos"
+        button.textContent = "Eliminar de Favoritos"
+
+        li_eliminarPost.appendChild(form_quitarFavoritos_noduenio)
+        form_quitarFavoritos_noduenio.appendChild(label)
+        label.appendChild(button)
+
+        post_menu.replaceChild(li_eliminarPost, li_guardarPost)
+
+        form_quitarFavoritos_noduenio.addEventListener("submit", (e) => {
+            e.preventDefault()
+
+            quitarPublicación_favoritos(post_menu, post, form_quitarFavoritos_noduenio)
+        })
+
+    } catch (error) {
+        console.error(`ERROR AL GUARDAR PUBLICACIÓN --> ${error}`)
+    }
+}
 
 //Quita la publicación guardada como favorito
 async function quitarPublicación_favoritos(post_menu, post, form_quitarFavoritos) {
 
-    let user_content = document.querySelector(".user_content")
+    /*let user_content = document.querySelector(".user_content")
     let div_favoritos = user_content.querySelector("p")
     let posts = user_content.querySelector(".user_posts")
     let sección_favoritos = document.querySelector(".favoritos")
-    let cant_favoritos = parseInt(sección_favoritos.textContent.match(/\d+/))
+    let cant_favoritos = parseInt(sección_favoritos.textContent.match(/\d+/))*/
 
     //Enviar datos con Fetch usando POST
     try {
+        if (form_quitarFavoritos.name === "quitarFavoritos_duenio") {
 
-        const res = await fetch(form_quitarFavoritos.action, {
+            let user_content = document.querySelector(".user_content")
+            let div_favoritos = user_content.querySelector("p")
+            let posts = user_content.querySelector(".user_posts")
+            let sección_favoritos = document.querySelector(".favoritos")
+            let cant_favoritos = parseInt(sección_favoritos.textContent.match(/\d+/))
+
+            const res = await fetch(form_quitarFavoritos.action, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+
+            //Creación del mensaje al momento de quitar una publicación como favorito
+            let div_msj = document.createElement("div")
+            let p_msj = document.createElement("p")
+            let posición_msj = document.body.querySelector(".msj")
+
+            div_msj.className = "mb-3 bg-red-600 px-5 py-2 font-bold"
+            p_msj.textContent = "Publicación removida de Favoritos"
+
+            div_msj.appendChild(p_msj)
+
+            posición_msj.appendChild(div_msj)
+
+            //Dispara el mensaje creado y desaparece luego de 4 segundos
+            let cont = 4
+
+            const msj_temporizador = setInterval(() => {
+
+                if (cont > 0) {
+                    cont--;
+                } else {
+                    clearInterval(msj_temporizador);
+
+                    posición_msj.removeChild(div_msj)
+                }
+
+            }, 1000);
+
+            //Quita la publicación en tiempo real (evita refrescar la pagina)
+            post.remove()
+            let cant_actualizado = 0
+
+            //Actualiza el contenido y contador de publicaciones cada vez que se quita una publicación
+            if (!posts.hasChildNodes()) {
+                cant_actualizado = cant_favoritos - 1
+                sección_favoritos.textContent = `Favoritos (${cant_actualizado})`
+                div_favoritos.textContent = "Nada de momento, explora publicaciones y guárdalos en tu perfil"
+            } else {
+                cant_actualizado = cant_favoritos - 1
+                sección_favoritos.textContent = `Favoritos (${cant_actualizado})`
+            }
+        } else if (form_quitarFavoritos.name === "quitarFavoritos_noduenio") {
+
+            const res = await fetch(form_quitarFavoritos.action, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+
+            //Creación del mensaje al momento de quitar una publicación como favorito
+            let div_msj = document.createElement("div")
+            let p_msj = document.createElement("p")
+            let posición_msj = document.body.querySelector(".msj")
+
+            div_msj.className = "mb-3 bg-red-600 px-5 py-2 font-bold"
+            p_msj.textContent = "Publicación removida de Favoritos"
+
+            div_msj.appendChild(p_msj)
+
+            posición_msj.appendChild(div_msj)
+
+            //Dispara el mensaje creado y desaparece luego de 4 segundos
+            let cont = 4
+
+            const msj_temporizador = setInterval(() => {
+
+                if (cont > 0) {
+                    cont--;
+                } else {
+                    clearInterval(msj_temporizador);
+
+                    posición_msj.removeChild(div_msj)
+                }
+
+            }, 1000);
+
+            //Al quitar la publicación como favorito, el botón vuelve a cambiar de estado teniendo como texto "Guardar en Favoritos"
+            //Ademas cambia de formulario al de guardar la publicación como favorito
+
+            //Recrear nodo padre y el resto de nodos hijo para la Función de guardar publicación como favorito
+            let li_eliminarPost = post.querySelector("#quitar-de-favoritos")
+
+            let li_guardarPost = document.createElement("li")
+            li_guardarPost.id = "agregar-a-favoritos"
+
+            let form_guardarFavoritos = document.createElement("form")
+            let id_post = parseInt(post.querySelector("ul").id.match(/\d+/))
+
+            form_guardarFavoritos.action = `/favoritos/${id_post}`
+            form_guardarFavoritos.method = "post"
+            form_guardarFavoritos.name = "guardarFavoritos"
+            form_guardarFavoritos.id = "guardarFavoritos"
+
+            let label = document.createElement("label")
+            label.for = "btn_favoritos"
+
+            let button = document.createElement("button")
+            button.className = "w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer"
+            button.id = "btn_favoritos"
+            button.textContent = "Guardar en Favoritos"
+
+            li_guardarPost.appendChild(form_guardarFavoritos)
+            form_guardarFavoritos.appendChild(label)
+            label.appendChild(button)
+
+            post_menu.replaceChild(li_guardarPost, li_eliminarPost)
+
+            form_guardarFavoritos.addEventListener("submit", async (event) => {
+                event.preventDefault()
+
+                //Ejecuta la Función que guarda publicación como favorito al enviar formulario
+                guardarPublicación_favoritos(post_menu, post, form_guardarFavoritos)
+            })
+        }
+    } catch (error) {
+        console.error(`ERROR AL QUITAR LA PUBLICACIÓN --> ${error}`)
+    }
+
+
+    try {
+        /*
+        const res = await fetch(form_quitarFavoritos_duenio.action, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -132,7 +348,7 @@ async function quitarPublicación_favoritos(post_menu, post, form_quitarFavorito
             cant_actualizado = cant_favoritos - 1
             sección_favoritos.textContent = `Favoritos (${cant_actualizado})`
         }
-
+        */
     } catch (error) {
         console.error(`ERROR AL QUITAR LA PUBLICACIÓN --> ${error}`)
     }
