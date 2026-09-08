@@ -284,12 +284,11 @@ async function vista_crearColeccion(post_menu, post) {
     btn_volver.title = "Volver"
     let flecha = document.createElement("p")
     flecha.className = "hover:bg-orange-400 hover:rounded-full w-fit p-1 font-bold cursor-pointer"
-    flecha.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 12H5" />
-            <path d="M12 19l-7-7 7-7" />
-        </svg>
-    `
+    flecha.innerHTML = 
+   `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5" />
+        <path d="M12 19l-7-7 7-7" />
+    </svg>`
 
     let form_crearColección = document.createElement("form")
     form_crearColección.action = "/crearColeccion"
@@ -347,8 +346,10 @@ async function vista_crearColeccion(post_menu, post) {
 
 //Renderiza listado de colecciones con bookmark funcional asociado que guarda/quita una publicación de esa colección
 async function botonesColección(post_menu, post) {
+
+    //Verifica si existen colecciones creadas por el usuario autenticado
     if (colecciones) {
-        //let divs_colecciones = []
+
         for (const c of colecciones) {
 
             let li_colección = document.createElement("li")
@@ -375,145 +376,17 @@ async function botonesColección(post_menu, post) {
                 );
 
                 if (guardada) {
-
-                    let form_quitarPublicacion = document.createElement("form")
-                    form_quitarPublicacion.className = "ml-10"
-                    form_quitarPublicacion.action = "/quitar-de-coleccion"
-                    form_quitarPublicacion.method = "post"
-                    form_quitarPublicacion.name = c.nombre_colección
-                    form_quitarPublicacion.id = c.nombre_colección
-
-                    form_quitarPublicacion.innerHTML = `
-                        <label for="btn_colección_guardado">
-                            <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección_guardado">
-                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-                                    <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
-                                </svg>
-                            </button>
-                        </label>
-                    `
-                    /*
-                                        const div = divs_colecciones.find(
-                                            div => div.textContent === c.nombre_colección
-                                        )
-                    
-                                        div.querySelector("div").appendChild(form_quitarPublicacion)
-                    */
-
-                    div_colección.appendChild(form_quitarPublicacion)
-
-                    //Ejecuta la Función para quitar publicación de una colección al enviar formulario
-                    form_quitarPublicacion.addEventListener("submit", (e) => {
-                        e.preventDefault()
-
-                        quitarPublicación_colección(form_quitarPublicacion, post)
-                    })
+                    //Renderiza las colecciones del usuario junto con un bookmark lleno indicando la publicación guardada en la colección que a su vez tiene la funcion de quitar esa publicación de la colección
+                    form_quitarPublicación_colección_render(post, c.nombre_colección, div_colección)
                 } else {
-
-                    let form_guardarPublicacion = document.createElement("form")
-                    form_guardarPublicacion.className = "ml-10"
-                    form_guardarPublicacion.action = "/guardar-en-coleccion"
-                    form_guardarPublicacion.method = "post"
-                    form_guardarPublicacion.name = c.nombre_colección
-                    form_guardarPublicacion.id = c.nombre_colección
-
-                    form_guardarPublicacion.innerHTML = `
-                            <label for="btn_colección">
-                                <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección">
-                                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-                                        <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
-                                    </svg>
-                                </button>
-                            </label>
-                
-                        `
-
-                    let btn = form_guardarPublicacion.querySelector("button")
-
-                    btn.addEventListener('mouseenter', () => {
-                        btn.innerHTML = `
-                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-                                    <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
-                                </svg>`
-                    });
-
-                    btn.addEventListener('mouseleave', () => {
-                        btn.innerHTML = `
-                               <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-                                    <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
-                                </svg>`
-                    });
-                    /*
-                                        const div = divs_colecciones.find(
-                                            div => div.textContent === c.nombre_colección
-                                        )
-                    
-                                        div.querySelector("div").appendChild(form_guardarPublicacion)
-                      */
-
-                    div_colección.appendChild(form_guardarPublicacion)
-
-                    //Ejecuta la Función que guarda publicación en una colección al enviar formulario
-                    form_guardarPublicacion.addEventListener("submit", (e) => {
-                        e.preventDefault()
-
-                        guardarPublicación_colección(form_guardarPublicacion, post)
-                    })
+                    //Renderiza las colecciones del usuario junto con un bookmark hueco que permite guardar una publicación en una colección especifica
+                    form_guardarPublicación_colección_render(post, c.nombre_colección, div_colección)
                 }
-
             } else {
-
-                let form_guardarPublicacion = document.createElement("form")
-                form_guardarPublicacion.className = "ml-10"
-                form_guardarPublicacion.action = "/guardar-en-coleccion"
-                form_guardarPublicacion.method = "post"
-                form_guardarPublicacion.name = c.nombre_colección
-                form_guardarPublicacion.id = c.nombre_colección
-
-                form_guardarPublicacion.innerHTML = `
-            <label for="btn_colección">
-                <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección">
-                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-                        <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
-                    </svg>
-                </button>
-            </label>
-            
-                `
-
-                let btn = form_guardarPublicacion.querySelector("button")
-
-                btn.addEventListener('mouseenter', () => {
-                    btn.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
-                </svg>`
-                });
-
-                btn.addEventListener('mouseleave', () => {
-                    btn.innerHTML = `
-               <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
-                </svg>`
-                });
-
-                div_colección.appendChild(form_guardarPublicacion)
-
-                //Ejecuta la Función que guarda publicación en una colección al enviar formulario
-                form_guardarPublicacion.addEventListener("submit", (e) => {
-                    e.preventDefault()
-
-                    guardarPublicación_colección(form_guardarPublicacion, post)
-                })
-
+                form_guardarPublicación_colección_render(post, c.nombre_colección, div_colección)
             }
-
-            //divs_colecciones.push(li_colección)
         }
-
     }
-
-
 }
 
 //Función que crea una nueva colección con un bookmark funcional asociado
@@ -537,18 +410,18 @@ async function nuevaColección(form_crearColección, post_menu, post, div_crearC
 
         //Mensaje confirmando creación de la colección
         div_content.innerHTML = ""
-        div_content.innerHTML = `
-        <p class="p-3 text-3xl"> Se ha creado la colección exitosamente </p>
+        div_content.innerHTML = 
+       `<p class="p-3 text-3xl"> Se ha creado la colección exitosamente </p>
         <div class="flex justify-center items-center text-2xl pt-2"> 
             <label for="btn_salir"> 
                 <button type="button" class="cursor-pointer hover:font-bold" id="btn_salir"> Salir </button>
             </label>
-        </div>
-        `
+        </div>`
 
+        //Actualizamos el listado de colecciones del usuario autenticado
         colecciones = result.userColecciones
 
-        //Rendeiza listado de colecciones en el menu de opciones de la publicación al tocar el boton para salir del div que crea una colección
+        //Renderiza listado de colecciones en el menu de opciones de la publicación al tocar el boton para salir del div que crea una colección
         document.querySelector("#btn_salir").addEventListener("click", () => {
 
             let li_colección = document.createElement("li")
@@ -560,54 +433,12 @@ async function nuevaColección(form_crearColección, post_menu, post, div_crearC
             nombre_colección.className = "mr-10"
             nombre_colección.textContent = result.nueva_colección.nombre_colección
 
-            let form_colección = document.createElement("form")
-            form_colección.className = "ml-10"
-            form_colección.action = `/guardar-en-coleccion`
-            form_colección.method = "post"
-            form_colección.name = result.nueva_colección.nombre_colección
-            form_colección.id = result.nueva_colección.nombre_colección
-
-            let label_colección = document.createElement("label")
-            label_colección.for = "btn_colección"
-
-            let btn_colección = document.createElement("button")
-            btn_colección.className = " cursor-pointer px-2 py-1"
-            btn_colección.type = "submit"
-            btn_colección.id = "btn_colección"
-            btn_colección.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
-                </svg>
-            `
-
-            btn_colección.addEventListener('mouseenter', () => {
-                btn_colección.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
-                </svg>`
-            });
-
-            btn_colección.addEventListener('mouseleave', () => {
-                btn_colección.innerHTML = `
-               <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
-                </svg>`
-            });
-
             li_colección.appendChild(div_colección)
             div_colección.appendChild(nombre_colección)
-            div_colección.appendChild(form_colección)
-            form_colección.appendChild(label_colección)
-            label_colección.appendChild(btn_colección)
-
             post_menu.appendChild(li_colección)
 
-            //Ejecuta la Función que guarda publicación en una colección al enviar formulario
-            form_colección.addEventListener("submit", (e) => {
-                e.preventDefault()
-
-                guardarPublicación_colección(form_colección, post)
-            })
+            //Renderiza las colecciones del usuario junto con un bookmark hueco que permite guardar una publicación en una colección especifica
+            form_guardarPublicación_colección_render(post, result.nueva_colección.nombre_colección, div_colección)
 
             div_crearColección.remove()
         })
@@ -645,31 +476,8 @@ async function guardarPublicación_colección(form_colección, post) {
         const tipo_msj = "guardar_publicación_colección"
         display_msj(tipo_msj, data)
 
-        //Al guardar la publicación, reemplaza el formulario para guardar publicación de una colección por uno para quitarlo
-        let form_quitarPublicacion = document.createElement("form")
-        form_quitarPublicacion.className = "ml-10"
-        form_quitarPublicacion.action = "/quitar-de-coleccion"
-        form_quitarPublicacion.method = "post"
-        form_quitarPublicacion.name = form_colección.name
-        form_quitarPublicacion.id = form_colección.id
-
-        form_quitarPublicacion.innerHTML = `
-            <label for="btn_colección_guardado">
-                <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección_guardado">
-                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-                        <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
-                    </svg>
-                </button>
-            </label>
-        `
-        form_colección.replaceWith(form_quitarPublicacion)
-
-        //Ejecuta la Función para quitar publicación de una colección al enviar formulario
-        form_quitarPublicacion.addEventListener("submit", (e) => {
-            e.preventDefault()
-
-            quitarPublicación_colección(form_quitarPublicacion, post)
-        })
+        //Al guardar la publicación, reemplaza el bookmark hueco por uno lleno en la colección asociada
+        form_guardarPublicación_colección_replace(post, form_colección, form_colección.name)
 
     } catch (error) {
         console.error(`Ocurrió un error inesperado ${error}`)
@@ -702,48 +510,9 @@ async function quitarPublicación_colección(form_quitarPublicacion, post) {
         const tipo_msj = "quitar_publicación_colección"
         display_msj(tipo_msj, data)
 
-        //Al quitar la publicación, reemplaza el formulario para quitar publicación de una colección por uno para guardarlo
-        let form_guardarPublicacion = document.createElement("form")
-        form_guardarPublicacion.className = "ml-10"
-        form_guardarPublicacion.action = "/guardar-en-coleccion"
-        form_guardarPublicacion.method = "post"
-        form_guardarPublicacion.name = form_quitarPublicacion.name
-        form_guardarPublicacion.id = form_quitarPublicacion.id
-
-        form_guardarPublicacion.innerHTML = `
-            <label for="btn_colección">
-                <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección">
-                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-                        <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
-                    </svg>
-                </button>
-            </label>
-            
-        `
-
-        let btn = form_guardarPublicacion.querySelector("button")
-
-        btn.addEventListener('mouseenter', () => {
-            btn.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
-                </svg>`
-        });
-
-        btn.addEventListener('mouseleave', () => {
-            btn.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
-                </svg>`
-        });
-        form_quitarPublicacion.replaceWith(form_guardarPublicacion)
-
-        //Ejecuta la Función que guarda publicación en una colección al enviar formulario
-        form_guardarPublicacion.addEventListener("submit", (e) => {
-            e.preventDefault()
-
-            guardarPublicación_colección(form_guardarPublicacion, post)
-        })
+        //Al quitar la publicación, reemplaza el bookmark lleno por uno hueco en la colección asociada
+        form_quitarPublicación_colección_replace(post, form_quitarPublicacion, form_quitarPublicacion.name)
+        
     } catch (error) {
         console.error(`Ocurrió un error inesperado ${error}`)
     }
@@ -795,6 +564,157 @@ function display_msj(tipo_msj, data = undefined) {
     }, 1000);
 }
 
+//Funcion que renderiza las colecciones del usuario junto con un bookmark hueco que permite guardar una publicación en una colección especifica
+function form_guardarPublicación_colección_render(post, nombre_colección, div_colección) {
+
+    let form_guardarPublicacion = document.createElement("form")
+    form_guardarPublicacion.className = "ml-10"
+    form_guardarPublicacion.action = "/guardar-en-coleccion"
+    form_guardarPublicacion.method = "post"
+    form_guardarPublicacion.name = nombre_colección
+    form_guardarPublicacion.id = nombre_colección
+
+    form_guardarPublicacion.innerHTML = 
+       `<label for="btn_colección">
+            <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección">
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
+                </svg>
+            </button>
+        </label>`
+
+    let btn = form_guardarPublicacion.querySelector("button")
+
+    btn.addEventListener('mouseenter', () => {
+        btn.innerHTML = 
+       `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
+        </svg>`
+    });
+
+    btn.addEventListener('mouseleave', () => {
+        btn.innerHTML = 
+       `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
+        </svg>`
+    });
+
+    div_colección.appendChild(form_guardarPublicacion)
+
+    //Ejecuta la Función que guarda publicación en una colección al enviar formulario
+    form_guardarPublicacion.addEventListener("submit", (e) => {
+        e.preventDefault()
+
+        guardarPublicación_colección(form_guardarPublicacion, post)
+    })
+
+}
+
+//Funcion que renderiza las colecciones del usuario junto con un bookmark lleno indicando la publicación guardada en la colección que a su vez tiene la funcion de quitar esa publicación de la colección
+function form_quitarPublicación_colección_render(post, nombre_colección, div_colección) {
+
+    let form_quitarPublicacion = document.createElement("form")
+    form_quitarPublicacion.className = "ml-10"
+    form_quitarPublicacion.action = "/quitar-de-coleccion"
+    form_quitarPublicacion.method = "post"
+    form_quitarPublicacion.name = nombre_colección
+    form_quitarPublicacion.id = nombre_colección
+
+    form_quitarPublicacion.innerHTML = 
+   `<label for="btn_colección_guardado">
+        <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección_guardado">
+            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+                <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
+            </svg>
+        </button>
+    </label>`
+
+    div_colección.appendChild(form_quitarPublicacion)
+
+    //Ejecuta la Función para quitar publicación de una colección al enviar formulario
+    form_quitarPublicacion.addEventListener("submit", (e) => {
+        e.preventDefault()
+
+        quitarPublicación_colección(form_quitarPublicacion, post)
+    })
+}
+
+//Funcion que reemplaza el bookmark hueco por uno lleno luego de guardar una publicación en una colección asociada al bookmark
+function form_guardarPublicación_colección_replace(post, form_guardarPublicacion, nombre_colección) {
+
+    let form_quitarPublicacion = document.createElement("form")
+    form_quitarPublicacion.className = "ml-10"
+    form_quitarPublicacion.action = "/quitar-de-coleccion"
+    form_quitarPublicacion.method = "post"
+    form_quitarPublicacion.name = nombre_colección
+    form_quitarPublicacion.id = nombre_colección
+
+    form_quitarPublicacion.innerHTML = 
+   `<label for="btn_colección_guardado">
+        <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección_guardado">
+            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+                <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
+            </svg>
+        </button>
+    </label>`
+
+    form_guardarPublicacion.replaceWith(form_quitarPublicacion)
+
+    //Ejecuta la Función para quitar publicación de una colección al enviar formulario
+    form_quitarPublicacion.addEventListener("submit", (e) => {
+        e.preventDefault()
+
+        quitarPublicación_colección(form_quitarPublicacion, post)
+    })
+
+
+}
+
+//Funcion que reemplaza el bookmark lleno por uno hueco luego de quitar una publicación de una colección asociada al bookmark
+function form_quitarPublicación_colección_replace(post, form_quitarPublicacion, nombre_colección) {
+
+    let form_guardarPublicacion = document.createElement("form")
+    form_guardarPublicacion.className = "ml-10"
+    form_guardarPublicacion.action = "/guardar-en-coleccion"
+    form_guardarPublicacion.method = "post"
+    form_guardarPublicacion.name = form_quitarPublicacion.name
+    form_guardarPublicacion.id = form_quitarPublicacion.id
+
+    form_guardarPublicacion.innerHTML = 
+   `<label for="btn_colección">
+        <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección">
+            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+                <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
+            </svg>
+        </button>
+    </label>`
+
+    let btn = form_guardarPublicacion.querySelector("button")
+
+    btn.addEventListener('mouseenter', () => {
+        btn.innerHTML = 
+       `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
+        </svg>`
+    });
+
+    btn.addEventListener('mouseleave', () => {
+        btn.innerHTML = 
+       `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
+        </svg>`
+    });
+
+    form_quitarPublicacion.replaceWith(form_guardarPublicacion)
+
+    //Ejecuta la Función que guarda publicación en una colección al enviar formulario
+    form_guardarPublicacion.addEventListener("submit", (e) => {
+        e.preventDefault()
+
+        guardarPublicación_colección(form_guardarPublicacion, post)
+    })
+}
+
 //Renderizar imagenes dentro de la publicación
 for (const i of img_container) {
 
@@ -812,14 +732,10 @@ for (const i of img_container) {
                 dark_bg.classList.toggle("inset-0")
                 dark_bg.classList.toggle("bg-black/50")
 
-
-
-
                 images[3].appendChild(dark_bg)
 
             } else if (a > 3) {
                 images[a].classList.toggle("hidden")
-
             }
         }
         const text_img = document.createElement("p")
@@ -835,5 +751,3 @@ for (const i of img_container) {
         images[3].appendChild(text_img)
     }
 }
-
-//link(rel="stylesheet", href="./style/output.css")
