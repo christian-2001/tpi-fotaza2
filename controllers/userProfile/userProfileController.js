@@ -70,15 +70,16 @@ export async function mostrarPerfilUsuario(req, res) {
             const usuarioSesion = await Usuario.findByPk(req.user.id_usuario);
             misFollowing = await getFollowing(usuarioSesion);
 
-            postsFavorito = await Publicacion_Favoritos.findAll({
-                where: {
-                    id_favoritos: req.user.id_usuario
-                },
 
-                order: [["id_post", "ASC"]]
-            })
         }
 
+        postsFavorito = await Publicacion_Favoritos.findAll({
+            where: {
+                id_favoritos: req.user.id_usuario
+            },
+
+            order: [["id_post", "ASC"]]
+        })
 
         misFollowing = await Seguidores.findAll({
             where: { id_seguidor: req.user.id_usuario },
@@ -105,8 +106,6 @@ export async function mostrarPerfilUsuario(req, res) {
                 }
             })
         }
-
-        console.log(favoritos)
 
         res.render("./userProfile/userProfile", {
             sección,
