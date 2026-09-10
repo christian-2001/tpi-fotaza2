@@ -15,11 +15,12 @@ export async function mostrarPerfilUsuario(req, res) {
 
     const sección = req.params.sección
     const id_usuario = req.params.id_usuario
+    const userColeccion = req.params.userColeccion
     const current_url = req.originalUrl
     let userColecciones
     let postsColecciones
     let postsFavorito
-
+    let postsColeccion
     if (!req.user) {
         return res.redirect("/login");
     }
@@ -69,8 +70,6 @@ export async function mostrarPerfilUsuario(req, res) {
 
             const usuarioSesion = await Usuario.findByPk(req.user.id_usuario);
             misFollowing = await getFollowing(usuarioSesion);
-
-
         }
 
         postsFavorito = await Publicacion_Favoritos.findAll({
@@ -105,7 +104,18 @@ export async function mostrarPerfilUsuario(req, res) {
                     }
                 }
             })
+
+            if (sección === "colecciones" && userColeccion) {
+                postsColeccion = await getPostsColección(userColeccion, req.user.id_usuario)
+
+                console.log("==========================================================================================")
+                console.log(postsColeccion.length)
+                console.log("==========================================================================================")
+
+            }
         }
+
+
 
         res.render("./userProfile/userProfile", {
             sección,
@@ -121,10 +131,49 @@ export async function mostrarPerfilUsuario(req, res) {
             postsFavorito,
             current_url,
             userColecciones,
-            postsColecciones
+            userColeccion,
+            postsColecciones,
+            postsColeccion
         });
     } catch (error) {
         res.status(400).send(`Ocurrió un error ${error}`)
+    }
+}
+
+export async function registrarFollow(req, res) {
+    const id_usuarioSession = req.user.id_usuario
+    const id_usuario = req.params.idUsuarioSeguido
+    const sección = req.params.sección
+
+    try {
+
+        const nuevoSeguidor = await Seguidores.create({
+            id_seguidor: id_usuarioSession,
+            id_seguido: id_usuario
+        })
+
+        res.redirect(req.headers.referer || "/")
+    } catch (error) {
+        res.status(400).send(`Error al guardar seguidor ${error}`)
+    }
+}
+
+export async function eliminarFollow(req, res) {
+    const id_usuarioSession = req.user.id_usuario
+    const id_usuario = req.params.idUsuarioSeguido
+    const sección = req.params.sección
+
+    try {
+        const quitarSeguidor = await Seguidores.destroy({
+            where: {
+                id_seguidor: id_usuarioSession,
+                id_seguido: id_usuario
+            }
+        })
+
+        res.redirect(req.headers.referer || "/")
+    } catch (error) {
+        res.status(400).send(`Error al eliminar seguidor ${error}`)
     }
 }
 
@@ -145,7 +194,6 @@ async function getPosts(usuario) {
 
     return publicaciones
 }
-
 
 async function getFollowers(usuario) {
 
@@ -204,4 +252,39 @@ async function getPostsFavoritos(usuario) {
     publicaciones.sort((a, b) => b.Publicacion_Favoritos[0].fh_guardado - a.Publicacion_Favoritos[0].fh_guardado)
 
     return publicaciones
+}
+
+async function getPostsColección(_nombre_colección, _id_usuario) {
+    const _colección = await Colección.findOne({
+        where: {
+            nombre_colección: _nombre_colección,
+            id_usuario: _id_usuario
+        }
+    })
+
+
+    const _posts_coleccion = await Publicacion_Colecciones.findAll({
+        where: {
+            id_colección: _colección.id_colección
+        },
+    });
+
+    const Ids_posts_coleccion = _posts_coleccion.map(pc => pc.id_post)
+
+    const posts = await Publicacion.findAll({
+
+        where: {
+            id_post: {
+                [Op.in]: Ids_posts_coleccion
+            }
+        },
+
+        include: [
+            { model: Usuario, required: true },
+            { model: Etiqueta, required: true },
+            { model: Imagen, required: true },
+        ]
+    })
+
+    return posts
 }
