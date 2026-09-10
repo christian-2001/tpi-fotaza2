@@ -2,6 +2,7 @@ import express from "express"
 import session from "express-session";
 import 'dotenv/config';
 import IndexRoutes from "./routes/IndexRoutes/IndexRoutes.js"
+import ProfileRoutes from "./routes/ProfileRoutes/ProfileRoutes.js"
 import loginRoutes from "./routes/loginRoutes/loginRoutes.js"
 import registrerRoutes from "./routes/registrer/registrer.js"
 import postRoutes from "./routes/postRoutes/postRoutes.js"
@@ -37,6 +38,8 @@ app.use("/login", loginRoutes)
 app.use("/registrarse", registrerRoutes)
 
 app.use("/", authUserHome, IndexRoutes)
+
+app.use("/usuarioPerfil", authUserHome, ProfileRoutes)
 
 app.use("/subirPost", authUserHome, postRoutes)
 
