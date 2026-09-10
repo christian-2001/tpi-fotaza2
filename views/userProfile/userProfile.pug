@@ -32,7 +32,7 @@ block content
             else if userSession
                 div(class="text-center mt-3")
                     if yaEsSeguido
-                        form(action=`/dejar-de-seguir/${usuario.id_usuario}/posts`, method="post")
+                        form(action=`/usuarioPerfil/dejar-de-seguir/${usuario.id_usuario}/posts`, method="post")
                             button(type="submit" class="bg-red-700 hover:bg-red-800 text-violet-50 font-semibold px-5 py-1.5") Dejar de seguir
                     else
                         form(action=`/seguir/${usuario.id_usuario}/posts`, method="post")
@@ -158,12 +158,12 @@ block content
                                             p(class="bg-green-800 text-white px-2 py-1")
                                                 span(class="font-bold") Tú sigues a #{usuario.nombre_usuario}
                                     else if seguido
-                                        form(action=`/dejar-de-seguir/${follower.seguidor.id_usuario}/followers`, method="post")
+                                        form(action=`/usuarioPerfil/dejar-de-seguir/${follower.seguidor.id_usuario}/followers`, method="post")
                                             div(class="flex justify-between items-center py-2 px-6 border-b-1")
                                                 p(class="font-medium") #{follower.seguidor.nombre_usuario}
                                                 button(type="submit" name="btn_seguir" id="btn_seguir" class="bg-red-700 hover:bg-red-800 text-violet-50 font-semibold px-5 py-1.5") Dejar de seguir
                                     else
-                                        form(action=`/seguir/${follower.seguidor.id_usuario}/followers`, method="post")
+                                        form(action=`/usuarioPerfil/seguir/${follower.seguidor.id_usuario}/followers`, method="post")
                                             div(class="flex justify-between items-center py-2 px-6 border-b-1")
                                                 p(class="font-medium") #{follower.seguidor.nombre_usuario}
                                                 button(type="submit" name="btn_seguir" id="btn_seguir" class="bg-green-700 hover:bg-green-800 text-violet-50 font-semibold px-5 py-1.5") Seguir
@@ -198,12 +198,12 @@ block content
                                                 span(class="font-bold") #{usuario.nombre_usuario}
                                                 |  te está siguiendo
                                     else if yoLoSigo
-                                        form(action=`/dejar-de-seguir/${following.seguido.id_usuario}/following`, method="post")
+                                        form(action=`/usuarioPerfil/dejar-de-seguir/${following.seguido.id_usuario}/following`, method="post")
                                             div(class="flex justify-between items-center py-2 px-6 border-b-1")
                                                 p(class="font-medium") #{following.seguido.nombre_usuario}
                                                 button(type="submit" name="btn_seguir" id="btn_seguir" class="bg-red-700 hover:bg-red-800 text-violet-50 font-semibold px-5 py-1.5") Dejar de seguir
                                     else
-                                        form(action=`/seguir/${following.seguido.id_usuario}/following`, method="post")
+                                        form(action=`/usuarioPerfil/seguir/${following.seguido.id_usuario}/following`, method="post")
                                             div(class="flex justify-between items-center py-2 px-6 border-b-1")
                                                 p(class="font-medium") #{following.seguido.nombre_usuario}
                                                 button(type="submit" name="btn_seguir" id="btn_seguir" class="bg-green-700 hover:bg-green-800 text-violet-50 font-semibold px-5 py-1.5") Seguir
