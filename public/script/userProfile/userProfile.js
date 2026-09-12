@@ -1,5 +1,14 @@
 let posts = document.querySelectorAll(".post") //--> Todas las publicaciónes guardadas como favorito
 let post_menu_all = document.querySelectorAll(".opciones") //--> Obtiene todos los nodos que contienen el boton "..." en todas las publicaciones
+let post_menu_all2 = document.querySelectorAll(".opciones2") //--> Obtiene todos los nodos que contienen el boton "..." en todas las publicaciones
+
+if(document.querySelector(".user_colecciones")){
+    let btn_crearColección = document.querySelector(".user_colecciones").querySelector("#crearColeccion")
+
+    btn_crearColección.addEventListener("click", (e) => {
+        vista_crearColeccion("colecciones")
+    })
+}
 
 //Iterar sobre todas las publicaciones
 
@@ -8,11 +17,18 @@ for (const p of posts) {
     //Lista de opciones disponibles en todas las publicaciones
     let post_menu = p.querySelector(".opciones")
 
+    let post_menu2 = p.querySelector(".opciones2")
+
+    let post_menu2_lis = p.querySelector(".opciones2").querySelectorAll(".coleccion")
+
     //Boton "..." visible en la esquina superior derecha, en todas las publicaciones, que muestra/oculta las opciones
     let button_post = p.querySelector(".boton_opciones")
 
     //Boton que permite guardar una publicación en una colección
     let btn_colección = p.querySelector("#btn_colección")
+
+    let list_btn_colección_guardar = post_menu2.querySelectorAll("#btn_colección")
+
 
     //Obtiene el formulario que permite guardar la publicación en "Favoritos"
     let form_guardarFavoritos = p.querySelector("#guardarFavoritos")
@@ -23,7 +39,8 @@ for (const p of posts) {
     //Obtiene el formulario que permite quitar la publicación de "Favoritos"
     let form_quitarFavoritos_noduenio = p.querySelector("#quitarFavoritos_noduenio")
 
-
+    let btn_crearColección = p.querySelector("#crearColeccion")
+    console.log(btn_crearColección)
     if (form_quitarFavoritos_duenio) {
 
         form_quitarFavoritos_duenio.addEventListener("submit", (e) => {
@@ -54,45 +71,101 @@ for (const p of posts) {
     if (btn_colección) {
 
         btn_colección.addEventListener("click", (e) => {
-            console.log("Aasd")
 
-            div_colecciones(btn_colección, post_menu, button_post, p)
+            //div_colecciones(btn_colección, post_menu, button_post, p)
+            div_colecciones(post_menu, post_menu2)
         })
 
+    }
+
+    btn_crearColección.addEventListener("click", (e) => {
+        vista_crearColeccion("userColeccion", post_menu, p, post_menu2)
+    })
+
+    for (const btn_guardar of list_btn_colección_guardar) {
+        
+        btn_guardar.addEventListener('mouseenter', () => {
+            btn_guardar.innerHTML =
+                `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
+        </svg>`
+        });
+
+        btn_guardar.addEventListener('mouseleave', () => {
+            btn_guardar.innerHTML =
+                `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
+        </svg>`
+        });
+
+
+    }
+
+    for (const li of post_menu2_lis) {
+
+        const form = li.querySelector("form")
+        form.addEventListener("submit", (e) => {
+            e.preventDefault()
+
+            if (form.action.includes("/quitar-de-coleccion")) {
+                quitarPublicación_colección(form, p)
+            } else if (form.action.includes("/guardar-en-coleccion")) {
+                console.log("GUARDAR")
+                guardarPublicación_colección(form, p)
+            }
+        })
     }
 
     //Mostrar y ocultar menu al clickear los puntos suspensivos (...)
     //dentro de la publciación
     if (button_post) {
         button_post.addEventListener("click", () => {
-
-            if (post_menu.classList == "hidden") {
-                mostrarOpciones(post_menu)
+        
+            if (post_menu.classList.contains("hidden") && post_menu2.classList.contains("hidden")) {
+                mostrarOpciones(post_menu_all, post_menu, post_menu_all2, post_menu2)
             } else {
-                ocultarOpciones(post_menu_all, post_menu)
+                ocultarOpciones(post_menu_all, post_menu_all2, post_menu, post_menu2)
             }
 
         })
     }
 }
 
-function mostrarOpciones(post_menu) {
+function mostrarOpciones(post_menu_all, post_menu, post_menu_all2, post_menu2) {
 
+    console.log("====================== MOSTRAR ======================")
     post_menu.classList.remove("hidden")
     post_menu.classList.toggle("block")
 
-}
 
-function ocultarOpciones(post_menu_all, post_menu) {
 
     for (const menu of post_menu_all) {
         if (!menu.classList.contains("hidden") && menu.id !== post_menu.id) {
+            menu.classList.remove("block")
             menu.classList.toggle("hidden")
         }
     }
-    post_menu.classList.remove("block")
-    post_menu.classList.toggle("hidden")
 
+    for (const menu2 of post_menu_all2) {
+        if (!menu2.classList.contains("hidden") && menu2.id !== post_menu2.id) {
+            menu2.classList.remove("block")
+            menu2.classList.toggle("hidden")
+        }
+    }
+
+}
+
+function ocultarOpciones(post_menu_all, post_menu_all2, post_menu, post_menu2) {
+    console.log("====================== OCULTAR ======================")
+    if(post_menu.classList.contains("block")){
+        post_menu.classList.remove("block")
+        post_menu.classList.toggle("hidden")
+    }
+    console.log(post_menu2)
+    if(post_menu2.classList.contains("block")){
+        post_menu2.classList.remove("block")
+        post_menu2.classList.toggle("hidden")
+    }
 }
 
 //Función que guarda publicación como favorito
@@ -293,8 +366,18 @@ async function quitarPublicación_favoritos(post_menu, post, form_quitarFavorito
     }
 }
 
+async function div_colecciones(post_menu, post_menu2) {
+    post_menu.classList.remove("block")
+    post_menu.classList.toggle("hidden")
+
+    post_menu2.classList.remove("hidden")
+    post_menu2.classList.toggle("block")
+}
+
+
+
 //Función que culta los botones "Guardar en Favoritos" y "Guardar en Colección" renderizando el boton para crear colección y el listado de colecciones creados por el usuario
-async function div_colecciones(btn_colección, post_menu, button_post, post) {
+/*async function div_colecciones(btn_colección, post_menu, button_post, post) {
 
     //Renderizar boton que permite crear una nueva colección
     let opciones = post_menu.querySelectorAll("li")
@@ -343,10 +426,10 @@ async function div_colecciones(btn_colección, post_menu, button_post, post) {
     //Guardar la publicación en una o más de una colección
     botonesColección(post_menu, post)
 
-}
+}*/
 
 //Renderizar div que contiene la Función para crear una colección
-async function vista_crearColeccion(post_menu, post) {
+async function vista_crearColeccion(seccion, post_menu = undefined, post = undefined, post_menu2 = undefined) {
     let pag_body = document.querySelector("body")
 
     let div_crearColección = document.createElement("div")
@@ -418,7 +501,7 @@ async function vista_crearColeccion(post_menu, post) {
     form_crearColección.addEventListener("submit", async (e) => {
         e.preventDefault()
 
-        nuevaColección(form_crearColección, post_menu, post, div_crearColección, div_content)
+        nuevaColección(seccion, form_crearColección, post_menu, post, div_crearColección, div_content, post_menu2)
     })
 }
 
@@ -468,7 +551,7 @@ async function botonesColección(post_menu, post) {
 }
 
 //Función que crea una nueva colección con un bookmark funcional asociado
-async function nuevaColección(form_crearColección, post_menu, post, div_crearColección, div_content) {
+async function nuevaColección(seccion, form_crearColección, post_menu = undefined, post = undefined, div_crearColección, div_content, post_menu2 = undefined) {
 
     //Dato a enviar en la peticion POST
     const data = form_crearColección.querySelector("#nombreColeccion").value
@@ -502,23 +585,54 @@ async function nuevaColección(form_crearColección, post_menu, post, div_crearC
         //Renderiza listado de colecciones en el menu de opciones de la publicación al tocar el boton para salir del div que crea una colección
         document.querySelector("#btn_salir").addEventListener("click", () => {
 
-            let li_colección = document.createElement("li")
-            li_colección.className = "coleccion border-b-1 border-black"
-            let div_colección = document.createElement("div")
-            div_colección.className = "flex justify-between items-center p-2"
+            if(seccion === "colecciones"){
 
-            let nombre_colección = document.createElement("p")
-            nombre_colección.className = "mr-10"
-            nombre_colección.textContent = result.nueva_colección.nombre_colección
+                const coleccion = colecciones.find(col => col.nombre_colección === data)
 
-            li_colección.appendChild(div_colección)
-            div_colección.appendChild(nombre_colección)
-            post_menu.appendChild(li_colección)
+                let a = document.createElement("a")
+                let div = document.createElement("div")
+                let label = document.createElement("label")
+                let button = document.createElement("button")
+                let p = document.createElement("p")
 
-            //Renderiza las colecciones del usuario junto con un bookmark hueco que permite guardar una publicación en una colección especifica
-            form_guardarPublicación_colección_render(post, result.nueva_colección.nombre_colección, div_colección)
+                a.href = `/usuarioPerfil/${coleccion.id_usuario}/colecciones/${coleccion.nombre_colección}`
+                div.className = "coleccion relative bg-white border-1 border-gray-400 rounded-[10px] px-20 py-2 hover:outline-orange-400 hover:bg-orange-400 hover:opacity-80 h-fit text-center"
+                label.for = "btn_userColeccion"
+                button.className = "text-center hover:font-bold cursor-pointer"
+                button.id = "crearColeccion"
+                button.textContent = coleccion.nombre_colección
+                p.textContent = "(0 publicaciones)"
 
-            div_crearColección.remove()
+                a.appendChild(div)
+                div.appendChild(label)
+                label.appendChild(button)
+                div.appendChild(p)
+
+                let user_colecciones_nodo = document.querySelector(".user_colecciones")
+                let btn_crearColeccion = user_colecciones_nodo.querySelector("#crearColeccion")
+                
+                user_colecciones_nodo.insertBefore(a, btn_crearColeccion);
+
+                div_crearColección.remove()
+            } else if (seccion === "userColeccion"){
+                let li_colección = document.createElement("li")
+                li_colección.className = "coleccion border-b-1 border-black"
+                let div_colección = document.createElement("div")
+                div_colección.className = "flex justify-between items-center p-2"
+    
+                let nombre_colección = document.createElement("p")
+                nombre_colección.className = "mr-10"
+                nombre_colección.textContent = result.nueva_colección.nombre_colección
+    
+                li_colección.appendChild(div_colección)
+                div_colección.appendChild(nombre_colección)
+                post_menu2.appendChild(li_colección)
+    
+                //Renderiza las colecciones del usuario junto con un bookmark hueco que permite guardar una publicación en una colección especifica
+                form_guardarPublicación_colección_render(post, result.nueva_colección.nombre_colección, div_colección)
+    
+                div_crearColección.remove()
+            }
         })
 
     } catch (error) {

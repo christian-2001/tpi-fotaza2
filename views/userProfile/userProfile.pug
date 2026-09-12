@@ -4,6 +4,7 @@ block metadata
     script.
         let colecciones = !{JSON.stringify(userColecciones ? userColecciones : 0)}
         let postsColecciones = !{JSON.stringify(postsColecciones ? postsColecciones : 0)} 
+        let user_coleccion = !{JSON.stringify(userColeccion ? userColeccion : 0)} 
     if esDueño
         title Perfil de #{userSession.user_name}
     else
@@ -14,6 +15,7 @@ block content
     - const idPerfil = esDueño ? userSession.id : usuario.id_usuario
     - let esFavorito
     - let postsColeccionesCount 
+    - let guardada
         div(class="msj fixed bottom-0 right-10 mb-10 z-20 text-white text-2xl")
 
         div(class="flex justify-center my-5")
@@ -321,7 +323,7 @@ block content
                         p(class="text-center text-[2rem] my-5 font-medium") Nada de momento, explora publicaciones y guárdalos en tu perfil
                     
                     div(class="msj fixed bottom-0 right-10 mb-10 z-20 text-white text-2xl")
-                //- ==================== COLECCIONES ====================
+                //- ==================== COLECCIONES ====================               
                 else if sección == "colecciones"
                     if !postsColeccion
                         div(class="flex justify-center")
@@ -340,14 +342,14 @@ block content
                                                     p (#{postsColeccionesCount} publicaciones)
                                         #crearColeccion(class="flex justify-center")
                                             div(class="relative bg-emerald-500 border-1 border-gray-400 rounded-[10px] px-6 py-1 hover:outline-orange-400 hover:bg-emerald-600 hover:opacity-80 hover:text-white cursor-pointer h-fit text-center")
-                                                p Crear Colección 
-                                    else
-                                        
+                                                label(for="crearColeccion")
+                                                    button(class="text-center hover:font-bold cursor-pointer" id="crearColeccion") Crear Colección
                             else
                                 p(class="text-center text-[2rem] my-5 font-medium") Nada de momento
                     else
                         p(class="text-center text-[2rem] my-5 font-medium") #{userColeccion}
-                                div(class="flex justify-center")               
+                            div(class="flex justify-center")
+                                if postsColeccion.length > 0               
                                     .user_posts(class=(postsColeccion.length === 1) ? "grid grid-cols-1 mx-20 gap-4" : "grid grid-cols-2 mx-20 gap-4")
                                         each post in postsColeccion
                                             .post(class="relative bg-white border-1 border-gray-400 rounded-[10px] p-2 hover:outline-3 hover:outline-orange-400 hover:opacity-80 h-fit")
@@ -361,7 +363,40 @@ block content
                                                                 button(class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer", id="btn_quitarFavoritos") Eliminar de Favoritos
                                                     li(id="guardar-en-colección")
                                                         label(for="btn_colección")
-                                                            button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_colección") Guardar en Colección                     
+                                                            button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_colección") Guardar en Colección
+
+                                                ul(class="opciones2 hidden absolute bg-gray-200 top-7 right-2 mt-2 z-10", id=`post${post.id_post}`)
+                                                    li(class="border-black border-b-2")
+                                                        div(class="flex justify-center items-center py-1")
+                                                            label(for="crearColeccion")
+                                                                button(class="w-45 text-center text-blue-700 hover:font-bold cursor-pointer " id="crearColeccion") + Crear colección
+
+                                                    each c in userColecciones
+                                                        - guardada = false                                                   
+                                                        li(class="coleccion border-b-1 border-black")
+                                                            div(class="flex justify-between items-center p-2")
+                                                                if c.nombre_colección === userColeccion 
+                                                                    p(class="mr-10") #{c.nombre_colección} -> tu colección
+                                                                else 
+                                                                    p(class="mr-10") #{c.nombre_colección}
+
+
+                                                                if postsColecciones.length > 0
+                                                                    - const _guardada = postsColecciones.some(pc => pc.id_colección === c.id_colección && pc.id_post === post.id_post);
+                                                                    - guardada = _guardada
+                                                                
+                                                                    if guardada
+                                                                        form(action="/quitar-de-coleccion", method="post" class="ml-10" name=`${c.nombre_colección}` id=`${c.nombre_colección}`)
+                                                                            label(for="btn_colección_guardado")
+                                                                                button(class="cursor-pointer px-2 py-1" type="submit" id="btn_colección_guardado")
+                                                                                    svg(xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24") 
+                                                                                        path(d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z")
+                                                                    else                            
+                                                                        form(action="/guardar-en-coleccion", method="post" class="ml-10" name=`${c.nombre_colección}` id=`${c.nombre_colección}`) 
+                                                                            label(for="btn_colección")
+                                                                                button(class="cursor-pointer px-2 py-1" type="submit" id="btn_colección" disabled=(c.nombre_colección === userColeccion))                                                          
+                                                                                    svg(xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24") 
+                                                                                        path(d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z")
 
                                                 .post_usuario(class="text-center text-[20px]")
                                                     p
@@ -388,6 +423,6 @@ block content
                                                         .imagenes(class="grid grid-cols-1")
                                                             each post_img in post.Imagens
                                                                 img(src=`${post_img.img_path}`)
-                        
-
+                                else
+                                    p(class="text-center text-[2rem] font-medium") Colección vacía
     script(src="/script/userProfile/userProfile.js" defer) 

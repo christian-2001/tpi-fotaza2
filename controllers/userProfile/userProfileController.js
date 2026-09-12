@@ -107,11 +107,6 @@ export async function mostrarPerfilUsuario(req, res) {
 
             if (sección === "colecciones" && userColeccion) {
                 postsColeccion = await getPostsColección(userColeccion, req.user.id_usuario)
-
-                console.log("==========================================================================================")
-                console.log(postsColeccion.length)
-                console.log("==========================================================================================")
-
             }
         }
 
