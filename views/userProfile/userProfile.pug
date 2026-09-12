@@ -357,13 +357,37 @@ block content
                                                     button(type="button" class="boton_opciones text-5xl hover:text-gray-300 cursor-pointer") ...
 
                                                 ul(class="opciones hidden absolute bg-gray-200 top-7 right-2 mt-2 z-10", id=`post${post.id_post}`)
-                                                    li(id="quitar-de-favoritos")
-                                                        form(action=`/quitar-de-favoritos/${post.id_post}`, method="post", name="quitarFavoritos_duenio", id="quitarFavoritos_duenio") 
-                                                            label(for="btn_quitarFavoritos") 
-                                                                button(class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer", id="btn_quitarFavoritos") Eliminar de Favoritos
-                                                    li(id="guardar-en-colección")
-                                                        label(for="btn_colección")
-                                                            button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_colección") Guardar en Colección
+                                                    - esFavorito = false
+                                                    each postFav in postsFavorito
+                                                        if (post.id_post === postFav.id_post)
+
+                                                            if (esFavorito === false)          
+                                                                li(id="quitar-de-favoritos")
+                                                                    form(action=`/quitar-de-favoritos/${post.id_post}`, method="post", name="quitarFavoritos_noduenio", id="quitarFavoritos_noduenio") 
+                                                                        label(for="btn_quitarFavoritos") 
+                                                                            button(class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer", id="btn_quitarFavoritos_coleccion") Eliminar de Favoritos
+                                                                            - esFavorito = true
+                                                                li(id="guardar-en-colección")
+                                                                    label(for="btn_colección")
+                                                                        button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_colección") Guardar en Colección
+                                                            else
+                                                                li(id="agregar-a-favoritos")
+                                                                    form(action=`/favoritos/${post.id_post}`, method="post", name="guardarFavoritos", id="guardarFavoritos") 
+                                                                        label(for="btn_favoritos") 
+                                                                            button(class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer", id="btn_favoritos") Guardar en Favoritos
+
+                                                                li(id="guardar-en-coleccion")
+                                                                    label(for="btn_colección")
+                                                                        button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_colección") Guardar en Colección                
+                                                
+                                                    if esFavorito === false
+                                                        li(id="agregar-a-favoritos")
+                                                            form(action=`/favoritos/${post.id_post}`, method="post", name="guardarFavoritos", id="guardarFavoritos") 
+                                                                label(for="btn_favoritos") 
+                                                                    button(class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer", id="btn_favoritos") Guardar en Favoritos
+                                                        li(id="guardar-en-coleccion")
+                                                            label(for="btn_colección")
+                                                                button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_colección") Guardar en Colección                
 
                                                 ul(class="opciones2 hidden absolute bg-gray-200 top-7 right-2 mt-2 z-10", id=`post${post.id_post}`)
                                                     li(class="border-black border-b-2")

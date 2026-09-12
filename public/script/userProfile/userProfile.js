@@ -168,6 +168,14 @@ function ocultarOpciones(post_menu_all, post_menu_all2, post_menu, post_menu2) {
     }
 }
 
+async function div_colecciones(post_menu, post_menu2) {
+    post_menu.classList.remove("block")
+    post_menu.classList.toggle("hidden")
+
+    post_menu2.classList.remove("hidden")
+    post_menu2.classList.toggle("block")
+}
+
 //Función que guarda publicación como favorito
 async function guardarPublicación_favoritos(post_menu, post, form_guardarFavoritos) {
     //Enviar datos con Fetch usando POST
@@ -366,13 +374,7 @@ async function quitarPublicación_favoritos(post_menu, post, form_quitarFavorito
     }
 }
 
-async function div_colecciones(post_menu, post_menu2) {
-    post_menu.classList.remove("block")
-    post_menu.classList.toggle("hidden")
 
-    post_menu2.classList.remove("hidden")
-    post_menu2.classList.toggle("block")
-}
 
 
 
