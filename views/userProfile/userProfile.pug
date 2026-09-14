@@ -363,7 +363,7 @@ block content
                                                 - esFavorito = false
                                                 each postFav in postsFavorito
                                                     if (post.id_post === postFav.id_post)
-                                            //-
+                                            
                                                         if (esFavorito === false)          
                                                             li(id="quitar-de-favoritos")
                                                                 form(action=`/quitar-de-favoritos/${post.id_post}`, method="post", name="quitarFavoritos_noduenio", id="quitarFavoritos_noduenio") 
