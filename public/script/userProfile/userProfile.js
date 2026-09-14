@@ -1,12 +1,21 @@
 let posts = document.querySelectorAll(".post") //--> Todas las publicaciónes guardadas como favorito
 let post_menu_all = document.querySelectorAll(".opciones") //--> Obtiene todos los nodos que contienen el boton "..." en todas las publicaciones
 let post_menu_all2 = document.querySelectorAll(".opciones2") //--> Obtiene todos los nodos que contienen el boton "..." en todas las publicaciones
+let nombreColección = document.querySelector(".nombreColeccion").textContent
 
-if(document.querySelector(".user_colecciones")){
+let btn_modificarColección = document.querySelector("#btn_modificarColección")
+
+if (btn_modificarColección) {
+    btn_modificarColección.addEventListener("click", (e) => {
+        vista_crear_modificar_coleccion("modificar", "userColeccion")
+    })
+}
+
+if (document.querySelector(".user_colecciones")) {
+
     let btn_crearColección = document.querySelector(".user_colecciones").querySelector("#crearColeccion")
-
     btn_crearColección.addEventListener("click", (e) => {
-        vista_crearColeccion("colecciones")
+        vista_crear_modificar_coleccion("crear", "colecciones")
     })
 }
 
@@ -79,11 +88,11 @@ for (const p of posts) {
     }
 
     btn_crearColección.addEventListener("click", (e) => {
-        vista_crearColeccion("userColeccion", post_menu, p, post_menu2)
+        vista_crear_modificar_coleccion("userColeccion", post_menu, p, post_menu2)
     })
 
     for (const btn_guardar of list_btn_colección_guardar) {
-        
+
         btn_guardar.addEventListener('mouseenter', () => {
             btn_guardar.innerHTML =
                 `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
@@ -120,7 +129,7 @@ for (const p of posts) {
     //dentro de la publciación
     if (button_post) {
         button_post.addEventListener("click", () => {
-        
+
             if (post_menu.classList.contains("hidden") && post_menu2.classList.contains("hidden")) {
                 mostrarOpciones(post_menu_all, post_menu, post_menu_all2, post_menu2)
             } else {
@@ -157,12 +166,12 @@ function mostrarOpciones(post_menu_all, post_menu, post_menu_all2, post_menu2) {
 
 function ocultarOpciones(post_menu_all, post_menu_all2, post_menu, post_menu2) {
     console.log("====================== OCULTAR ======================")
-    if(post_menu.classList.contains("block")){
+    if (post_menu.classList.contains("block")) {
         post_menu.classList.remove("block")
         post_menu.classList.toggle("hidden")
     }
     console.log(post_menu2)
-    if(post_menu2.classList.contains("block")){
+    if (post_menu2.classList.contains("block")) {
         post_menu2.classList.remove("block")
         post_menu2.classList.toggle("hidden")
     }
@@ -374,10 +383,6 @@ async function quitarPublicación_favoritos(post_menu, post, form_quitarFavorito
     }
 }
 
-
-
-
-
 //Función que culta los botones "Guardar en Favoritos" y "Guardar en Colección" renderizando el boton para crear colección y el listado de colecciones creados por el usuario
 /*async function div_colecciones(btn_colección, post_menu, button_post, post) {
 
@@ -431,11 +436,11 @@ async function quitarPublicación_favoritos(post_menu, post, form_quitarFavorito
 }*/
 
 //Renderizar div que contiene la Función para crear una colección
-async function vista_crearColeccion(seccion, post_menu = undefined, post = undefined, post_menu2 = undefined) {
+async function vista_crear_modificar_coleccion(acción = undefined, sección = undefined, post_menu = undefined, post = undefined, post_menu2 = undefined) {
     let pag_body = document.querySelector("body")
 
-    let div_crearColección = document.createElement("div")
-    div_crearColección.className = "div_crearColeccion fixed bg-black/50 flex items-center justify-center z-30 inset-0"
+    let div = document.createElement("div")
+    div.className = "divColeccion fixed bg-black/50 flex items-center justify-center z-30 inset-0"
 
     let div_content = document.createElement("div")
     div_content.className = "div_content border bg-white p-6"
@@ -453,58 +458,116 @@ async function vista_crearColeccion(seccion, post_menu = undefined, post = undef
         <path d="M12 19l-7-7 7-7" />
     </svg>`
 
-    let form_crearColección = document.createElement("form")
-    form_crearColección.action = "/crearColeccion"
-    form_crearColección.method = "post"
-    form_crearColección.name = "form_crearColeccion"
-    form_crearColección.id = "form_crearColeccion"
+    if (acción === "crear") {
+        let form_crearColección = document.createElement("form")
+        form_crearColección.action = "/crearColeccion"
+        form_crearColección.method = "post"
+        form_crearColección.name = "form_crearColeccion"
+        form_crearColección.id = "form_crearColeccion"
 
-    let label_Input = document.createElement("label")
-    label_Input.for = "nombreColeccion"
-    label_Input.className = "text-lg mb-[5px]"
-    label_Input.textContent = "Ingrese el nombre para su nueva colección"
+        let label_Input = document.createElement("label")
+        label_Input.for = "nombreColeccion"
+        label_Input.className = "text-lg mb-[5px]"
+        label_Input.textContent = "Ingrese el nombre para su nueva colección"
 
-    let input_colección = document.createElement("input")
-    input_colección.name = "nombreColeccion"
-    input_colección.id = "nombreColeccion"
-    input_colección.size = 50
-    input_colección.maxLength = 50
-    input_colección.type = "text"
-    input_colección.className = "block w-fit p-1 border focus:ring-3 focus:ring-orange-500 focus:outline-none focus:border-none"
+        let input_colección = document.createElement("input")
+        input_colección.name = "nombreColeccion"
+        input_colección.id = "nombreColeccion"
+        input_colección.size = 50
+        input_colección.maxLength = 50
+        input_colección.type = "text"
+        input_colección.className = "block w-fit p-1 border focus:ring-3 focus:ring-orange-500 focus:outline-none focus:border-none"
 
-    let div_btnConfirmar = document.createElement("div")
-    div_btnConfirmar.className = "confirmar flex justify-center mt-6"
-    let label_btnConfirmar = document.createElement("label")
-    label_btnConfirmar.for = "btn_confirmar"
-    let btnConfirmar = document.createElement("button")
-    btnConfirmar.type = "submit"
-    btnConfirmar.className = "px-5 py-1 hover:bg-blue-500 hover:text-white hover:font-bold cursor-pointer border"
-    btnConfirmar.id = "btn_confirmar"
-    btnConfirmar.textContent = "Confirmar"
+        let div_btnConfirmar = document.createElement("div")
+        div_btnConfirmar.className = "confirmar flex justify-center mt-6"
+        let label_btnConfirmar = document.createElement("label")
+        label_btnConfirmar.for = "btn_confirmar"
+        let btnConfirmar = document.createElement("button")
+        btnConfirmar.type = "submit"
+        btnConfirmar.className = "px-5 py-1 hover:bg-blue-500 hover:text-white hover:font-bold cursor-pointer border"
+        btnConfirmar.id = "btn_confirmar"
+        btnConfirmar.textContent = "Confirmar"
 
-    div_crearColección.appendChild(div_content)
-    div_content.appendChild(div_btnVolver)
-    div_btnVolver.appendChild(btn_volver)
-    btn_volver.appendChild(flecha)
-    div_content.appendChild(form_crearColección)
-    form_crearColección.appendChild(label_Input)
-    label_Input.appendChild(input_colección)
+        div.appendChild(div_content)
+        div_content.appendChild(div_btnVolver)
+        div_btnVolver.appendChild(btn_volver)
+        btn_volver.appendChild(flecha)
+        div_content.appendChild(form_crearColección)
+        form_crearColección.appendChild(label_Input)
+        label_Input.appendChild(input_colección)
 
-    form_crearColección.appendChild(div_btnConfirmar)
-    div_btnConfirmar.appendChild(label_btnConfirmar)
-    label_btnConfirmar.appendChild(btnConfirmar)
+        form_crearColección.appendChild(div_btnConfirmar)
+        div_btnConfirmar.appendChild(label_btnConfirmar)
+        label_btnConfirmar.appendChild(btnConfirmar)
 
-    flecha.addEventListener("click", () => {
-        pag_body.removeChild(div_crearColección)
-    })
+        flecha.addEventListener("click", () => {
+            pag_body.removeChild(div)
+        })
 
-    pag_body.appendChild(div_crearColección)
+        pag_body.appendChild(div)
 
-    form_crearColección.addEventListener("submit", async (e) => {
-        e.preventDefault()
+        form_crearColección.addEventListener("submit", async (e) => {
+            e.preventDefault()
 
-        nuevaColección(seccion, form_crearColección, post_menu, post, div_crearColección, div_content, post_menu2)
-    })
+            httpPostColeccion(acción, sección, form_crearColección, post_menu, post, div, div_content, post_menu2)
+        })
+    } else if (acción === "modificar") {
+
+        let form_modificarColección = document.createElement("form")
+        form_modificarColección.action = window.location.href
+        form_modificarColección.method = "post"
+        form_modificarColección.name = "form_modificarColeccion"
+        form_modificarColección.id = "form_modificarColeccion"
+
+        let label_Input = document.createElement("label")
+        label_Input.for = "nuevo_nombreColeccion"
+        label_Input.className = "text-lg mb-[5px]"
+        label_Input.textContent = "Ingrese el nuevo nombre para su colección"
+
+        let input_colección = document.createElement("input")
+        input_colección.name = "nuevo_nombreColeccion"
+        input_colección.id = "nuevo_nombreColeccion"
+        input_colección.size = 50
+        input_colección.maxLength = 50
+        input_colección.type = "text"
+        input_colección.className = "block w-fit p-1 border focus:ring-3 focus:ring-orange-500 focus:outline-none focus:border-none"
+
+        let div_btnConfirmar = document.createElement("div")
+        div_btnConfirmar.className = "confirmar flex justify-center mt-6"
+        let label_btnConfirmar = document.createElement("label")
+        label_btnConfirmar.for = "btn_confirmar"
+        let btnConfirmar = document.createElement("button")
+        btnConfirmar.type = "submit"
+        btnConfirmar.className = "px-5 py-1 hover:bg-blue-500 hover:text-white hover:font-bold cursor-pointer border"
+        btnConfirmar.id = "btn_confirmar"
+        btnConfirmar.textContent = "Confirmar"
+
+        div.appendChild(div_content)
+        div_content.appendChild(div_btnVolver)
+        div_btnVolver.appendChild(btn_volver)
+        btn_volver.appendChild(flecha)
+        div_content.appendChild(form_modificarColección)
+        form_modificarColección.appendChild(label_Input)
+        label_Input.appendChild(input_colección)
+
+        form_modificarColección.appendChild(div_btnConfirmar)
+        div_btnConfirmar.appendChild(label_btnConfirmar)
+        label_btnConfirmar.appendChild(btnConfirmar)
+
+        flecha.addEventListener("click", () => {
+            pag_body.removeChild(div)
+        })
+
+        pag_body.appendChild(div)
+
+        form_modificarColección.addEventListener("submit", async (e) => {
+            e.preventDefault()
+
+            httpPostColeccion(acción, sección, form_modificarColección, post_menu, post, div, div_content, post_menu2)
+        })
+    }
+
+
 }
 
 //Renderiza listado de colecciones con bookmark funcional asociado que guarda/quita una publicación de esa colección
@@ -553,41 +616,77 @@ async function botonesColección(post_menu, post) {
 }
 
 //Función que crea una nueva colección con un bookmark funcional asociado
-async function nuevaColección(seccion, form_crearColección, post_menu = undefined, post = undefined, div_crearColección, div_content, post_menu2 = undefined) {
-
-    //Dato a enviar en la peticion POST
-    const data = form_crearColección.querySelector("#nombreColeccion").value
-
-    //Fetch con POST
+async function httpPostColeccion(acción = undefined, sección = undefined, formColección = undefined, post_menu = undefined, post = undefined, div = undefined, div_content = undefined, post_menu2 = undefined) {
+    let _nombreNuevo = (formColección.name === "form_modificarColeccion") ? formColección.querySelector("#nuevo_nombreColeccion").value : undefined
     try {
-        const res = await fetch(form_crearColección.action, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+        if (acción === "crear") {
+            //Dato a enviar en la peticion POST
+            const data = formColección.querySelector("#nombreColeccion").value
 
-            body: JSON.stringify({ data })
-        })
+            //Fetch con POST
 
-        const result = await res.json()
+            const res = await fetch(formColección.action, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-        //Mensaje confirmando creación de la colección
-        div_content.innerHTML = ""
-        div_content.innerHTML =
-            `<p class="p-3 text-3xl"> Se ha creado la colección exitosamente </p>
-        <div class="flex justify-center items-center text-2xl pt-2"> 
-            <label for="btn_salir"> 
-                <button type="button" class="cursor-pointer hover:font-bold" id="btn_salir"> Salir </button>
-            </label>
-        </div>`
+                body: JSON.stringify({ data })
+            })
 
-        //Actualizamos el listado de colecciones del usuario autenticado
-        colecciones = result.userColecciones
+            const result = await res.json()
+            console.log(div_content)
+            //Mensaje confirmando creación de la colección
+            div_content.innerHTML = ""
+            div_content.innerHTML =
+                `<p class="p-3 text-3xl"> Se ha creado la colección exitosamente </p>
+            <div class="flex justify-center items-center text-2xl pt-2"> 
+                <label for="btn_salir"> 
+                    <button type="button" class="cursor-pointer hover:font-bold" id="btn_salir"> Salir </button>
+                </label>
+            </div>`
+
+            //Actualizamos el listado de colecciones del usuario autenticado
+            colecciones = result.userColecciones
+
+        } else if (acción === "modificar") {
+
+            div_content.innerHTML = ""
+            div_content.innerHTML =
+                `<p class="p-3 text-3xl"> Se cambió de nombre exitosamente </p>
+            <div class="flex justify-center items-center text-2xl pt-2"> 
+                <label for="btn_salir"> 
+                    <button type="button" class="cursor-pointer hover:font-bold" id="btn_salir"> Salir </button>
+                </label>
+            </div>`
+
+        }
 
         //Renderiza listado de colecciones en el menu de opciones de la publicación al tocar el boton para salir del div que crea una colección
-        document.querySelector("#btn_salir").addEventListener("click", () => {
+        document.querySelector("#btn_salir").addEventListener("click", async() => {
 
-            if(seccion === "colecciones"){
+            if (acción === "modificar" && sección === "userColeccion") {
+
+                //Dato a enviar en la peticion POST
+                const data = {
+                    nombreViejo: nombreColección,
+                    nombreNuevo: _nombreNuevo,
+                }
+
+                //Fetch con POST
+                const res = await fetch(formColección.action, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({ data })
+                })
+
+                const { newURL } = await res.json()
+                window.location.href = newURL
+
+            } else if (acción === "crear" && sección === "colecciones") {
 
                 const coleccion = colecciones.find(col => col.nombre_colección === data)
 
@@ -612,28 +711,30 @@ async function nuevaColección(seccion, form_crearColección, post_menu = undefi
 
                 let user_colecciones_nodo = document.querySelector(".user_colecciones")
                 let btn_crearColeccion = user_colecciones_nodo.querySelector("#crearColeccion")
-                
+
                 user_colecciones_nodo.insertBefore(a, btn_crearColeccion);
 
-                div_crearColección.remove()
-            } else if (seccion === "userColeccion"){
+                div.remove()
+
+            } else if (acción === undefined && sección === "userColeccion") {
+
                 let li_colección = document.createElement("li")
                 li_colección.className = "coleccion border-b-1 border-black"
                 let div_colección = document.createElement("div")
                 div_colección.className = "flex justify-between items-center p-2"
-    
+
                 let nombre_colección = document.createElement("p")
                 nombre_colección.className = "mr-10"
                 nombre_colección.textContent = result.nueva_colección.nombre_colección
-    
+
                 li_colección.appendChild(div_colección)
                 div_colección.appendChild(nombre_colección)
                 post_menu2.appendChild(li_colección)
-    
+
                 //Renderiza las colecciones del usuario junto con un bookmark hueco que permite guardar una publicación en una colección especifica
                 form_guardarPublicación_colección_render(post, result.nueva_colección.nombre_colección, div_colección)
-    
-                div_crearColección.remove()
+
+                div.remove()
             }
         })
 

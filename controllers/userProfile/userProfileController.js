@@ -172,6 +172,32 @@ export async function eliminarFollow(req, res) {
     }
 }
 
+export async function modificarColeccion(req, res) {
+
+    let { id_usuario, sección, userColeccion } = req.params
+    let { nombreViejo, nombreNuevo } = req.body.data
+
+    let colección = await Colección.findOne({
+        where: {
+            nombre_colección: userColeccion
+        }
+    })
+
+    if (colección) {
+        await Colección.update(
+            { nombre_colección: nombreNuevo },
+            {
+                where: {
+                    nombre_colección: userColeccion,
+                    id_usuario: id_usuario
+                },
+            },
+        );
+
+        res.status(200).json({ newURL: `/usuarioPerfil/${id_usuario}/colecciones/${encodeURIComponent(nombreNuevo) }`})
+    }
+}
+
 async function getPosts(usuario) {
 
     const publicaciones = await Publicacion.findAll({
