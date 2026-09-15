@@ -13,6 +13,7 @@ Publicacion_Colecciones.init(
         model: Publicacion,
         key: "id_post",
       },
+      onDelete: "CASCADE"
     },
 
     id_colección: {
@@ -20,7 +21,8 @@ Publicacion_Colecciones.init(
       references: {
         model: Colección,
         key: "id_colección"
-      }
+      },
+      onDelete: "CASCADE"
     },
 
     fh_guardado: {

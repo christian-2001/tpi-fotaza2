@@ -198,6 +198,24 @@ export async function modificarColeccion(req, res) {
     }
 }
 
+export async function borrarColecciones(req, res){
+    let arrayColecciones  = req.body.data
+
+    try {
+        await Colección.destroy({
+            where: {
+                nombre_colección: {
+                    [Op.in]: arrayColecciones
+                }
+            }
+        })
+    
+        res.status(200).send("COLECCÍON ELIMINADA EXITOSAMENTE!!!")
+    } catch (error) {
+        res.status(400).send(`Error al eliminar colecciones ${error}`)
+    }
+}
+
 async function getPosts(usuario) {
 
     const publicaciones = await Publicacion.findAll({

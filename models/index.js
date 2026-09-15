@@ -101,13 +101,13 @@ Publicacion_Favoritos.belongsTo(Favoritos, { foreignKey: "id_favoritos"})
 
 Publicacion.belongsToMany(Colección, { through: Publicacion_Colecciones, foreignKey: "id_post", otherKey: "id_colección"})
 Colección.belongsToMany(Publicacion, { through: Publicacion_Colecciones, foreignKey: "id_colección", otherKey: "id_post" })
-
+/*
 Publicacion.hasMany(Publicacion_Colecciones, { foreignKey: "id_post"})
 Publicacion_Colecciones.belongsTo(Publicacion, { foreignKey: "id_post"})
 
-Colección.hasMany(Publicacion_Colecciones, { foreignKey: "id_colección"})
-Publicacion_Colecciones.belongsTo(Colección, { foreignKey: "id_colección"})
-
+Colección.hasMany(Publicacion_Colecciones, { foreignKey: "id_colección", onDelete: 'CASCADE'})
+Publicacion_Colecciones.belongsTo(Colección, { foreignKey: "id_colección", onDelete: 'CASCADE'})
+*/
 //-------------------------------------------------------------------------------------
 
 

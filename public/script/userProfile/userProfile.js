@@ -1,7 +1,12 @@
 let posts = document.querySelectorAll(".post") //--> Todas las publicaciónes guardadas como favorito
 let post_menu_all = document.querySelectorAll(".opciones") //--> Obtiene todos los nodos que contienen el boton "..." en todas las publicaciones
 let post_menu_all2 = document.querySelectorAll(".opciones2") //--> Obtiene todos los nodos que contienen el boton "..." en todas las publicaciones
-let nombreColección = document.querySelector(".nombreColeccion").textContent
+let nombreColección
+
+if (document.querySelector(".nombreColeccion")) {
+    nombreColección = document.querySelector(".nombreColeccion").textContent
+}
+
 
 let btn_modificarColección = document.querySelector("#btn_modificarColección")
 
@@ -11,11 +16,17 @@ if (btn_modificarColección) {
     })
 }
 
-if (document.querySelector(".user_colecciones")) {
-
-    let btn_crearColección = document.querySelector(".user_colecciones").querySelector("#crearColeccion")
+let btn_crearColección = document.querySelector("#crearColeccion")
+if (btn_crearColección) {
     btn_crearColección.addEventListener("click", (e) => {
         vista_crear_modificar_coleccion("crear", "colecciones")
+    })
+}
+
+let btn_borrarColección = document.querySelector("#borrarColeccion")
+if (btn_borrarColección) {
+    btn_borrarColección.addEventListener("click", (e) => {
+        vista_borrar_coleccion()
     })
 }
 
@@ -49,7 +60,7 @@ for (const p of posts) {
     let form_quitarFavoritos_noduenio = p.querySelector("#quitarFavoritos_noduenio")
 
     let btn_crearColección = p.querySelector("#crearColeccion")
-    console.log(btn_crearColección)
+
     if (form_quitarFavoritos_duenio) {
 
         form_quitarFavoritos_duenio.addEventListener("submit", (e) => {
@@ -119,7 +130,6 @@ for (const p of posts) {
             if (form.action.includes("/quitar-de-coleccion")) {
                 quitarPublicación_colección(form, p)
             } else if (form.action.includes("/guardar-en-coleccion")) {
-                console.log("GUARDAR")
                 guardarPublicación_colección(form, p)
             }
         })
@@ -142,7 +152,6 @@ for (const p of posts) {
 
 function mostrarOpciones(post_menu_all, post_menu, post_menu_all2, post_menu2) {
 
-    console.log("====================== MOSTRAR ======================")
     post_menu.classList.remove("hidden")
     post_menu.classList.toggle("block")
 
@@ -165,12 +174,10 @@ function mostrarOpciones(post_menu_all, post_menu, post_menu_all2, post_menu2) {
 }
 
 function ocultarOpciones(post_menu_all, post_menu_all2, post_menu, post_menu2) {
-    console.log("====================== OCULTAR ======================")
     if (post_menu.classList.contains("block")) {
         post_menu.classList.remove("block")
         post_menu.classList.toggle("hidden")
     }
-    console.log(post_menu2)
     if (post_menu2.classList.contains("block")) {
         post_menu2.classList.remove("block")
         post_menu2.classList.toggle("hidden")
@@ -570,6 +577,162 @@ async function vista_crear_modificar_coleccion(acción = undefined, sección = u
 
 }
 
+async function vista_borrar_coleccion() {
+    let pag_body = document.querySelector("body")
+
+    let div = document.createElement("div")
+    div.className = "divColeccion fixed bg-black/50 flex flex-col items-center justify-center z-30 inset-0"
+
+    let div_content = document.createElement("div")
+    div_content.className = "div_content border bg-white p-6"
+
+    let div_btnVolver = document.createElement("div")
+    div_btnVolver.className = "flex justify-center mb-3"
+    let btn_volver = document.createElement("button")
+    btn_volver.type = "button"
+    btn_volver.title = "Volver"
+
+    let flecha = document.createElement("p")
+    flecha.className = "volver hover:bg-orange-400 hover:rounded-full w-fit p-1 font-bold cursor-pointer"
+    flecha.innerHTML =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5" />
+        <path d="M12 19l-7-7 7-7" />
+    </svg>`
+
+    let form_borrarColección = document.createElement("form")
+    form_borrarColección.action = window.location.href
+    form_borrarColección.method = "post"
+    form_borrarColección.name = "form_borrarColección"
+    form_borrarColección.id = "form_borrarColección"
+
+    let p = document.createElement("label")
+    p.className = "text-lg mb-[5px]"
+    p.textContent = "Seleccione la o las colecciones que desea eliminar"
+
+    let div_checkboxs = document.createElement("div")
+    div_checkboxs.className = "list_colecciones flex flex-col items-center gap-2 my-6"
+
+    form_borrarColección.appendChild(p)
+    form_borrarColección.appendChild(div_checkboxs)
+
+    let div_item
+    let input
+    let label
+
+    for (const c of colecciones) {
+        div_item = document.createElement("div")
+        div_item.className = "item flex gap-2"
+
+        input = document.createElement("input")
+        input.type = "checkbox"
+        input.id = c.nombre_colección
+        input.name = c.nombre_colección
+        input.value = c.nombre_colección
+
+        label = document.createElement("label")
+        label.for = c.nombre_colección
+        label.textContent = c.nombre_colección
+        label.className = "font-bold"
+
+        div_checkboxs.appendChild(div_item)
+        div_item.appendChild(input)
+        div_item.appendChild(label)
+
+    }
+
+    let inputList = document.querySelectorAll("input")
+    let itemsColecciones = form_borrarColección.querySelector(".list_colecciones").querySelectorAll(".item")
+
+    /* inputList.addEventListener("change", () => {
+         div_checkboxs.hasChildNodes()
+         if (input.checked) {
+             label.className = "bg-blue-500 px-4 py-2"
+             btnConfirmar.className = "px-5 py-1 border cursor-pointer hover:bg-blue-500 hover:text-white hover:font-bold"
+         } else if (!input.checked || !div_checkboxs.hasChildNodes()) {
+             let labelClases = label.classList
+             label.classList.remove("bg-blue-500", "px-4", "py-2")
+             btnConfirmar.className = "px-5 py-1 border cursor-pointer hover:bg-blue-500 hover:text-white hover:font-bold disabled:pointer-events-none disabled:opacity-40 disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed"
+         }
+     })*/
+
+    let divBotones = document.createElement("div")
+    divBotones.className = "divBotones flex justify-center gap-2 items-center mt-6"
+
+    let div_btnEliminar = document.createElement("div")
+    div_btnEliminar.className = "eliminar"
+    let label_btnEliminar = document.createElement("label")
+    label_btnEliminar.for = "btn_eliminar"
+    let btnEliminar = document.createElement("button")
+    btnEliminar.type = "submit"
+    btnEliminar.className = "px-5 py-1 border cursor-pointer hover:bg-red-500 hover:text-white hover:font-bold disabled:pointer-events-none disabled:opacity-40 disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed"
+    btnEliminar.id = "btn_eliminar"
+    btnEliminar.textContent = "Eliminar"
+    btnEliminar.disabled = true;
+
+    let div_btnSalir = document.createElement("div")
+    div_btnSalir.className = "salir hidden"
+    let label_btnSalir = document.createElement("label")
+    label_btnSalir.for = "btn_salir"
+    let btnSalir = document.createElement("button")
+    btnSalir.type = "submit"
+    btnSalir.className = "px-5 py-1 hover:bg-orange-500 hover:text-white hover:font-bold cursor-pointer border"
+    btnSalir.id = "btn_salir"
+    btnSalir.textContent = "Salir"
+
+    for (const item of itemsColecciones) {
+        let input = item.querySelector("input")
+        let label = item.querySelector("label")
+        input.addEventListener("change", () => {
+            if (input.checked) {
+                label.className = "bg-blue-500 px-4 py-1 text-white font-bold"
+                btnEliminar.className = "px-5 py-1 border cursor-pointer hover:bg-red-500 hover:text-white hover:font-bold"
+                btnEliminar.disabled = false
+            } else if (!input.checked) {
+                let labelClases = label.classList
+                label.classList.remove("bg-blue-500", "px-4", "py-1", "text-white")
+
+                let listChecked = [...form_borrarColección.querySelectorAll('input[type="checkbox"]')]
+                const checked = listChecked.some(
+                    lc => lc.checked
+                );
+
+                if (checked === false) {
+                    btnEliminar.className = "px-5 py-1 border cursor-pointer hover:bg-red-500 hover:text-white hover:font-bold disabled:pointer-events-none disabled:opacity-40 disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed"
+                    btnEliminar.disabled = true
+                }
+            }
+        })
+    }
+
+    form_borrarColección.appendChild(divBotones)
+    divBotones.appendChild(div_btnEliminar)
+    div_btnEliminar.appendChild(label_btnEliminar)
+    label_btnEliminar.appendChild(btnEliminar)
+    divBotones.appendChild(div_btnSalir)
+    div_btnSalir.appendChild(label_btnSalir)
+    label_btnSalir.appendChild(btnSalir)
+
+    div.appendChild(div_content)
+    div_content.appendChild(div_btnVolver)
+    div_btnVolver.appendChild(btn_volver)
+    btn_volver.appendChild(flecha)
+    div_content.appendChild(form_borrarColección)
+
+    flecha.addEventListener("click", () => {
+        pag_body.removeChild(div)
+    })
+
+    pag_body.appendChild(div)
+
+    form_borrarColección.addEventListener("submit", (e) => {
+        e.preventDefault()
+
+        httpBorrarColeccion(form_borrarColección, div_content)
+    })
+
+}
+
 //Renderiza listado de colecciones con bookmark funcional asociado que guarda/quita una publicación de esa colección
 async function botonesColección(post_menu, post) {
 
@@ -618,10 +781,12 @@ async function botonesColección(post_menu, post) {
 //Función que crea una nueva colección con un bookmark funcional asociado
 async function httpPostColeccion(acción = undefined, sección = undefined, formColección = undefined, post_menu = undefined, post = undefined, div = undefined, div_content = undefined, post_menu2 = undefined) {
     let _nombreNuevo = (formColección.name === "form_modificarColeccion") ? formColección.querySelector("#nuevo_nombreColeccion").value : undefined
+    let data
+
     try {
         if (acción === "crear") {
             //Dato a enviar en la peticion POST
-            const data = formColección.querySelector("#nombreColeccion").value
+            data = formColección.querySelector("#nombreColeccion").value
 
             //Fetch con POST
 
@@ -635,7 +800,7 @@ async function httpPostColeccion(acción = undefined, sección = undefined, form
             })
 
             const result = await res.json()
-            console.log(div_content)
+            
             //Mensaje confirmando creación de la colección
             div_content.innerHTML = ""
             div_content.innerHTML =
@@ -663,8 +828,7 @@ async function httpPostColeccion(acción = undefined, sección = undefined, form
         }
 
         //Renderiza listado de colecciones en el menu de opciones de la publicación al tocar el boton para salir del div que crea una colección
-        document.querySelector("#btn_salir").addEventListener("click", async() => {
-
+        document.querySelector("#btn_salir").addEventListener("click", async () => {
             if (acción === "modificar" && sección === "userColeccion") {
 
                 //Dato a enviar en la peticion POST
@@ -709,11 +873,7 @@ async function httpPostColeccion(acción = undefined, sección = undefined, form
                 label.appendChild(button)
                 div.appendChild(p)
 
-                let user_colecciones_nodo = document.querySelector(".user_colecciones")
-                let btn_crearColeccion = user_colecciones_nodo.querySelector("#crearColeccion")
-
-                user_colecciones_nodo.insertBefore(a, btn_crearColeccion);
-
+                window.location.href = window.location.href
                 div.remove()
 
             } else if (acción === undefined && sección === "userColeccion") {
@@ -738,6 +898,90 @@ async function httpPostColeccion(acción = undefined, sección = undefined, form
             }
         })
 
+    } catch (error) {
+        console.error(`Ocurrió un error inesperado ${error}`)
+    }
+
+}
+async function httpBorrarColeccion(form_borrarColección, div_content) {
+    try {
+        //Obtener los nombres de las colecciones con checked
+        const data = []
+
+        //iterar sobre todos los div que contiene "checkbox" y "label"
+        let list = document.querySelector(".list_colecciones")
+        list.querySelectorAll(".item").forEach(i => {
+            if (i.querySelector('[type="checkbox"]').checked) {
+                //Guardar nombre de la colección con "checked" en el array
+                const nombreColeccion = i.querySelector("label").textContent
+                data.push(nombreColeccion)
+                //Quitar colección del listado
+                i.remove()
+            }
+        })
+
+        let msj = document.createElement("p")
+        msj.className = "msj_borrado text-center text-red-500 font-bold mt-5"
+        msj.textContent = "Borrado exitoso!!!"
+
+        let childNode = document.querySelector(".msj_borrado")
+
+        if (div_content.contains(childNode)) {
+            childNode.replaceWith(msj)
+        } else {
+            div_content.appendChild(msj)
+        }
+
+        //Fetch con POST
+        const res = await fetch(form_borrarColección.action, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({ data })
+        })
+
+        if (!document.querySelector(".list_colecciones").hasChildNodes()) {
+
+            let flecha = document.querySelector(".div_content").querySelector(".volver")
+            flecha.remove()
+
+            let label = form_borrarColección.querySelector("label")
+            label.textContent = "Se borraron todas las colecciones"
+            label.className = "text-red-500 font-bold"
+
+            let divBotones = form_borrarColección.querySelector(".divBotones")
+            divBotones.querySelector(".eliminar").remove()
+
+            let btnSalir = form_borrarColección.querySelector(".salir")
+            btnSalir.classList.remove("hidden")
+            btnSalir.classList.toggle("block")
+
+            btnSalir.addEventListener("click", (e) => {
+                location.reload()
+            })
+
+            list.classList.remove("my-6")
+        } else {
+
+            let btnSalir = form_borrarColección.querySelector(".salir")
+            btnSalir.classList.remove("hidden")
+            btnSalir.classList.toggle("block")
+
+            btnSalir.addEventListener("click", (e) => {
+                location.reload(form_borrarColección.querySelector(".salir"))
+            })
+
+            let btnEliminar = form_borrarColección.querySelector("#btn_eliminar")
+
+            //btnEliminar.className = "px-5 py-1 border cursor-pointer hover:bg-red-500 hover:text-white hover:font-bold"
+            btnEliminar.className = "px-5 py-1 border cursor-pointer hover:bg-red-500 hover:text-white hover:font-bold disabled:pointer-events-none disabled:opacity-40 disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed"
+            //btnEliminar.classList.toggle("disabled:pointer-events-none", "disabled:opacity-40", "disabled:bg-gray-200", "disabled:text-gray-400", "disabled:border-gray-300", "disabled:cursor-not-allowed")
+            
+            btnEliminar.disabled = true
+            
+        }
     } catch (error) {
         console.error(`Ocurrió un error inesperado ${error}`)
     }
