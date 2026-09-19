@@ -18,7 +18,9 @@ export async function mostrarPerfilUsuario(req, res) {
     const userColeccion = req.params.userColeccion
     const current_url = req.originalUrl
     let userColecciones
+    let userAuthColecciones
     let postsColecciones
+    let postsUserAuthColecciones
     let postsFavorito
     let postsColeccion
     if (!req.user) {
@@ -84,8 +86,51 @@ export async function mostrarPerfilUsuario(req, res) {
             where: { id_seguidor: req.user.id_usuario },
             include: [{ model: Usuario, as: 'seguido' }],
         });
+        console.log(perfilDescripción.nombre_usuario)
 
-        if (req.user) {
+        //Colecciones creadas por el usuario
+        userColecciones = await Colección.findAll({
+            where: {
+                id_usuario: usuarioPerfil.id_usuario
+            }
+        })
+
+        //Ids de las colecciones obtenidas de la consulta anterior
+        const mapidsColecciones = userColecciones.map(colección => colección.id_colección)
+
+        //Publicaciones guardadas en las colecciones creadas por el usuario
+        postsColecciones = await Publicacion_Colecciones.findAll({
+            where: {
+                id_colección: {
+                    [Op.in]: mapidsColecciones
+                }
+            }
+        })
+
+        if (sección === "colecciones" && userColeccion) {
+            postsColeccion = await getPostsColección(userColeccion, usuarioPerfil.id_usuario)
+
+            //Colecciones creadas por el usuario AUTENTICADO
+            userAuthColecciones = await Colección.findAll({
+                where: {
+                    id_usuario: req.user.id_usuario
+                }
+            })
+            //Ids de las colecciones obtenidas de la consulta anterior
+            const mapidsColecciones = userAuthColecciones.map(colección => colección.id_colección)
+
+            //Publicaciones guardadas en las colecciones creadas por el usuario AUTENTICADO
+            postsUserAuthColecciones = await Publicacion_Colecciones.findAll({
+                where: {
+                    id_colección: {
+                        [Op.in]: mapidsColecciones
+                    }
+                }
+            })
+
+        }
+
+        /*if (perfilDescripción.nombre_usuario === req.user.nombre_usuario) {
             //Colecciones creadas por el usuario autenticado
             userColecciones = await Colección.findAll({
                 where: {
@@ -108,7 +153,7 @@ export async function mostrarPerfilUsuario(req, res) {
             if (sección === "colecciones" && userColeccion) {
                 postsColeccion = await getPostsColección(userColeccion, req.user.id_usuario)
             }
-        }
+        }*/
 
 
 
@@ -126,8 +171,10 @@ export async function mostrarPerfilUsuario(req, res) {
             postsFavorito,
             current_url,
             userColecciones,
+            userAuthColecciones,
             userColeccion,
             postsColecciones,
+            postsUserAuthColecciones,
             postsColeccion
         });
     } catch (error) {
@@ -194,12 +241,12 @@ export async function modificarColeccion(req, res) {
             },
         );
 
-        res.status(200).json({ newURL: `/usuarioPerfil/${id_usuario}/colecciones/${encodeURIComponent(nombreNuevo) }`})
+        res.status(200).json({ newURL: `/usuarioPerfil/${id_usuario}/colecciones/${encodeURIComponent(nombreNuevo)}` })
     }
 }
 
-export async function borrarColecciones(req, res){
-    let arrayColecciones  = req.body.data
+export async function borrarColecciones(req, res) {
+    let arrayColecciones = req.body.data
 
     try {
         await Colección.destroy({
@@ -209,7 +256,7 @@ export async function borrarColecciones(req, res){
                 }
             }
         })
-    
+
         res.status(200).send("COLECCÍON ELIMINADA EXITOSAMENTE!!!")
     } catch (error) {
         res.status(400).send(`Error al eliminar colecciones ${error}`)

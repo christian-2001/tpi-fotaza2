@@ -7,7 +7,6 @@ if (document.querySelector(".nombreColeccion")) {
     nombreColección = document.querySelector(".nombreColeccion").textContent
 }
 
-
 let btn_modificarColección = document.querySelector("#btn_modificarColección")
 
 if (btn_modificarColección) {
@@ -16,9 +15,10 @@ if (btn_modificarColección) {
     })
 }
 
-let btn_crearColección = document.querySelector("#crearColeccion")
-if (btn_crearColección) {
-    btn_crearColección.addEventListener("click", (e) => {
+let btn_crearColección_userAuth = document.querySelector("#crearColeccion")
+
+if (btn_crearColección_userAuth) {
+    btn_crearColección_userAuth.addEventListener("click", (e) => {
         vista_crear_modificar_coleccion("crear", "colecciones")
     })
 }
@@ -59,8 +59,7 @@ for (const p of posts) {
     //Obtiene el formulario que permite quitar la publicación de "Favoritos"
     let form_quitarFavoritos_noduenio = p.querySelector("#quitarFavoritos_noduenio")
 
-    let btn_crearColección = p.querySelector("#crearColeccion")
-
+    let btn_crearColección = p.querySelector("#crearColeccion_opciones2")
     if (form_quitarFavoritos_duenio) {
 
         form_quitarFavoritos_duenio.addEventListener("submit", (e) => {
@@ -99,7 +98,7 @@ for (const p of posts) {
     }
 
     btn_crearColección.addEventListener("click", (e) => {
-        vista_crear_modificar_coleccion("userColeccion", post_menu, p, post_menu2)
+        vista_crear_modificar_coleccion("crear", "userColeccion", post_menu, p, post_menu2)
     })
 
     for (const btn_guardar of list_btn_colección_guardar) {
@@ -782,7 +781,8 @@ async function botonesColección(post_menu, post) {
 async function httpPostColeccion(acción = undefined, sección = undefined, formColección = undefined, post_menu = undefined, post = undefined, div = undefined, div_content = undefined, post_menu2 = undefined) {
     let _nombreNuevo = (formColección.name === "form_modificarColeccion") ? formColección.querySelector("#nuevo_nombreColeccion").value : undefined
     let data
-
+    let result
+    
     try {
         if (acción === "crear") {
             //Dato a enviar en la peticion POST
@@ -799,8 +799,8 @@ async function httpPostColeccion(acción = undefined, sección = undefined, form
                 body: JSON.stringify({ data })
             })
 
-            const result = await res.json()
-            
+             result = await res.json()
+
             //Mensaje confirmando creación de la colección
             div_content.innerHTML = ""
             div_content.innerHTML =
@@ -876,7 +876,7 @@ async function httpPostColeccion(acción = undefined, sección = undefined, form
                 window.location.href = window.location.href
                 div.remove()
 
-            } else if (acción === undefined && sección === "userColeccion") {
+            } else if (acción === "crear" && sección === "userColeccion") {
 
                 let li_colección = document.createElement("li")
                 li_colección.className = "coleccion border-b-1 border-black"
@@ -980,7 +980,6 @@ async function httpBorrarColeccion(form_borrarColección, div_content) {
             //btnEliminar.classList.toggle("disabled:pointer-events-none", "disabled:opacity-40", "disabled:bg-gray-200", "disabled:text-gray-400", "disabled:border-gray-300", "disabled:cursor-not-allowed")
             
             btnEliminar.disabled = true
-            
         }
     } catch (error) {
         console.error(`Ocurrió un error inesperado ${error}`)
