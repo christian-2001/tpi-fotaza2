@@ -55,8 +55,9 @@ block content
                     button(type="button" class=(sección == "followers") ? "followers bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "followers cursor-pointer hover:font-bold mx-5") Seguidores (#{seguidores.length})
                 a(href=`/usuarioPerfil/${idPerfil}/following`)
                     button(type="button" class=(sección == "following") ? "following bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "following cursor-pointer hover:font-bold mx-5") Siguiendo (#{seguidos.length})
-                a(href=`/usuarioPerfil/${idPerfil}/favoritos`)
-                    button(type="button" class=(sección == "favoritos") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "favoritos cursor-pointer hover:font-bold mx-5") Favoritos (#{favoritos.length})
+                if esDueño
+                    a(href=`/usuarioPerfil/${idPerfil}/favoritos`)
+                        button(type="button" class=(sección == "favoritos") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "favoritos cursor-pointer hover:font-bold mx-5") Favoritos (#{favoritos.length})
                 a(href=`/usuarioPerfil/${idPerfil}/colecciones`)
                     button(type="button" class=(sección == "colecciones") ? "colecciones bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "colecciones cursor-pointer hover:font-bold mx-5") Colecciones (#{userColecciones.length})
 
