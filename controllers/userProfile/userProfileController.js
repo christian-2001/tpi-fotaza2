@@ -132,34 +132,6 @@ export async function mostrarPerfilUsuario(req, res) {
         })
 
 
-        console.log(postsFollowing.length)
-        /*if (perfilDescripción.nombre_usuario === req.user.nombre_usuario) {
-            //Colecciones creadas por el usuario autenticado
-            userColecciones = await Colección.findAll({
-                where: {
-                    id_usuario: req.user.id_usuario
-                }
-            })
-
-            //Ids de las colecciones obtenidas de la consulta anterior
-            const mapidsColecciones = userColecciones.map(colección => colección.id_colección)
-
-            //Publicaciones guardadas en las colecciones creadas por el usuario autenticado
-            postsColecciones = await Publicacion_Colecciones.findAll({
-                where: {
-                    id_colección: {
-                        [Op.in]: mapidsColecciones
-                    }
-                }
-            })
-
-            if (sección === "colecciones" && userColeccion) {
-                postsColeccion = await getPostsColección(userColeccion, req.user.id_usuario)
-            }
-        }*/
-
-
-
         res.render("./userProfile/userProfile", {
             sección,
             usuario: usuarioPerfil,
