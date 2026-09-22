@@ -38,7 +38,7 @@ block content
                         form(action=`/usuarioPerfil/dejar-de-seguir/${usuario.id_usuario}/posts`, method="post")
                             button(type="submit" class="bg-red-700 hover:bg-red-800 text-violet-50 font-semibold px-5 py-1.5") Dejar de seguir
                     else
-                        form(action=`/seguir/${usuario.id_usuario}/posts`, method="post")
+                        form(action=`/usuarioPerfil/seguir/${usuario.id_usuario}/posts`, method="post")
                             button(type="submit" class="bg-green-700 hover:bg-green-800 text-violet-50 font-semibold px-5 py-1.5") Seguir
             
             .descripcion(class="bg-blue-200 grid grid-cols-1 gap-x-8 gap-y-2 p-3 mx-auto w-fit mt-5 font-medium")
