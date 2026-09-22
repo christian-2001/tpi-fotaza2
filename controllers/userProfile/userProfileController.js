@@ -17,6 +17,7 @@ export async function mostrarPerfilUsuario(req, res) {
     const id_usuario = req.params.id_usuario
     const userColeccion = req.params.userColeccion
     const current_url = req.originalUrl
+    let mapidsColecciones
     let userColecciones
     let userAuthColecciones
     let postsColecciones
@@ -61,6 +62,7 @@ export async function mostrarPerfilUsuario(req, res) {
         const publicaciones = await getPosts(usuarioPerfil);
         const seguidores = await getFollowers(usuarioPerfil);
         const seguidos = await getFollowing(usuarioPerfil);
+        const postsFollowing = await getPostsFollowing(seguidos)
         const favoritos = await getPostsFavoritos(usuarioPerfil)
 
         let yaEsSeguido = false;
@@ -96,7 +98,7 @@ export async function mostrarPerfilUsuario(req, res) {
         })
 
         //Ids de las colecciones obtenidas de la consulta anterior
-        const mapidsColecciones = userColecciones.map(colección => colección.id_colección)
+        mapidsColecciones = userColecciones.map(colección => colección.id_colección)
 
         //Publicaciones guardadas en las colecciones creadas por el usuario
         postsColecciones = await Publicacion_Colecciones.findAll({
@@ -107,29 +109,30 @@ export async function mostrarPerfilUsuario(req, res) {
             }
         })
 
-        if (sección === "colecciones" && userColeccion) {
+        if(userColeccion){
             postsColeccion = await getPostsColección(userColeccion, usuarioPerfil.id_usuario)
-
-            //Colecciones creadas por el usuario AUTENTICADO
-            userAuthColecciones = await Colección.findAll({
-                where: {
-                    id_usuario: req.user.id_usuario
-                }
-            })
-            //Ids de las colecciones obtenidas de la consulta anterior
-            const mapidsColecciones = userAuthColecciones.map(colección => colección.id_colección)
-
-            //Publicaciones guardadas en las colecciones creadas por el usuario AUTENTICADO
-            postsUserAuthColecciones = await Publicacion_Colecciones.findAll({
-                where: {
-                    id_colección: {
-                        [Op.in]: mapidsColecciones
-                    }
-                }
-            })
-
         }
 
+        //Colecciones creadas por el usuario AUTENTICADO
+        userAuthColecciones = await Colección.findAll({
+            where: {
+                id_usuario: req.user.id_usuario
+            }
+        })
+        //Ids de las colecciones obtenidas de la consulta anterior
+        mapidsColecciones = userAuthColecciones.map(colección => colección.id_colección)
+
+        //Publicaciones guardadas en las colecciones creadas por el usuario AUTENTICADO
+        postsUserAuthColecciones = await Publicacion_Colecciones.findAll({
+            where: {
+                id_colección: {
+                    [Op.in]: mapidsColecciones
+                }
+            }
+        })
+
+
+        console.log(postsFollowing.length)
         /*if (perfilDescripción.nombre_usuario === req.user.nombre_usuario) {
             //Colecciones creadas por el usuario autenticado
             userColecciones = await Colección.findAll({
@@ -170,6 +173,7 @@ export async function mostrarPerfilUsuario(req, res) {
             favoritos,
             postsFavorito,
             current_url,
+            postsFollowing,
             userColecciones,
             userAuthColecciones,
             userColeccion,
@@ -310,6 +314,27 @@ async function getFollowing(usuario) {
     })
 
     return seguidos
+}
+
+async function getPostsFollowing(seguidos) {
+
+    const mapIdsSeguidos = seguidos.map(i => i.id_seguido)
+
+    let result = await Publicacion.findAll({
+        where: {
+            id_usuario: {
+                [Op.in]: mapIdsSeguidos
+            }
+        },
+
+        include: [
+            { model: Usuario, required: true },
+            { model: Etiqueta, required: true },
+            { model: Imagen, required: true },
+        ]
+    })
+
+    return result
 }
 
 async function getPostsFavoritos(usuario) {
