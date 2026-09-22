@@ -88,7 +88,6 @@ export async function mostrarPerfilUsuario(req, res) {
             where: { id_seguidor: req.user.id_usuario },
             include: [{ model: Usuario, as: 'seguido' }],
         });
-        console.log(perfilDescripción.nombre_usuario)
 
         //Colecciones creadas por el usuario
         userColecciones = await Colección.findAll({
