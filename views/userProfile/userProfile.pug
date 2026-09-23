@@ -56,20 +56,31 @@ block content
                     button(type="button" class=(sección == "followers") ? "followers bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "followers cursor-pointer hover:font-bold mx-5") Seguidores (#{seguidores.length})
                 a(href=`/usuarioPerfil/${idPerfil}/following`)
                     button(type="button" class=(sección == "following") ? "following bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "following cursor-pointer hover:font-bold mx-5") Siguiendo (#{seguidos.length})
+
                 if esDueño
                     a(href=`/usuarioPerfil/${idPerfil}/favoritos`)
                         button(type="button" class=(sección == "favoritos") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "favoritos cursor-pointer hover:font-bold mx-5") Favoritos (#{favoritos.length})
                     a(href=`/usuarioPerfil/${idPerfil}/postsFollowing`)
                         button(type="button" class=(sección == "postsFollowing") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "favoritos cursor-pointer hover:font-bold mx-5") Publicaciones de usuarios que sigo (#{postsFollowing.length})
-                
                 a(href=`/usuarioPerfil/${idPerfil}/colecciones`)
                     button(type="button" class=(sección == "colecciones") ? "colecciones bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "colecciones cursor-pointer hover:font-bold mx-5") Colecciones (#{userColecciones.length})
 
             .user_content
+                .btnPosts(class="flex justify-center mt-5 mb-10")
+                    div(class="grid grid-cols-2 items-center gap-2")
+                        #crearPublicacion
+                            a(href="/subirPost")
+                                div(class="relative bg-emerald-500 border-1 border-gray-400 rounded-[10px] px-6 py-1 font-bold hover:font-bold hover:outline-orange-400 hover:bg-emerald-700 hover:opacity-80 hover:text-white cursor-pointer h-fit text-center")
+                                    label(for="crearPublicación")
+                                        button(class="text-center cursor-pointer" id="crearPublicación") Crear Publicación
+                        #borrarPublicacion
+                            div(class="relative bg-red-500 border-1 border-gray-400 rounded-[10px] px-6 py-1 font-bold hover:font-bold hover:outline-orange-400 hover:bg-red-700 hover:opacity-80 hover:text-white cursor-pointer h-fit text-center")
+                                label(for="borrarPublicación")
+                                    button(class="text-center cursor-pointer" id="borrarPublicación") Borrar Publicación/es
                 //- Se utilizara el metodo reutilizable "renderPosts" que renderiza publicaciones en la siguientes secciones del perfil
                 //-
                     Disponible para cada perfil:
-                        * Mis publicaciones
+                        * Publicaciones
                         * Seguidores
                         * Siguiendo
                         * Colecciones (el contenido difiere según si se trata o no de un usuario AUTENTICADO)

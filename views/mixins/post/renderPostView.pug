@@ -56,7 +56,8 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, i
                                 else
                                     a(href="/login") 
                                         p(class="text-center text-2xl hover:font-bold hover:text-blue-400") Debes iniciar sesion para valorizar una imagen
-                        h1(class="text-gray-300 text-[80px] absolute inset-0 flex justify-center items-center") marca_de_agua
+                        //-
+                            h1(class="text-gray-300 text-[80px] absolute inset-0 flex justify-center items-center") marca_de_agua
                         .img_carrousel(class="text-2xl text-white")
                             if imgIndex == 0
                                 a(href=`/post/${post_id}/${++imgIndex}`)
