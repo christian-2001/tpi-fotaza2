@@ -66,17 +66,7 @@ block content
                     button(type="button" class=(sección == "colecciones") ? "colecciones bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "colecciones cursor-pointer hover:font-bold mx-5") Colecciones (#{userColecciones.length})
 
             .user_content
-                .btnPosts(class="flex justify-center mt-5 mb-10")
-                    div(class="grid grid-cols-2 items-center gap-2")
-                        #crearPublicacion
-                            a(href="/subirPost")
-                                div(class="relative bg-emerald-500 border-1 border-gray-400 rounded-[10px] px-6 py-1 font-bold hover:font-bold hover:outline-orange-400 hover:bg-emerald-700 hover:opacity-80 hover:text-white cursor-pointer h-fit text-center")
-                                    label(for="crearPublicación")
-                                        button(class="text-center cursor-pointer" id="crearPublicación") Crear Publicación
-                        #borrarPublicacion
-                            div(class="relative bg-red-500 border-1 border-gray-400 rounded-[10px] px-6 py-1 font-bold hover:font-bold hover:outline-orange-400 hover:bg-red-700 hover:opacity-80 hover:text-white cursor-pointer h-fit text-center")
-                                label(for="borrarPublicación")
-                                    button(class="text-center cursor-pointer" id="borrarPublicación") Borrar Publicación/es
+                
                 //- Se utilizara el metodo reutilizable "renderPosts" que renderiza publicaciones en la siguientes secciones del perfil
                 //-
                     Disponible para cada perfil:
@@ -91,6 +81,17 @@ block content
 
                 //- ==================== POSTS ====================
                 if sección == "posts"
+                    .btnPosts(class="flex justify-center mt-5 mb-10")
+                        div(class="grid grid-cols-2 items-center gap-2")
+                            #crearPublicacion
+                                a(href="/subirPost")
+                                    div(class="relative bg-emerald-500 border-1 border-gray-400 rounded-[10px] px-6 py-1 font-bold hover:font-bold hover:outline-orange-400 hover:bg-emerald-700 hover:opacity-80 hover:text-white cursor-pointer h-fit text-center")
+                                        label(for="crearPublicación")
+                                            button(class="text-center cursor-pointer" id="crearPublicación") Crear Publicación
+                            #borrarPublicacion
+                                div(class="relative bg-red-500 border-1 border-gray-400 rounded-[10px] px-6 py-1 font-bold hover:font-bold hover:outline-orange-400 hover:bg-red-700 hover:opacity-80 hover:text-white cursor-pointer h-fit text-center")
+                                    label(for="borrarPublicación")
+                                        button(class="text-center cursor-pointer" id="borrarPublicación") Borrar Publicación/es
                     +renderPosts(sección, posts, esFavorito, guardada) 
                 //- ==================== FOLLOWERS ====================
                 else if sección == "followers"
