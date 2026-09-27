@@ -7,6 +7,7 @@ import { Op, Sequelize } from "sequelize"
 import { Imagen_Etiqueta } from "../../models/Imagen_Etiqueta.js"
 import { Comentario } from "../../models/Comentario.js"
 import { Valorizacion } from "../../models/Valorizacion.js"
+import { getImagenUrl } from "../../utils/cloudinaryHelper.js"
 
 export async function mostrarPost(req, res) {
     const id = req.params.id_post
@@ -15,7 +16,7 @@ export async function mostrarPost(req, res) {
     const current_url = req.originalUrl
 
     try {
-        const imgs = await Imagen.findAll({
+        let imgs = await Imagen.findAll({
 
             order: [['id_img', 'ASC']],
 
@@ -24,6 +25,11 @@ export async function mostrarPost(req, res) {
                 { model: Valorizacion }
             ]
         })
+
+        const imgsMod = imgs.map(img => ({
+            ...img.dataValues,
+            img_path_copyright: getImagenUrl(img)
+        }))
 
         const post_user = await Publicacion.findOne({
             where: {
@@ -42,7 +48,7 @@ export async function mostrarPost(req, res) {
             order: [["fh_comentario", "ASC"]],
 
             include: [
-                { model: Imagen, required: true, where: { id_img: imgs[img].id_img } },
+                { model: Imagen, required: true, where: { id_img: imgsMod[img].id_img } },
                 { model: Usuario, required: true }
             ]
         })
@@ -50,7 +56,7 @@ export async function mostrarPost(req, res) {
         const tags = await Imagen_Etiqueta.findAll({
             where: {
                 '$Imagen_Etiqueta.id_img$': {
-                    [Op.eq]: imgs[img].id_img
+                    [Op.eq]: imgsMod[img].id_img
                 }
             }
         })
@@ -66,14 +72,14 @@ export async function mostrarPost(req, res) {
 
         const cant = await Valorizacion.count({
             where: {
-                id_img: imgs[img].id_img
+                id_img: imgsMod[img].id_img
             }
         })
 
         let prom = await Valorizacion.findAll({
 
             where: {
-                id_img: imgs[img].id_img
+                id_img: imgsMod[img].id_img
             },
 
             attributes: [
@@ -88,20 +94,19 @@ export async function mostrarPost(req, res) {
         if (req.user) {
             miValorizacion = await Valorizacion.findOne({
                 where: {
-                    id_img: imgs[img].id_img,
+                    id_img: imgsMod[img].id_img,
                     id_usuario: req.user.id_usuario
                 }
             })
 
-            console.log(miValorizacion)
         }
 
-        if (img > 0 && img < (imgs.length - 1)) {
+        if (img > 0 && img < (imgsMod.length - 1)) {
             const img_prev = img - 1
             const img_next = img + 1
 
             res.render("./post/postView", {
-                postImages: imgs,
+                postImages: imgsMod,
                 post_id: id,
                 id_post_user: post_user.id_usuario,
                 prev: img_prev,
@@ -117,7 +122,7 @@ export async function mostrarPost(req, res) {
             })
         } else {
             res.render("./post/postView", {
-                postImages: imgs,
+                postImages: imgsMod,
                 post_id: id,
                 id_post_user: post_user.id_usuario,
                 imgIndex: img,

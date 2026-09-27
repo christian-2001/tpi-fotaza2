@@ -12,7 +12,7 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, i
 
                 if postImages.length > 1
                     .img_content(class="bg-blue-400 relative inline-block") 
-                        img(src=`${postImages[imgIndex].img_path}`, alt="img_prueba", class="size-full object-cover")
+                        img(src=`${postImages[imgIndex].img_path_copyright}`, alt="img_prueba", class="size-full object-cover")
                         div(class="absolute bottom-0 w-full z-99 text-[20px] text-white")
                             .img_desc1(class="bg-black/85 flex justify-around border-b-1")
                                 div(class="py-3")
@@ -56,8 +56,7 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, i
                                 else
                                     a(href="/login") 
                                         p(class="text-center text-2xl hover:font-bold hover:text-blue-400") Debes iniciar sesion para valorizar una imagen
-                        //-
-                            h1(class="text-gray-300 text-[80px] absolute inset-0 flex justify-center items-center") marca_de_agua
+                        
                         .img_carrousel(class="text-2xl text-white")
                             if imgIndex == 0
                                 a(href=`/post/${post_id}/${++imgIndex}`)
@@ -120,7 +119,7 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, i
                                         p(class="text-center text-2xl hover:font-bold hover:text-blue-400") Debes iniciar sesion para comentar
                 else
                     .img_content(class="bg-blue-400 relative inline-block") 
-                        img(src=`${postImages[0].img_path}`, alt="img_prueba", class="size-full object-cover")
+                        img(src=`${postImages[0].img_path_copyright}`, alt="img_prueba", class="size-full object-cover")
                         div(class="absolute bottom-0 w-full z-99 text-[20px] text-white")
                             .img_desc1(class="bg-black/85 flex justify-around border-b-1")
                                 div(class="py-3")
@@ -164,7 +163,6 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, i
                                 else
                                     a(href="/login") 
                                         p(class="text-center text-2xl hover:font-bold hover:text-blue-400") Debes iniciar sesion para valorizar una imagen
-                        h1(class="text-gray-300 text-[80px] absolute inset-0 flex justify-center items-center") marca_de_agua
 
                     .comentarios(class="bg-green-200 w-1/2 overflow-y-auto relative")
                                                 

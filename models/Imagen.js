@@ -26,6 +26,11 @@ Imagen.init(
             defaultValue: false,
         },
 
+        texto_personalizado: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+
         extension: {
             type: DataTypes.STRING,
             allowNull: false

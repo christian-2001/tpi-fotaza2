@@ -50,6 +50,8 @@ export async function subirPost(req, res) {
             const nuevaImagen = await Imagen.create({
                 nombre_img: uploadResult.public_id,
                 img_path: uploadResult.secure_url,
+                copyright: img.copyright,
+                texto_personalizado: (img.customText === "") ? null : img.customText,
                 extension: uploadResult.format,
                 id_post: nuevaPublicacion.id_post   
             })

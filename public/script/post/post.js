@@ -81,7 +81,7 @@ function manejarImagenes(files, event) {
         div_licencia.className = "div_licencia bg-white p-4 items-center mt-2 text-wrap"
         div_checkboxs.className = "licencia flex flex-col gap-2 w-100"
 
-        div_checkLabel_licencia.className = "item flex gap-2"
+        div_checkLabel_licencia.className = "item_licencia flex gap-2"
         check_licencia.type = "checkbox"
         check_licencia.id = "checkbox_licencia"
         check_licencia.name = "checkbox_licencia"
@@ -91,7 +91,7 @@ function manejarImagenes(files, event) {
         label_licencia.for = "checkbox_licencia"
         label_licencia.textContent = "Licencia(Copyright)"
 
-        div_checkLabel_texto_personalizado.className = "item flex gap-2"
+        div_checkLabel_texto_personalizado.className = "item_texto_personalizado flex gap-2"
         check_texto_personalizado.type = "checkbox"
         check_texto_personalizado.disabled = "true"
         check_texto_personalizado.id = "check_texto_personalizado"
@@ -100,7 +100,7 @@ function manejarImagenes(files, event) {
 
         labelCheck_texto_personalizado.for = "check_texto_personalizado"
         labelCheck_texto_personalizado.className = "font-bold text-gray-400"
-        labelCheck_texto_personalizado.textContent = 'Texto Personalizado (hasta 15 caracteres) (Si usted lo deja vacío, se generará la marca de agua con el texto "fotaza2" por defecto)'
+        labelCheck_texto_personalizado.textContent = 'Texto Personalizado (hasta 15 caracteres) (Si usted deja la casilla vacía, se generará la marca de agua con el texto "fotaza2" por defecto)'
 
         label_inputText_texto_personalizado.for = "inputText_texto_personalizado"
 
@@ -116,7 +116,7 @@ function manejarImagenes(files, event) {
             REFERENCIA PARA MÁS ADELANTE
             h1(class="text-gray-300 text-[80px] absolute inset-0 flex justify-center items-center") marca_de_agua
         */
-        
+
         div_img_container.appendChild(btn_eliminar)
         div_img_container.appendChild(img_etiquetas)
         img_preview.appendChild(div_img_container)
@@ -139,6 +139,10 @@ function manejarImagenes(files, event) {
             if (check_licencia.checked) {
                 check_texto_personalizado.removeAttribute("disabled")
                 labelCheck_texto_personalizado.classList.remove("text-gray-400")
+                const h1 = document.createElement("h1")
+                h1.className = "font-[Arial] text-[30px] font-bold absolute inset-0 flex justify-center items-center opacity-70 text-white text-shadow-sm"
+                h1.textContent = "fotaza2"
+                div_img.appendChild(h1)
             } else {
                 if (check_texto_personalizado.checked) {
                     check_texto_personalizado.checked = false
@@ -147,6 +151,8 @@ function manejarImagenes(files, event) {
                 }
                 check_texto_personalizado.disabled = "true"
                 labelCheck_texto_personalizado.className = "font-bold text-gray-400"
+                inputText_texto_personalizado.value = ""
+                div_img.querySelector("h1").remove()
             }
         })
 
@@ -154,21 +160,24 @@ function manejarImagenes(files, event) {
             if (check_texto_personalizado.checked) {
                 inputText_texto_personalizado.removeAttribute("disabled")
                 inputText_texto_personalizado.classList.remove("disabled:opacity-40", "disabled:bg-gray-400", "disabled:cursor-not-allowed", "disabled:border-none")
+                div_img.querySelector("h1").textContent = "insertar texto"
             } else {
                 inputText_texto_personalizado.disabled = "true"
                 inputText_texto_personalizado.className = "border px-1 mt-3 disabled:opacity-40 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:border-none w-full"
+                inputText_texto_personalizado.value = ""
+                div_img.querySelector("h1").textContent = "fotaza2"
             }
         })
 
         inputText_texto_personalizado.addEventListener("keyup", (e) => {
-      
-            if(!div_img_container.querySelector("h1")){
+
+            if (!div_img_container.querySelector("h1")) {
                 //h1(class="text-gray-300 text-[80px] absolute inset-0 flex justify-center items-center") marca_de_agua
-                const h1 = document.createElement("h1")
-                h1.className = "text-gray-300 text-[30px] absolute inset-0 z-1 flex justify-center items-center"
+                /*const h1 = document.createElement("h1")
+                h1.className = "font-[Arial] text-[30px] font-bold absolute inset-0 flex justify-center items-center opacity-70 text-white text-shadow-sm"
                 div_img.appendChild(h1)
-                h1.textContent = inputText_texto_personalizado.value
-            } else{
+                h1.textContent = inputText_texto_personalizado.value*/
+            } else {
                 div_img.querySelector("h1").innerHTML = ""
                 div_img.querySelector("h1").textContent = inputText_texto_personalizado.value
             }
@@ -208,24 +217,79 @@ function quitarImagen(div) {
 
 function enviarFormulario(event) {
     event.preventDefault()
+    console.log("FORMULARIO")
 
     const titulo = document.getElementById("titulo").value
     const descripcion = document.getElementById("descripcion").value
     const imagenes = []
     let postEtiquetas = document.getElementById("etiquetas").value.trim()
     postEtiquetas = postEtiquetas.split(" ")
-
     if (img_preview.hasChildNodes()) {
         for (let a of img_preview.children) {
             const name = a.id
-            const src = a.childNodes[0].src
+
+            const src = a.childNodes[0].querySelector("#img_loaded").src
+
             let arrImgTags = a.childNodes[2].value.trim()
             arrImgTags = arrImgTags.split(" ")
 
+            //Obtener div con checkbox y label para "Licencia"
+            let checkLicencia = a.childNodes[3].querySelector(".licencia").querySelector(".item_licencia")
+
+            //Obtener valor del checkbox de "Licencia"
+            checkLicencia = checkLicencia.querySelector('input[type="checkbox"]').checked
+
+            //Obtener div con checkbox y label para "Texto Personalizado"
+            let checkTextoPersonalizado = a.childNodes[3].querySelector(".licencia").querySelector(".item_texto_personalizado")
+
+            //Obtener valor del checkbox de "Texto Personalizado"
+            checkTextoPersonalizado = checkTextoPersonalizado.querySelector('input[type="checkbox"]').checked
+
+            //Obtener input del "Texto Personalizado"
+            let input = a.childNodes[3].querySelector('input[type="text"]')
+
+            //Obtener valor contenido en el input
+            input = input.value
+
+            if (checkLicencia && !checkTextoPersonalizado) {
+                input = "fotaza2"
+            }
+            /* 
+                 //Obtener div con checkbox y label para "Licencia"
+                 let checkLicencia = a.childNodes[3].querySelector(".licencia").querySelector(".item_licencia")
+ 
+                 //Obtener valor del checkbox de "Licencia"
+                 checkLicencia = checkLicencia.querySelector('input[type="checkbox"]').checked
+                 --------------------------------------------------------------------------------------------------------------------
+                 //Obtener div con checkbox y label para "Texto Personalizado"
+                 let checkTextoPersonalizado = a.childNodes[3].querySelector(".licencia").querySelector(".item_texto_personalizado")
+ 
+                 //Obtener valor del checkbox de "Texto Personalizado"
+                 checkTextoPersonalizado = checkTextoPersonalizado.querySelector('input[type="checkbox"]').checked
+                 --------------------------------------------------------------------------------------------------------------------
+                 //Obtener input del "Texto Personalizado"
+                 let input = a.childNodes[3].querySelector('input[type="text"]')
+ 
+                 //Obtener valor contenido en el input
+                 input = input.value                
+                 =============================================================================================================
+                 
+                 outputs de ejemplo
+                 console.log("checkLicencia --> " + checkLicencia)
+                 OUTPUT = "checkLicencia --> false"
+ 
+                 console.log("checkTextoPersonalizado --> " + checkTextoPersonalizado)
+                 OUTPUT = "checkTextoPersonalizado --> false"
+                 
+                 console.log("input --> " + input)
+                 OUTPUT = "input --> asddasdasd"
+            */
             imagenes.push({
                 img_name: name,
                 img_src: src,
-                img_tags: arrImgTags
+                img_tags: arrImgTags,
+                copyright: checkLicencia ? checkLicencia : false,
+                customText: input
             })
         }
         const bodyData = {
@@ -234,7 +298,6 @@ function enviarFormulario(event) {
             formImages: imagenes,
             formPostTags: postEtiquetas
         }
-
         fetch(form.action, {
             method: "post",
             headers: {

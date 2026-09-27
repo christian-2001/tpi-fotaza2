@@ -64,7 +64,6 @@ export async function mostrarPerfilUsuario(req, res) {
         const seguidos = await getFollowing(usuarioPerfil);
         const postsFollowing = await getPostsFollowing(seguidos)
         const favoritos = await getPostsFavoritos(usuarioPerfil)
-
         let yaEsSeguido = false;
 
         let misFollowing = [];
@@ -239,11 +238,10 @@ export async function borrarColecciones(req, res) {
 }
 
 async function getPosts(usuario) {
-
     const publicaciones = await Publicacion.findAll({
 
         where: {
-            '$Usuario.id_usuario$': usuario.id_usuario
+            id_usuario: usuario.id_usuario
         },
 
         include: [
