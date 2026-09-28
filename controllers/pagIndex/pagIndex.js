@@ -13,6 +13,7 @@ import { Publicacion_Colecciones } from "../../models/Publicacion_Colecciones.js
 export async function pagIndex(req, res) {
     let postsFavorito
     let userColecciones
+    let mapidsColecciones
     let userAuthColecciones
     let postsColecciones
     let postsUserAuthColecciones
@@ -47,7 +48,7 @@ export async function pagIndex(req, res) {
         })
 
         //Ids de las colecciones obtenidas de la consulta anterior
-        const mapidsColecciones = userColecciones.map(colección => colección.id_colección)
+        mapidsColecciones = userColecciones.map(colección => colección.id_colección)
 
         //Publicaciones guardadas en las colecciones creadas por el usuario autenticado
         postsColecciones = await Publicacion_Colecciones.findAll({
@@ -70,7 +71,7 @@ export async function pagIndex(req, res) {
         postsUserAuthColecciones = await Publicacion_Colecciones.findAll({
             where: {
                 id_colección: {
-                    [Op.in]: mapidsColecciones
+                    [Op.in]: mapidsColecciones2
                 }
             }
         })

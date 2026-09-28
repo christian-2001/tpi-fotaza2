@@ -31,11 +31,44 @@ for (const p of posts) {
     //Boton que permite guardar una publicación en una colección
     let btn_colección = p.querySelector("#btn_coleccion")
 
+    let list_btn_colección_guardar = post_menu2.querySelectorAll("#btn_colección")
+
     let btn_crearColección = p.querySelector("#crearColeccion_opciones2")
 
     btn_crearColección.addEventListener("click", (e) => {
         vista_crearColeccion(post_menu, p, post_menu2)
     })
+
+    for (const btn_guardar of list_btn_colección_guardar) {
+
+        btn_guardar.addEventListener('mouseenter', () => {
+            btn_guardar.innerHTML =
+                `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
+        </svg>`
+        });
+
+        btn_guardar.addEventListener('mouseleave', () => {
+            btn_guardar.innerHTML =
+                `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
+        </svg>`
+        });
+    }
+
+    for (const li of post_menu2_lis) {
+
+        const form = li.querySelector("form")
+        form.addEventListener("submit", (e) => {
+            e.preventDefault()
+
+            if (form.action.includes("/quitar-de-coleccion")) {
+                quitarPublicación_colección(form, p)
+            } else if (form.action.includes("/guardar-en-coleccion")) {
+                guardarPublicación_colección(form, p)
+            }
+        })
+    }
 
     //Quitar publicación de la seccion "Favoritos" del usuario mediante Fetch
     if (form_quitarFavoritos_noduenio) {
