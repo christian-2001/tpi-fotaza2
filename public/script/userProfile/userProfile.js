@@ -60,6 +60,7 @@ for (const p of posts) {
     let form_quitarFavoritos_noduenio = p.querySelector("#quitarFavoritos_noduenio")
 
     let btn_crearColección = p.querySelector("#crearColeccion_opciones2")
+    
     if (form_quitarFavoritos_duenio) {
 
         form_quitarFavoritos_duenio.addEventListener("submit", (e) => {
@@ -799,7 +800,7 @@ async function httpPostColeccion(acción = undefined, sección = undefined, form
                 body: JSON.stringify({ data })
             })
 
-             result = await res.json()
+            result = await res.json()
 
             //Mensaje confirmando creación de la colección
             div_content.innerHTML = ""

@@ -32,14 +32,6 @@ block content
     if queryResult
         +tagsQuery(queryResult)
     else
-        //-
-            div(class="flex justify-center mt-5")
-                if !userSession
-                    a(href="/login")
-                        button(type="button" class="bg-white text-[20px] px-3 py-1 hover:bg-orange-400 hover:font-bold hover:text-white border-1 border-gray-400 cursor-pointer") Debes iniciar sesion para crear una publicación
-                else
-                    a(href="/subirPost")
-                        button(type="button" class="bg-white text-[20px] px-3 py-1 hover:bg-orange-400 hover:font-bold hover:text-white border-1 border-gray-400 cursor-pointer") Crear publicación
         div(class="grid grid-cols-2 my-10 mx-60 gap-4")
             each val in posts
                 .post(class="relative bg-white border-1 border-gray-400 rounded-[10px] p-2 hover:outline-3 hover:outline-orange-400 hover:opacity-80 h-fit") 
@@ -79,7 +71,34 @@ block content
                                 li(id="guardar-en-coleccion")
                                     label(for="btn_coleccion")
                                         button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_coleccion") Guardar en Colección                
-                          
+                        ul(class="opciones2 hidden absolute bg-gray-200 top-7 right-2 mt-2 z-10", id=`post${val.id_post}`)
+                            li(class="border-black border-b-2")
+                                div(class="flex justify-center items-center py-1")
+                                    label(for="crearColeccion_opciones2")
+                                        button(class="w-45 text-center text-blue-700 hover:font-bold cursor-pointer " id="crearColeccion_opciones2") + Crear colección
+
+                            each c in userAuthColecciones
+                                - guardada = false                                                   
+                                li(class="coleccion border-b-1 border-black")
+                                    div(class="flex justify-between items-center p-2")
+                                        p(class="mr-10")= c.nombre_colección
+
+                                        if postsUserAuthColecciones.length > 0
+                                            - const _guardada = postsUserAuthColecciones.some(pc => pc.id_colección === c.id_colección && pc.id_post === val.id_post);
+                                            - guardada = _guardada
+                                            if guardada
+                                                form(action="/quitar-de-coleccion", method="post" class="ml-10" name= c.nombre_colección id= c.nombre_colección)
+                                                    label(for="btn_colección_guardado")
+                                                        button(class="cursor-pointer px-2 py-1" type="submit" id="btn_colección_guardado")
+                                                            svg(xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24") 
+                                                                path(d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z")
+                                            else                            
+                                                form(action="/guardar-en-coleccion", method="post" class="ml-10" name= c.nombre_colección id= c.nombre_colección)
+                                                    label(for="btn_colección")
+                                                        button(class="cursor-pointer px-2 py-1" type="submit" id="btn_colección" disabled=(c.nombre_colección === userColeccion))                                                          
+                                                            svg(xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24") 
+                                                                path(d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z")
+  
                     .post_usuario(class="relative text-center text-[20px]")
                         p
                             | Publicado por 

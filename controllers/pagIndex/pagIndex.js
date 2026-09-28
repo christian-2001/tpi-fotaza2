@@ -13,7 +13,9 @@ import { Publicacion_Colecciones } from "../../models/Publicacion_Colecciones.js
 export async function pagIndex(req, res) {
     let postsFavorito
     let userColecciones
+    let userAuthColecciones
     let postsColecciones
+    let postsUserAuthColecciones
     //Publicaciones con: Titulo, Descripcion, Nombre del usuario, Fecha y hora de publicacion, Etiquetas, Imagenes
     const posts = await Publicacion.findAll({
         include: [
@@ -55,6 +57,23 @@ export async function pagIndex(req, res) {
                 }
             }
         })
+
+        //Colecciones creadas por el usuario AUTENTICADO
+        userAuthColecciones = await Colección.findAll({
+            where: {
+                id_usuario: req.user.id_usuario
+            }
+        })
+                
+        const mapidsColecciones2 = userAuthColecciones.map(colección => colección.id_colección)
+
+        postsUserAuthColecciones = await Publicacion_Colecciones.findAll({
+            where: {
+                id_colección: {
+                    [Op.in]: mapidsColecciones
+                }
+            }
+        })
     }
 
     res.render("index", {
@@ -66,7 +85,9 @@ export async function pagIndex(req, res) {
         query: "",
         postsFavorito,
         userColecciones,
-        postsColecciones
+        userAuthColecciones,
+        postsColecciones,
+        postsUserAuthColecciones
     })
 
 }

@@ -6,12 +6,17 @@ let posts = document.querySelectorAll(".post")
 
 //Guarda todos los nodos que contiene "..." en todas las publiaciones
 let post_menu_all = document.querySelectorAll(".opciones")
+let post_menu_all2 = document.querySelectorAll(".opciones2") //--> Obtiene todos los nodos que contienen el boton "..." en todas las publicaciones
 
 //Iterar sobre todas las publicaciones
 for (const p of posts) {
 
     //Lista de opciones disponibles en todas las publicaciones
     let post_menu = p.querySelector(".opciones")
+
+    let post_menu2 = p.querySelector(".opciones2")
+
+    let post_menu2_lis = p.querySelector(".opciones2").querySelectorAll(".coleccion")
 
     //Boton "..." visible en la esquina superior derecha, en todas las publicaciones, que muestra/oculta las opciones
     let button_post = p.querySelector(".boton_opciones")
@@ -20,23 +25,27 @@ for (const p of posts) {
     let form_guardarFavoritos = p.querySelector("#guardarFavoritos")
 
     //Obtiene el formulario que permite quitar la publicación de "Favoritos"
-    let form_quitarFavoritos = p.querySelector("#quitarFavoritos")
+    //let form_quitarFavoritos = p.querySelector("#quitarFavoritos")
+    let form_quitarFavoritos_noduenio = p.querySelector("#quitarFavoritos_noduenio")
 
     //Boton que permite guardar una publicación en una colección
     let btn_colección = p.querySelector("#btn_coleccion")
 
+    let btn_crearColección = p.querySelector("#crearColeccion_opciones2")
+
+    btn_crearColección.addEventListener("click", (e) => {
+        vista_crearColeccion(post_menu, p, post_menu2)
+    })
+
     //Quitar publicación de la seccion "Favoritos" del usuario mediante Fetch
-    if (form_quitarFavoritos) {
+    if (form_quitarFavoritos_noduenio) {
 
-        let btn = form_quitarFavoritos.querySelector("#btn_quitarFavoritos")
-
-        form_quitarFavoritos.addEventListener("submit", (e) => {
+        form_quitarFavoritos_noduenio.addEventListener("submit", (e) => {
             e.preventDefault()
 
-            quitarPublicación_favoritos(post_menu, p, form_quitarFavoritos)
+            quitarPublicación_favoritos(post_menu, p, form_quitarFavoritos_noduenio)
         })
 
-        //Guardar publicación en la seccion "Favoritos" del usuario mediante Fetch
     } else if (form_guardarFavoritos) {
         let btn = form_guardarFavoritos.querySelector("#btn_favoritos")
 
@@ -52,31 +61,69 @@ for (const p of posts) {
     if (btn_colección) {
 
         btn_colección.addEventListener("click", (e) => {
-            div_colecciones(btn_colección, post_menu, button_post, p)
+            //div_colecciones(btn_colección, post_menu, button_post, p)
+            div_colecciones(post_menu, post_menu2)
         })
 
     }
 
     //Los usuarios anonimos no tendran el botón para acceder a las opciones en cada publicación
     //Los usuarios autenticados tendran disponibles dichas opciones
-    if (button_post !== null) {
+    /*if (button_post !== null) {
 
         //Mostrar y ocultar menu al clickear los puntos suspensivos (...)
         //dentro de la publciación
         postOpciones(button_post, post_menu_all, post_menu)
+    }*/
+
+    //Mostrar y ocultar menu al clickear los puntos suspensivos (...)
+    //dentro de la publciación
+    if (button_post) {
+        button_post.addEventListener("click", () => {
+
+            if (post_menu.classList.contains("hidden") && post_menu2.classList.contains("hidden")) {
+                mostrarOpciones(post_menu_all, post_menu, post_menu_all2, post_menu2)
+            } else {
+                ocultarOpciones(post_menu_all, post_menu_all2, post_menu, post_menu2)
+            }
+
+        })
     }
 }
 
 //Función que muestra/oculta menu de opciones disponibles en todas las publicaciones
-function mostrarOpciones(post_menu) {
+/*function mostrarOpciones(post_menu) {
 
     post_menu.classList.remove("hidden")
     post_menu.classList.toggle("block")
 
+}*/
+
+function mostrarOpciones(post_menu_all, post_menu, post_menu_all2, post_menu2) {
+
+    post_menu.classList.remove("hidden")
+    post_menu.classList.toggle("block")
+
+
+
+    for (const menu of post_menu_all) {
+        if (!menu.classList.contains("hidden") && menu.id !== post_menu.id) {
+            menu.classList.remove("block")
+            menu.classList.toggle("hidden")
+        }
+    }
+
+    for (const menu2 of post_menu_all2) {
+        if (!menu2.classList.contains("hidden") && menu2.id !== post_menu2.id) {
+            menu2.classList.remove("block")
+            menu2.classList.toggle("hidden")
+        }
+    }
+
 }
 
 //Función que oculta el menu de opciones de una publicación al clickear en "..." de otra publicación
-function ocultarOpciones(post_menu_all, post_menu) {
+/*function ocultarOpciones(post_menu_all, post_menu) {
     for (const menu of post_menu_all) {
         if (!menu.classList.contains("hidden") && menu.id !== post_menu.id) {
             menu.classList.toggle("hidden")
@@ -85,6 +132,24 @@ function ocultarOpciones(post_menu_all, post_menu) {
     post_menu.classList.remove("block")
     post_menu.classList.toggle("hidden")
 
+}*/
+
+function ocultarOpciones(post_menu_all, post_menu_all2, post_menu, post_menu2) {
+    if (post_menu.classList.contains("block")) {
+        post_menu.classList.remove("block")
+        post_menu.classList.toggle("hidden")
+    }
+    if (post_menu2.classList.contains("block")) {
+        post_menu2.classList.remove("block")
+        post_menu2.classList.toggle("hidden")
+    }
+}
+async function div_colecciones(post_menu, post_menu2) {
+    post_menu.classList.remove("block")
+    post_menu.classList.toggle("hidden")
+
+    post_menu2.classList.remove("hidden")
+    post_menu2.classList.toggle("block")
 }
 
 //Función que guarda publicación como favorito
@@ -203,7 +268,7 @@ async function quitarPublicación_favoritos(post_menu, post, form_quitarFavorito
 }
 
 //Función que culta los botones "Guardar en Favoritos" y "Guardar en Colección" renderizando el boton para crear colección y el listado de colecciones creados por el usuario
-async function div_colecciones(btn_colección, post_menu, button_post, post) {
+/*async function div_colecciones(btn_colección, post_menu, button_post, post) {
 
     //Renderizar boton que permite crear una nueva colección
     let opciones = post_menu.querySelectorAll("li")
@@ -252,7 +317,7 @@ async function div_colecciones(btn_colección, post_menu, button_post, post) {
     //Guardar la publicación en una o más de una colección
     botonesColección(post_menu, post)
 
-}
+}*/
 
 //Agrupa las funciones para mostrar/ocultar menu de opciones en todas las publicaciones
 function postOpciones(button_post, post_menu_all, post_menu) {
@@ -268,7 +333,7 @@ function postOpciones(button_post, post_menu_all, post_menu) {
 }
 
 //Renderizar div que contiene la Función para crear una colección
-async function vista_crearColeccion(post_menu, post) {
+async function vista_crearColeccion(post_menu, post, post_menu2) {
     let pag_body = document.querySelector("body")
 
     let div_crearColección = document.createElement("div")
@@ -284,8 +349,8 @@ async function vista_crearColeccion(post_menu, post) {
     btn_volver.title = "Volver"
     let flecha = document.createElement("p")
     flecha.className = "hover:bg-orange-400 hover:rounded-full w-fit p-1 font-bold cursor-pointer"
-    flecha.innerHTML = 
-   `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    flecha.innerHTML =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M19 12H5" />
         <path d="M12 19l-7-7 7-7" />
     </svg>`
@@ -340,7 +405,7 @@ async function vista_crearColeccion(post_menu, post) {
     form_crearColección.addEventListener("submit", async (e) => {
         e.preventDefault()
 
-        nuevaColección(form_crearColección, post_menu, post, div_crearColección, div_content)
+        nuevaColección(form_crearColección, post_menu, post, post_menu2, div_crearColección, div_content)
     })
 }
 
@@ -390,7 +455,7 @@ async function botonesColección(post_menu, post) {
 }
 
 //Función que crea una nueva colección con un bookmark funcional asociado
-async function nuevaColección(form_crearColección, post_menu, post, div_crearColección, div_content) {
+async function nuevaColección(form_crearColección, post_menu, post, post_menu2, div_crearColección, div_content) {
 
     //Dato a enviar en la peticion POST
     const data = form_crearColección.querySelector("#nombreColeccion").value
@@ -410,8 +475,8 @@ async function nuevaColección(form_crearColección, post_menu, post, div_crearC
 
         //Mensaje confirmando creación de la colección
         div_content.innerHTML = ""
-        div_content.innerHTML = 
-       `<p class="p-3 text-3xl"> Se ha creado la colección exitosamente </p>
+        div_content.innerHTML =
+            `<p class="p-3 text-3xl"> Se ha creado la colección exitosamente </p>
         <div class="flex justify-center items-center text-2xl pt-2"> 
             <label for="btn_salir"> 
                 <button type="button" class="cursor-pointer hover:font-bold" id="btn_salir"> Salir </button>
@@ -435,7 +500,7 @@ async function nuevaColección(form_crearColección, post_menu, post, div_crearC
 
             li_colección.appendChild(div_colección)
             div_colección.appendChild(nombre_colección)
-            post_menu.appendChild(li_colección)
+            post_menu2.appendChild(li_colección)
 
             //Renderiza las colecciones del usuario junto con un bookmark hueco que permite guardar una publicación en una colección especifica
             form_guardarPublicación_colección_render(post, result.nueva_colección.nombre_colección, div_colección)
@@ -512,7 +577,7 @@ async function quitarPublicación_colección(form_quitarPublicacion, post) {
 
         //Al quitar la publicación, reemplaza el bookmark lleno por uno hueco en la colección asociada
         form_quitarPublicación_colección_replace(post, form_quitarPublicacion, form_quitarPublicacion.name)
-        
+
     } catch (error) {
         console.error(`Ocurrió un error inesperado ${error}`)
     }
@@ -574,8 +639,8 @@ function form_guardarPublicación_colección_render(post, nombre_colección, div
     form_guardarPublicacion.name = nombre_colección
     form_guardarPublicacion.id = nombre_colección
 
-    form_guardarPublicacion.innerHTML = 
-       `<label for="btn_colección">
+    form_guardarPublicacion.innerHTML =
+        `<label for="btn_colección">
             <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección">
                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
                     <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
@@ -586,15 +651,15 @@ function form_guardarPublicación_colección_render(post, nombre_colección, div
     let btn = form_guardarPublicacion.querySelector("button")
 
     btn.addEventListener('mouseenter', () => {
-        btn.innerHTML = 
-       `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+        btn.innerHTML =
+            `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
             <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
         </svg>`
     });
 
     btn.addEventListener('mouseleave', () => {
-        btn.innerHTML = 
-       `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+        btn.innerHTML =
+            `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
             <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
         </svg>`
     });
@@ -620,8 +685,8 @@ function form_quitarPublicación_colección_render(post, nombre_colección, div_
     form_quitarPublicacion.name = nombre_colección
     form_quitarPublicacion.id = nombre_colección
 
-    form_quitarPublicacion.innerHTML = 
-   `<label for="btn_colección_guardado">
+    form_quitarPublicacion.innerHTML =
+        `<label for="btn_colección_guardado">
         <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección_guardado">
             <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
                 <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
@@ -649,8 +714,8 @@ function form_guardarPublicación_colección_replace(post, form_guardarPublicaci
     form_quitarPublicacion.name = nombre_colección
     form_quitarPublicacion.id = nombre_colección
 
-    form_quitarPublicacion.innerHTML = 
-   `<label for="btn_colección_guardado">
+    form_quitarPublicacion.innerHTML =
+        `<label for="btn_colección_guardado">
         <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección_guardado">
             <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
                 <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
@@ -680,8 +745,8 @@ function form_quitarPublicación_colección_replace(post, form_quitarPublicacion
     form_guardarPublicacion.name = form_quitarPublicacion.name
     form_guardarPublicacion.id = form_quitarPublicacion.id
 
-    form_guardarPublicacion.innerHTML = 
-   `<label for="btn_colección">
+    form_guardarPublicacion.innerHTML =
+        `<label for="btn_colección">
         <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección">
             <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
                 <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
@@ -692,15 +757,15 @@ function form_quitarPublicación_colección_replace(post, form_quitarPublicacion
     let btn = form_guardarPublicacion.querySelector("button")
 
     btn.addEventListener('mouseenter', () => {
-        btn.innerHTML = 
-       `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+        btn.innerHTML =
+            `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
             <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
         </svg>`
     });
 
     btn.addEventListener('mouseleave', () => {
-        btn.innerHTML = 
-       `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+        btn.innerHTML =
+            `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
             <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
         </svg>`
     });
