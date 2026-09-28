@@ -8,6 +8,19 @@ let posts = document.querySelectorAll(".post")
 let post_menu_all = document.querySelectorAll(".opciones")
 let post_menu_all2 = document.querySelectorAll(".opciones2") //--> Obtiene todos los nodos que contienen el boton "..." en todas las publicaciones
 
+//Listado de motivos disponibles para seleccionar al realizar una denuncia a una publicación
+let motivos = [
+    "Contenido sexual explícito o desnudos",
+    "Violencia gráfica o contenido perturbador",
+    "Discurso de odio o discriminación",
+    "Acoso, bullying o amenazas",
+    "Violación de derechos de autor",
+    "Violación de privacidad (persona identificable fotografiada o publicada sin consentimiento)",
+    "Spam o publicidad no deseada",
+    "Información falsa o engañosa (foto manipulada presentada como real)",
+    "Otro motivo"
+]
+
 //Iterar sobre todas las publicaciones
 for (const p of posts) {
 
@@ -34,6 +47,8 @@ for (const p of posts) {
     let list_btn_colección_guardar = post_menu2.querySelectorAll("#btn_colección")
 
     let btn_crearColección = p.querySelector("#crearColeccion_opciones2")
+
+    let btn_denunciarPost = p.querySelector("#denunciarPost")
 
     btn_crearColección.addEventListener("click", (e) => {
         vista_crearColeccion(post_menu, p, post_menu2)
@@ -122,6 +137,10 @@ for (const p of posts) {
 
         })
     }
+
+    btn_denunciarPost.addEventListener("click", (e) => {
+        div_denuncia()
+    })
 }
 
 //Función que muestra/oculta menu de opciones disponibles en todas las publicaciones
@@ -177,6 +196,7 @@ function ocultarOpciones(post_menu_all, post_menu_all2, post_menu, post_menu2) {
         post_menu2.classList.toggle("hidden")
     }
 }
+
 async function div_colecciones(post_menu, post_menu2) {
     post_menu.classList.remove("block")
     post_menu.classList.toggle("hidden")
@@ -614,6 +634,171 @@ async function quitarPublicación_colección(form_quitarPublicacion, post) {
     } catch (error) {
         console.error(`Ocurrió un error inesperado ${error}`)
     }
+}
+
+async function div_denuncia(div_content1 = undefined, div_content2 = undefined, motivo = undefined, descripcion = undefined) {
+    let pag_body = document.querySelector("body")
+    let div_crearDenuncia
+
+    if(div_content2){
+        if(!div_content2.classList.contains("hidden")){
+            div_content2.classList.remove("block")
+            div_content2.classList.toggle("hidden")
+        }
+    }
+
+    if (!pag_body.querySelector(".div_crearDenuncia")) {
+        div_crearDenuncia = document.createElement("div")
+        div_crearDenuncia.className = "div_crearDenuncia fixed bg-black/50 flex items-center justify-center z-30 inset-0"
+    }
+
+    if (!div_content1) {
+        div_content1 = document.createElement("div")
+        div_content1.className = "div_content1 border bg-white p-6"
+
+        let form_enviarDenuncia = document.createElement("form")
+        form_enviarDenuncia.action = "/enviarDenuncia"
+        form_enviarDenuncia.method = "post"
+        form_enviarDenuncia.name = "form_enviarDenuncia"
+        form_enviarDenuncia.id = "form_enviarDenuncia"
+
+        let div_motivo = document.createElement("div")
+        div_motivo.className = "div_motivo"
+
+        let label_select = document.createElement("label")
+        label_select.for = "motivo"
+        label_select.className = "text-lg mb-[5px]"
+        label_select.textContent = "Elija el motivo de su denuncia"
+
+        let select = document.createElement("select")
+        select.className = "block border w-100"
+        select.name = "motivo"
+        select.id = "motivo"
+
+        motivos.forEach(item => {
+            let motivoItem = document.createElement("option")
+            motivoItem.value = item
+            motivoItem.textContent = item
+            select.appendChild(motivoItem)
+        })
+
+        let div_descripcion = document.createElement("div")
+        div_descripcion.className = "div_descripcion mt-4"
+
+        let label_textarea = document.createElement("label")
+        label_textarea.for = "descripcion"
+        label_textarea.className = "text-lg mb-[5px]"
+        label_textarea.textContent = "Describa su denuncia"
+
+        let textarea = document.createElement("textarea")
+        textarea.name = "descripcion"
+        textarea.id = "descripcion"
+        textarea.className = 'block border w-full resize-none p-2 scrollbar-none overflow-auto h-55'
+        textarea.textContent = descripcion || ""
+
+        let div_botonesDenuncia = document.createElement("div")
+        div_botonesDenuncia.className = "div_botonesDenuncia flex justify-center items-center gap-2 mt-10"
+
+        let label_btn_realizarDenuncia = document.createElement("label")
+        label_btn_realizarDenuncia.for = "realizarDenuncia"
+        let btn_realizarDenuncia = document.createElement("button")
+        btn_realizarDenuncia.type = "button"
+        btn_realizarDenuncia.className = "border hover:text-white hover:font-bold hover:bg-blue-600 px-2 py-1 cursor-pointer"
+        btn_realizarDenuncia.id = "realizarDenuncia"
+        btn_realizarDenuncia.textContent = "Realizar Denuncia"
+
+        let label_btn_cancelarDenuncia = document.createElement("label")
+        label_btn_cancelarDenuncia.for = "cancelarDenuncia"
+        let btn_cancelarDenuncia = document.createElement("button")
+        btn_cancelarDenuncia.className = "border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer"
+        btn_cancelarDenuncia.type = "button"
+        btn_cancelarDenuncia.id = "cancelarDenuncia"
+        btn_cancelarDenuncia.textContent = "Cancelar"
+
+        btn_realizarDenuncia.addEventListener("click", (e) => {
+            div_confirmarDenuncia(div_crearDenuncia, form_enviarDenuncia, div_content1)
+        })
+
+        btn_cancelarDenuncia.addEventListener("click", (e) => {
+            div_crearDenuncia.remove()
+        })
+
+        div_crearDenuncia.appendChild(div_content1)
+        div_content1.appendChild(form_enviarDenuncia)
+        form_enviarDenuncia.appendChild(div_motivo)
+        div_motivo.appendChild(label_select)
+        label_select.appendChild(select)
+        form_enviarDenuncia.appendChild(div_descripcion)
+        div_descripcion.appendChild(label_textarea)
+        label_textarea.appendChild(textarea)
+        form_enviarDenuncia.appendChild(div_botonesDenuncia)
+        div_botonesDenuncia.appendChild(label_btn_realizarDenuncia)
+        label_btn_realizarDenuncia.appendChild(btn_realizarDenuncia)
+        div_botonesDenuncia.appendChild(label_btn_cancelarDenuncia)
+        label_btn_cancelarDenuncia.appendChild(btn_cancelarDenuncia)
+
+        pag_body.appendChild(div_crearDenuncia)
+    } else {
+        div_content1.classList.remove("hidden")
+        div_content1.classList.toggle("block")
+    }
+
+}
+
+async function div_confirmarDenuncia(div_crearDenuncia, form_enviarDenuncia, div_content1) {
+    const motivo = form_enviarDenuncia.querySelector("select").value
+    const descripcion = form_enviarDenuncia.querySelector("textarea").value
+    let div_content2
+
+    if (!div_content1.classList.contains("hidden")) {
+        div_content1.classList.toggle("hidden")
+        div_content2 = document.createElement("div")
+        div_content2.className = "div_content2 border bg-white p-6"
+    }
+
+    let text = document.createElement("h1")
+    text.className = "text-center"
+    text.textContent = "¿Confirmar denuncia?"
+
+    let div_btnDenuncia2 = document.createElement("div")
+    div_btnDenuncia2.className = "flex justify-center items-center mt-5 gap-2"
+
+    let label_btn_confirmar = document.createElement("label")
+    label_btn_confirmar.for = "confirmarDenuncia"
+    let btn_confirmar = document.createElement("button")
+    btn_confirmar.className = "border hover:text-white hover:font-bold hover:bg-green-600 px-2 py-1 cursor-pointer"
+    btn_confirmar.textContent = "Confirmar"
+
+    let label_btn_cancelar = document.createElement("label")
+    label_btn_cancelar.for = "cancelarDenuncia"
+    let btn_cancelar = document.createElement("button")
+    btn_cancelar.className = "border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer"
+    btn_cancelar.textContent = "Cancelar"
+
+    let label_btn_volver = document.createElement("label")
+    label_btn_volver.for = "volver"
+    let btn_volver = document.createElement("button")
+    btn_volver.className = "border hover:text-white hover:font-bold hover:bg-orange-600 px-2 py-1 cursor-pointer"
+    btn_volver.textContent = "Volver"
+
+    btn_volver.addEventListener("click", (e) => {
+        div_denuncia(div_content1, div_content2, motivo, descripcion)
+    })
+
+    btn_cancelar.addEventListener("click", (e) => {
+        div_crearDenuncia.remove()
+    })
+
+    div_content2.appendChild(text)
+    div_content2.appendChild(div_btnDenuncia2)
+    div_btnDenuncia2.appendChild(label_btn_confirmar)
+    label_btn_confirmar.appendChild(btn_confirmar)
+    div_btnDenuncia2.appendChild(label_btn_cancelar)
+    label_btn_cancelar.appendChild(btn_cancelar)
+    div_btnDenuncia2.appendChild(label_btn_volver)
+    label_btn_volver.appendChild(btn_volver)
+
+    div_crearDenuncia.appendChild(div_content2)
 }
 
 //Función que dispara un mensaje temporal personalizado, al guardar/quitar publicación como favorito/en una colección

@@ -22,17 +22,25 @@ mixin renderPosts(sección, postsSección, esFavorito, guardada)
                                         li(id="guardar-en-colección")
                                             label(for="btn_colección")
                                                 button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_colección") Guardar en Colección
+                                        li(id="denunciar_publicacion")
+                                            label(for="denunciarPost")
+                                                button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación
+                                    
                                     else
+                                        
                                         li(id="agregar-a-favoritos")
                                             form(action=`/favoritos/${post.id_post}`, method="post", name="guardarFavoritos", id="guardarFavoritos") 
                                                 label(for="btn_favoritos") 
                                                     button(class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer", id="btn_favoritos") Guardar en Favoritos
-
                                         li(id="guardar-en-coleccion")
                                             label(for="btn_colección")
                                                 button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_colección") Guardar en Colección                
-                                           
+                                        li(id="denunciar_publicacion")
+                                            label(for="denunciarPost")
+                                                button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación   
+                            
                             if esFavorito === false
+                                
                                 li(id="agregar-a-favoritos")
                                     form(action=`/favoritos/${post.id_post}`, method="post", name="guardarFavoritos", id="guardarFavoritos") 
                                         label(for="btn_favoritos") 
@@ -40,7 +48,10 @@ mixin renderPosts(sección, postsSección, esFavorito, guardada)
                                 li(id="guardar-en-coleccion")
                                     label(for="btn_colección")
                                         button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_colección") Guardar en Colección                
-
+                                li(id="denunciar_publicacion")
+                                            label(for="denunciarPost")
+                                                button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación
+                        
                         ul(class="opciones2 hidden absolute bg-gray-200 top-7 right-2 mt-2 z-10", id=`post${post.id_post}`)
                             li(class="border-black border-b-2")
                                 div(class="flex justify-center items-center py-1")
