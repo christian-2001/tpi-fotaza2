@@ -13,6 +13,9 @@ import { Colección } from "./Colección.js";
 import { Favoritos } from "./Favoritos.js";
 import { Publicacion_Favoritos } from "./Publicacion_Favoritos.js";
 import { Publicacion_Colecciones } from "./Publicacion_Colecciones.js";
+import { Motivo } from "./Motivo.js";
+import { DenunciaPublicacion } from "./DenunciaPublicacion.js";
+import { DenunciaComentario } from "./DenunciaComentario.js";
 /*
 ⁡⁢⁢⁢Relacion 1 a 1 con:
     HasOne -> un modelo tiene un elemento de otro modelo
@@ -62,6 +65,27 @@ Valorizacion.belongsTo(Imagen, { foreignKey: "id_img"})
 
 Usuario.hasMany(Valorizacion, { foreignKey: "id_usuario"})
 Valorizacion.belongsTo(Usuario, { foreignKey: "id_usuario"})
+//================================================================================
+Publicacion.hasMany(DenunciaPublicacion, { foreignKey: "id_post"})
+DenunciaPublicacion.belongsTo(Publicacion, { foreignKey: "id_post"})
+
+Usuario.hasMany(DenunciaPublicacion, { foreignKey: "id_usuario"})
+DenunciaPublicacion.belongsTo(Usuario, { foreignKey: "id_usuario"})
+
+Motivo.hasMany(DenunciaPublicacion, { foreignKey: "id_motivo"})
+DenunciaPublicacion.belongsTo(Motivo, { foreignKey: "id_motivo"})
+//================================================================================
+
+//================================================================================
+Comentario.hasMany(DenunciaComentario, { foreignKey: "id_comentario"})
+DenunciaComentario.belongsTo(Comentario, { foreignKey: "id_comentario"})
+
+Usuario.hasMany(DenunciaComentario, { foreignKey: "id_usuario"})
+DenunciaComentario.belongsTo(Usuario, { foreignKey: "id_usuario"})
+
+Motivo.hasMany(DenunciaComentario, { foreignKey: "id_motivo"})
+DenunciaComentario.belongsTo(Motivo, { foreignKey: "id_motivo"})
+//================================================================================
 
 //⁡⁢⁣⁣𝗥𝗲𝗹𝗮𝗰𝗶𝗼𝗻𝗲𝘀 𝗡 𝗮 𝗡⁡
 
