@@ -1079,8 +1079,9 @@ async function div_denuncia(div_content1 = undefined, div_content2 = undefined, 
     let pag_body = document.querySelector("body")
     let div_crearDenuncia
 
-    if(div_content2){
-        if(!div_content2.classList.contains("hidden")){
+    if (div_content2) {
+
+        if (!div_content2.classList.contains("hidden")) {
             div_content2.classList.remove("block")
             div_content2.classList.toggle("hidden")
         }
@@ -1091,15 +1092,15 @@ async function div_denuncia(div_content1 = undefined, div_content2 = undefined, 
         div_crearDenuncia.className = "div_crearDenuncia fixed bg-black/50 flex items-center justify-center z-30 inset-0"
     }
 
+    let form_enviarDenuncia = document.createElement("form")
+    form_enviarDenuncia.action = "/enviarDenuncia"
+    form_enviarDenuncia.method = "post"
+    form_enviarDenuncia.name = "form_enviarDenuncia"
+    form_enviarDenuncia.id = "form_enviarDenuncia"
+
     if (!div_content1) {
         div_content1 = document.createElement("div")
         div_content1.className = "div_content1 border bg-white p-6"
-
-        let form_enviarDenuncia = document.createElement("form")
-        form_enviarDenuncia.action = "/enviarDenuncia"
-        form_enviarDenuncia.method = "post"
-        form_enviarDenuncia.name = "form_enviarDenuncia"
-        form_enviarDenuncia.id = "form_enviarDenuncia"
 
         let div_motivo = document.createElement("div")
         div_motivo.className = "div_motivo"
@@ -1162,15 +1163,15 @@ async function div_denuncia(div_content1 = undefined, div_content2 = undefined, 
             div_crearDenuncia.remove()
         })
 
-        div_crearDenuncia.appendChild(div_content1)
-        div_content1.appendChild(form_enviarDenuncia)
-        form_enviarDenuncia.appendChild(div_motivo)
+        div_crearDenuncia.appendChild(form_enviarDenuncia)
+        form_enviarDenuncia.appendChild(div_content1)
+        div_content1.appendChild(div_motivo)
         div_motivo.appendChild(label_select)
         label_select.appendChild(select)
-        form_enviarDenuncia.appendChild(div_descripcion)
+        div_content1.appendChild(div_descripcion)
         div_descripcion.appendChild(label_textarea)
         label_textarea.appendChild(textarea)
-        form_enviarDenuncia.appendChild(div_botonesDenuncia)
+        div_content1.appendChild(div_botonesDenuncia)
         div_botonesDenuncia.appendChild(label_btn_realizarDenuncia)
         label_btn_realizarDenuncia.appendChild(btn_realizarDenuncia)
         div_botonesDenuncia.appendChild(label_btn_cancelarDenuncia)
@@ -1187,57 +1188,65 @@ async function div_denuncia(div_content1 = undefined, div_content2 = undefined, 
 async function div_confirmarDenuncia(div_crearDenuncia, form_enviarDenuncia, div_content1) {
     const motivo = form_enviarDenuncia.querySelector("select").value
     const descripcion = form_enviarDenuncia.querySelector("textarea").value
-    let div_content2
 
-    if (!div_content1.classList.contains("hidden")) {
-        div_content1.classList.toggle("hidden")
+    div_content1.classList.add("hidden")
+
+    let div_content2 = div_crearDenuncia.querySelector(".div_content2")
+
+    if (!div_content2) {
         div_content2 = document.createElement("div")
         div_content2.className = "div_content2 border bg-white p-6"
+
+        let text = document.createElement("h1")
+        text.className = "text-center"
+        text.textContent = "¿Confirmar denuncia?"
+
+        let div_btnDenuncia2 = document.createElement("div")
+        div_btnDenuncia2.className = "flex justify-center items-center mt-5 gap-2"
+
+        let label_btn_confirmar = document.createElement("label")
+        label_btn_confirmar.for = "confirmarDenuncia"
+        let btn_confirmar = document.createElement("button")
+        btn_confirmar.type = "submit"
+        btn_confirmar.className = "border hover:text-white hover:font-bold hover:bg-green-600 px-2 py-1 cursor-pointer"
+        btn_confirmar.textContent = "Confirmar"
+
+        let label_btn_cancelar = document.createElement("label")
+        label_btn_cancelar.for = "cancelarDenuncia"
+        let btn_cancelar = document.createElement("button")
+        btn_cancelar.type = "button"
+        btn_cancelar.className = "border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer"
+        btn_cancelar.textContent = "Cancelar"
+
+        let label_btn_volver = document.createElement("label")
+        label_btn_volver.for = "volver"
+        let btn_volver = document.createElement("button")
+        btn_volver.type = "button"
+        btn_volver.className = "border hover:text-white hover:font-bold hover:bg-orange-600 px-2 py-1 cursor-pointer"
+        btn_volver.textContent = "Volver"
+
+        btn_volver.addEventListener("click", (e) => {
+            div_content2.classList.add("hidden")
+            div_content1.classList.remove("hidden")
+        })
+
+        btn_cancelar.addEventListener("click", (e) => {
+            div_crearDenuncia.remove()
+        })
+
+        div_content2.appendChild(text)
+        div_content2.appendChild(div_btnDenuncia2)
+        div_btnDenuncia2.appendChild(label_btn_confirmar)
+        label_btn_confirmar.appendChild(btn_confirmar)
+        div_btnDenuncia2.appendChild(label_btn_cancelar)
+        label_btn_cancelar.appendChild(btn_cancelar)
+        div_btnDenuncia2.appendChild(label_btn_volver)
+        label_btn_volver.appendChild(btn_volver)
+
+        form_enviarDenuncia.appendChild(div_content2)
+    } else {
+        div_content2.classList.remove("hidden")
     }
-
-    let text = document.createElement("h1")
-    text.className = "text-center"
-    text.textContent = "¿Confirmar denuncia?"
-
-    let div_btnDenuncia2 = document.createElement("div")
-    div_btnDenuncia2.className = "flex justify-center items-center mt-5 gap-2"
-
-    let label_btn_confirmar = document.createElement("label")
-    label_btn_confirmar.for = "confirmarDenuncia"
-    let btn_confirmar = document.createElement("button")
-    btn_confirmar.className = "border hover:text-white hover:font-bold hover:bg-green-600 px-2 py-1 cursor-pointer"
-    btn_confirmar.textContent = "Confirmar"
-
-    let label_btn_cancelar = document.createElement("label")
-    label_btn_cancelar.for = "cancelarDenuncia"
-    let btn_cancelar = document.createElement("button")
-    btn_cancelar.className = "border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer"
-    btn_cancelar.textContent = "Cancelar"
-
-    let label_btn_volver = document.createElement("label")
-    label_btn_volver.for = "volver"
-    let btn_volver = document.createElement("button")
-    btn_volver.className = "border hover:text-white hover:font-bold hover:bg-orange-600 px-2 py-1 cursor-pointer"
-    btn_volver.textContent = "Volver"
-
-    btn_volver.addEventListener("click", (e) => {
-        div_denuncia(div_content1, div_content2, motivo, descripcion)
-    })
-
-    btn_cancelar.addEventListener("click", (e) => {
-        div_crearDenuncia.remove()
-    })
-
-    div_content2.appendChild(text)
-    div_content2.appendChild(div_btnDenuncia2)
-    div_btnDenuncia2.appendChild(label_btn_confirmar)
-    label_btn_confirmar.appendChild(btn_confirmar)
-    div_btnDenuncia2.appendChild(label_btn_cancelar)
-    label_btn_cancelar.appendChild(btn_cancelar)
-    div_btnDenuncia2.appendChild(label_btn_volver)
-    label_btn_volver.appendChild(btn_volver)
-
-    div_crearDenuncia.appendChild(div_content2)
 }
 
 //Función que dispara un mensaje temporal personalizado, al guardar/quitar publicación como favorito/en una colección
