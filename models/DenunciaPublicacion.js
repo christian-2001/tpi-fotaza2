@@ -45,7 +45,7 @@ DenunciaPublicacion.init(
       }
     },
 
-    descripcion: {
+    descripción: {
       type: DataTypes.STRING,
     },
 

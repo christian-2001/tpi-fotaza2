@@ -139,7 +139,7 @@ for (const p of posts) {
     }
 
     btn_denunciarPost.addEventListener("click", (e) => {
-        div_denuncia()
+        div_denuncia(p)
     })
 }
 
@@ -636,7 +636,7 @@ async function quitarPublicación_colección(form_quitarPublicacion, post) {
     }
 }
 
-async function div_denuncia(div_content1 = undefined, div_content2 = undefined, motivo = undefined, descripcion = undefined) {
+async function div_denuncia(post, div_content1 = undefined, div_content2 = undefined, motivo = undefined, descripcion = undefined) {
     let pag_body = document.querySelector("body")
     let div_crearDenuncia
 
@@ -653,11 +653,11 @@ async function div_denuncia(div_content1 = undefined, div_content2 = undefined, 
         div_crearDenuncia.className = "div_crearDenuncia fixed bg-black/50 flex items-center justify-center z-30 inset-0"
     }
 
-    let form_enviarDenuncia = document.createElement("form")
-    form_enviarDenuncia.action = "/enviarDenuncia"
-    form_enviarDenuncia.method = "post"
-    form_enviarDenuncia.name = "form_enviarDenuncia"
-    form_enviarDenuncia.id = "form_enviarDenuncia"
+    let form_denunciarPublicación = document.createElement("form")
+    form_denunciarPublicación.action = "/denunciarPublicacion"
+    form_denunciarPublicación.method = "post"
+    form_denunciarPublicación.name = "form_denunciarPublicacion"
+    form_denunciarPublicación.id = "form_denunciarPublicacion"
 
     if (!div_content1) {
         div_content1 = document.createElement("div")
@@ -717,15 +717,15 @@ async function div_denuncia(div_content1 = undefined, div_content2 = undefined, 
         btn_cancelarDenuncia.textContent = "Cancelar"
 
         btn_realizarDenuncia.addEventListener("click", (e) => {
-            div_confirmarDenuncia(div_crearDenuncia, form_enviarDenuncia, div_content1)
+            div_confirmarDenuncia(post, div_crearDenuncia, form_denunciarPublicación, div_content1)
         })
 
         btn_cancelarDenuncia.addEventListener("click", (e) => {
             div_crearDenuncia.remove()
         })
 
-        div_crearDenuncia.appendChild(form_enviarDenuncia)
-        form_enviarDenuncia.appendChild(div_content1)
+        div_crearDenuncia.appendChild(form_denunciarPublicación)
+        form_denunciarPublicación.appendChild(div_content1)
         div_content1.appendChild(div_motivo)
         div_motivo.appendChild(label_select)
         label_select.appendChild(select)
@@ -746,10 +746,7 @@ async function div_denuncia(div_content1 = undefined, div_content2 = undefined, 
 
 }
 
-async function div_confirmarDenuncia(div_crearDenuncia, form_enviarDenuncia, div_content1) {
-    const motivo = form_enviarDenuncia.querySelector("select").value
-    const descripcion = form_enviarDenuncia.querySelector("textarea").value
-
+async function div_confirmarDenuncia(post, div_crearDenuncia, form_denunciarPublicación, div_content1) {
     div_content1.classList.add("hidden")
 
     let div_content2 = div_crearDenuncia.querySelector(".div_content2")
@@ -786,6 +783,11 @@ async function div_confirmarDenuncia(div_crearDenuncia, form_enviarDenuncia, div
         btn_volver.className = "border hover:text-white hover:font-bold hover:bg-orange-600 px-2 py-1 cursor-pointer"
         btn_volver.textContent = "Volver"
 
+        form_denunciarPublicación.addEventListener("submit", (e) => {
+            e.preventDefault()
+            denunciarPublicación(post, form_denunciarPublicación, div_crearDenuncia, div_content2)
+        })
+
         btn_volver.addEventListener("click", (e) => {
             div_content2.classList.add("hidden")
             div_content1.classList.remove("hidden")
@@ -804,14 +806,73 @@ async function div_confirmarDenuncia(div_crearDenuncia, form_enviarDenuncia, div
         div_btnDenuncia2.appendChild(label_btn_volver)
         label_btn_volver.appendChild(btn_volver)
 
-        form_enviarDenuncia.appendChild(div_content2)
+        form_denunciarPublicación.appendChild(div_content2)
     } else {
         div_content2.classList.remove("hidden")
     }
 }
 
-//Función que dispara un mensaje temporal personalizado, al guardar/quitar publicación como favorito/en una colección
-function display_msj(tipo_msj, data = undefined) {
+async function denunciarPublicación(post, form, div_crearDenuncia, div_content2) {
+    const motivo_denuncia = form.querySelector("select").value
+    const descripcion_denuncia = form.querySelector("textarea").value
+    const nombre_post = post.querySelector(".post_titulo").querySelector("h1").textContent
+
+    const user_href = post.querySelector(".post_usuario").querySelector("a").getAttribute("href")
+    const regex = /^\/usuarioPerfil\/(\d+)\/posts$/;
+    let match = user_href.match(regex);
+
+    const data = {
+        motivo: motivo_denuncia,
+        descripción: descripcion_denuncia,
+        publicación: nombre_post,
+        id_usuario_publicación: match[1]
+    }
+    try {
+        const res = await fetch(form.action, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ data })
+        })
+
+        const { msj_denunciaExitosa } = await res.json()
+        
+        div_content2.innerHTML = ""
+
+        let msj = document.createElement("h1")
+        msj.textContent = msj_denunciaExitosa
+
+        let div_btn_cerrarDiv = document.createElement("div")
+        div_btn_cerrarDiv.className = "flex justify-center items-center mt-5"
+        
+        let label_cerrarDiv = document.createElement("label")
+        label_cerrarDiv.for = "cerrarDivDenuncia"
+
+        let btn_cerrarDiv = document.createElement("button")
+        btn_cerrarDiv.type = "button"
+        btn_cerrarDiv.className = "border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer"
+        btn_cerrarDiv.id = "cerrarDivDenuncia"
+        btn_cerrarDiv.name = "cerrarDivDenuncia"
+        btn_cerrarDiv.textContent = "Salir"
+
+        div_content2.appendChild(msj)
+        div_content2.appendChild(div_btn_cerrarDiv)
+        div_btn_cerrarDiv.appendChild(label_cerrarDiv)
+        label_cerrarDiv.appendChild(btn_cerrarDiv)
+
+        btn_cerrarDiv.addEventListener("click", (e) => {
+            div_crearDenuncia.remove()
+        })
+
+
+    } catch (error) {
+        console.error(`ERROR AL DENUNCIAR PUBLICACIÓN --> ${error}`)
+    }
+}
+
+//Función que dispara un mensaje temporal personalizado, al guardar/quitar publicación como favorito/en una colección, al denunciar una publicación
+function display_msj(tipo_msj, data = undefined, ...otrosMensajes) {
     let div_msj = document.createElement("div")
 
     if (tipo_msj === "guardar_publicación_favoritos") {
@@ -834,8 +895,12 @@ function display_msj(tipo_msj, data = undefined) {
         div_msj.className = "mb-3 bg-red-600 px-5 py-2 font-bold"
         div_msj.textContent = `Publicación removida de ${data.nombreColección}`
 
-    }
+    } else if (tipo_msj === "denunciarPublicación") {
 
+        div_msj.className = "mb-3 bg-green-600 px-5 py-2 font-bold"
+        div_msj.textContent = otrosMensajes
+
+    }
     let posición_msj = document.body.querySelector(".msj")
 
     posición_msj.appendChild(div_msj)

@@ -13,6 +13,7 @@ import { Seguidores } from "../models/Seguidores.js";
 import { Favoritos } from "../models/Favoritos.js";
 import { Publicacion_Favoritos } from "../models/Publicacion_Favoritos.js";
 import { Publicacion_Colecciones } from "../models/Publicacion_Colecciones.js";
+import { Motivo } from "../models/Motivo.js";
 
 async function seed() {
     await sequelize.sync({ alter: true });
@@ -221,6 +222,19 @@ async function seed() {
         { id_seguidor: users[0].id_usuario, id_seguido: users[1].id_usuario },
         // user03 sigue a user02
         { id_seguidor: users[3].id_usuario, id_seguido: users[2].id_usuario },
+    ]);
+
+
+    await Motivo.bulkCreate([
+        { nombre: "Contenido sexual explícito o desnudos" },
+        { nombre: "Violencia gráfica o contenido perturbador" },
+        { nombre: "Discurso de odio o discriminación" },
+        { nombre: "Acoso, bullying o amenazas" },
+        { nombre: "Violación de derechos de autor" },
+        { nombre: "Violación de privacidad (persona identificable fotografiada o publicada sin consentimiento)" },
+        { nombre: "Spam o publicidad no deseada" },
+        { nombre: "Información falsa o engañosa (foto manipulada presentada como real)" },
+        { nombre: "Otro motivo" },
     ]);
 
     console.log("✅ Seed completado con datos de prueba.");

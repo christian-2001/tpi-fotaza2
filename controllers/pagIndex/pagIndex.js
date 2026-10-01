@@ -9,6 +9,8 @@ import { Colección } from "../../models/Colección.js"
 import { Publicacion_Favoritos } from "../../models/Publicacion_Favoritos.js"
 import { Op, Sequelize } from "sequelize"
 import { Publicacion_Colecciones } from "../../models/Publicacion_Colecciones.js"
+import { Motivo } from "../../models/Motivo.js"
+import { DenunciaPublicacion } from "../../models/DenunciaPublicacion.js"
 
 export async function pagIndex(req, res) {
     let postsFavorito
@@ -65,7 +67,7 @@ export async function pagIndex(req, res) {
                 id_usuario: req.user.id_usuario
             }
         })
-                
+
         const mapidsColecciones2 = userAuthColecciones.map(colección => colección.id_colección)
 
         postsUserAuthColecciones = await Publicacion_Colecciones.findAll({
@@ -314,5 +316,43 @@ export async function quitar_de_colección(req, res) {
 
     } catch (error) {
         res.status(400).send(`Error al quitar publicación ${error}`)
+    }
+}
+
+export async function denunciarPublicación(req, res) {
+    const { motivo, descripción, publicación } = req.body.data
+    let { id_usuario_publicación } = req.body.data
+    id_usuario_publicación = parseInt(id_usuario_publicación)
+
+    try {
+
+        const _post = await Publicacion.findOne({
+            where: {
+                titulo: publicación,
+                id_usuario: id_usuario_publicación
+            },
+
+            attributes: ["id_post"]
+        })
+
+        const _motivo = await Motivo.findOne({
+            where: {
+                nombre: motivo
+            },
+
+            attributes: ["id_motivo"]
+        })
+
+        const denuncia = await DenunciaPublicacion.create({
+            id_post: _post.id_post,
+            id_denunciante: req.user.id_usuario,
+            id_motivo: _motivo.id_motivo,
+            descripción: descripción
+        })
+
+        res.json({ msj_denunciaExitosa: "Se ha realizado la denuncia hacia la publicación exitosamente" })
+
+    } catch (error) {
+        res.status(400).send(`Error al denunciar publicación ${error}`)
     }
 }
