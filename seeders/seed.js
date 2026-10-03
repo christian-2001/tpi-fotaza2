@@ -17,7 +17,7 @@ import { DenunciaPublicacion } from "../models/DenunciaPublicacion.js";
 import { Motivo } from "../models/Motivo.js";
 
 async function seed() {
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: true, force: true });
 
     // ─────────────────────────────────────────────
     // PERSONA  (4 personas)
@@ -31,6 +31,8 @@ async function seed() {
         { dni: "33333333", tipo_dni: "DNI", sexo: "Femenino", nombre: "User", apellido: "Two", fecha_nacimiento: "1998-08-20", mail: "user02@test.com" },
         // personas[3] → user03
         { dni: "44444444", tipo_dni: "DNI", sexo: "Masculino", nombre: "User", apellido: "Three", fecha_nacimiento: "2000-03-15", mail: "user03@test.com" },
+        // personas[4] → validador
+        { dni: "55555555", tipo_dni: "DNI", sexo: "Femenino", nombre: "Validador", apellido: "Contenidos", fecha_nacimiento: "1988-11-25", mail: "validador@test.com" },
     ]);
 
     // ─────────────────────────────────────────────
@@ -50,6 +52,8 @@ async function seed() {
         { nombre_usuario: "user02", id_persona: personas[2].id_persona, contrasenia: "user@8912" },
         // users[3] → user03
         { nombre_usuario: "user03", id_persona: personas[3].id_persona, contrasenia: "user@3456" },
+        // users[4] → validador (rol: validador)
+        { nombre_usuario: "validador", id_persona: personas[4].id_persona, contrasenia: "valid@1234", rol: "validador" },
     ];
 
     // Generar hash para cada contraseña

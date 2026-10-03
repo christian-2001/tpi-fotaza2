@@ -9,7 +9,7 @@ export async function authUserHome(req, res, next){
         try {   
 
             const usuario = await Usuario.findByPk(userId, {
-                attributes: ["id_usuario", "nombre_usuario"],
+                attributes: ["id_usuario", "nombre_usuario", "rol"],
             })
 
             req.user = usuario
@@ -26,6 +26,14 @@ export async function authUserHome(req, res, next){
         }
     }
     next()
+}
+
+export function esValidador(req, res, next) {
+    console.log(req.user)
+    if (req.user && req.user.rol === "validador") {
+        return next()
+    }
+    return res.status(403).render("error", { mensaje: "Acceso denegado" })
 }
 
 export async function cerrarSesion(req, res){

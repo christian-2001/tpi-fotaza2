@@ -28,6 +28,12 @@ Usuario.init(
             type: DataTypes.STRING
         },
 
+        rol: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'usuario'
+        },
+
         cant_publicaciones: {
             type: DataTypes.INTEGER,
             defaultValue: 0

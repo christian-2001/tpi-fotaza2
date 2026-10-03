@@ -11,20 +11,7 @@ export async function authLogin(req, res) {
 
     mail = mail.trim()
     contrasenia = contrasenia.trim()
-/*
-    const validate_result = validarFormLogin({
-        mail: mail
-    })
-*/
-/*
-    if (validate_result.success === false) {
-        res.status(400).render("./login/login", {
-            error: "Mail o contraseña incorrectos",
-            formValues: req.body
-        })
-        return
-    }
-*/
+
     try {
         const perfil = await Persona.findOne({
             where: {
@@ -45,7 +32,7 @@ export async function authLogin(req, res) {
             })
             return
         }
-  
+
         const pass_valido = await user.validarContraseña(contrasenia)
 
         if (!pass_valido) {
@@ -58,6 +45,12 @@ export async function authLogin(req, res) {
 
         req.session.userId = user.id_usuario
 
+        if (user.rol === "validador") {
+            return res.redirect("/validador")
+        }
+
+        return res.redirect("/")
+
     } catch (error) {
         console.log(`Error al loguearse --> ${error}`)
 
@@ -68,6 +61,6 @@ export async function authLogin(req, res) {
         return
     }
 
-    res.redirect("/")
+
 }
 
