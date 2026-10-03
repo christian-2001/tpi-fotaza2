@@ -54,8 +54,9 @@ block content
                                             label(for="btn_coleccion")
                                                 button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_coleccion") Guardar en Colección
                                         li(id="denunciar_publicacion")
-                                            label(for="denunciarPost")
-                                                button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación  
+                                            form(action=`/denuncias/publicacion/${val.id_post}/verificarPublicacionDenunciada`, method="get" name="verificarPublicacionDenunciada" id="verificarPublicacionDenunciada") 
+                                                label(for="denunciarPost")
+                                                    button(type="submit" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación  
                                     
                                     else
 
@@ -67,8 +68,9 @@ block content
                                             label(for="btn_coleccion")
                                                 button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_coleccion") Guardar en Colección                
                                         li(id="denunciar_publicacion")
-                                            label(for="denunciarPost")
-                                                button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación
+                                            form(action=`/denuncias/publicacion/${val.id_post}/verificarPublicacionDenunciada`, method="get" name="verificarPublicacionDenunciada" id="verificarPublicacionDenunciada") 
+                                                label(for="denunciarPost")
+                                                    button(type="submit" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación
 
                             if esFavorito === false
                                 li(id="agregar-a-favoritos")
@@ -79,8 +81,9 @@ block content
                                     label(for="btn_coleccion")
                                         button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_coleccion") Guardar en Colección                
                                 li(id="denunciar_publicacion")
-                                    label(for="denunciarPost")
-                                        button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación
+                                    form(action=`/denuncias/publicacion/${val.id_post}/verificarPublicacionDenunciada`, method="get" name="verificarPublicacionDenunciada" id="verificarPublicacionDenunciada") 
+                                        label(for="denunciarPost")
+                                            button(type="submit" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación
 
                         ul(class="opciones2 hidden absolute bg-gray-200 top-7 right-2 mt-2 z-10", id=`post${val.id_post}`)
                             li(class="border-black border-b-2")
@@ -111,6 +114,13 @@ block content
                                             
   
                     .post_usuario(class="relative text-center text-[20px]")
+                        if userSession
+                            if (val.Usuario.id_usuario === userSession.id) && postsDenunciados
+                                each pd in postsDenunciados
+                                    if pd.titulo === val.titulo
+                                        h1(class="font-bold text-red-700") Denuncias acumuladas: (#{pd.infoDenuncia.length}/3)
+                                        if pd.infoDenuncia.length === 3
+                                            h1(class="font-bold text-red-700") Publicación enviada al validador de contenidos!!!
                         p
                             | Publicado por 
                             a(href=`/usuarioPerfil/${val.Usuario.id_usuario}/posts` class="hover:font-bold") #{val.Usuario.nombre_usuario}

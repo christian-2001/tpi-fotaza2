@@ -21,8 +21,34 @@ let motivos = [
     "Otro motivo"
 ]
 
+//Div con el mensaje de alerta tras recibir una o más denuncias de una o más publciaciones
+const div_denuncias = document.querySelector(".div_denuncias")
+
+//Si las denuncias no han sido leidas por el autor, se ejecuta el siguiente bloque de codigo
+if (div_denuncias) {
+    //Formulario para acceder a la ruta que me lleva al metodo que marca las denuncias de las publicaciones como leidas
+    const form_marcarPublicacionDenunciasLeidas = div_denuncias.querySelector("form")
+
+    //Evento submit del form
+    form_marcarPublicacionDenunciasLeidas.addEventListener("submit", async (e) => {
+        e.preventDefault()
+
+        await fetch(form_marcarPublicacionDenunciasLeidas.action, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        //Cierra el mensaje de alerta
+        div_denuncias.remove()
+    })
+}
 //Iterar sobre todas las publicaciones
 for (const p of posts) {
+
+    //Tiutlo de la publicación
+    let post_titulo = p.querySelector(".post_titulo").querySelector("h1").textContent
 
     //Lista de opciones disponibles en todas las publicaciones
     let post_menu = p.querySelector(".opciones")
@@ -48,7 +74,7 @@ for (const p of posts) {
 
     let btn_crearColección = p.querySelector("#crearColeccion_opciones2")
 
-    let btn_denunciarPost = p.querySelector("#denunciarPost")
+    let form_denunciarPost = p.querySelector("#verificarPublicacionDenunciada")
 
     btn_crearColección.addEventListener("click", (e) => {
         vista_crearColeccion(post_menu, p, post_menu2)
@@ -138,8 +164,32 @@ for (const p of posts) {
         })
     }
 
-    btn_denunciarPost.addEventListener("click", (e) => {
-        div_denuncia(p)
+    form_denunciarPost.addEventListener("submit", async (e) => {
+        e.preventDefault()
+
+        try {
+            const res = await fetch(form_denunciarPost.action, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+
+            const { msj_confirmacion } = await res.json()
+
+            if (msj_confirmacion === "NO EXISTE DENUNCIA A LA PUBLICACION POR PARTE DEL USUARIO") {
+
+                div_denuncia(p)
+
+            } else if (msj_confirmacion === "YA DENUNCIASTE ESTA PUBLICACION") {
+
+                const tipo_msj = "denunciaPublicaciónExistente"
+                display_msj(tipo_msj)
+
+            }
+        } catch (error) {
+            console.error(`ERROR AL VERIFICAR DENUNCIA A LA PUBLICACION --> ${error}`)
+        }
     })
 }
 
@@ -654,7 +704,7 @@ async function div_denuncia(post, div_content1 = undefined, div_content2 = undef
     }
 
     let form_denunciarPublicación = document.createElement("form")
-    form_denunciarPublicación.action = "/denunciarPublicacion"
+    form_denunciarPublicación.action = "/denuncias/publicacion/denunciarPublicacion"
     form_denunciarPublicación.method = "post"
     form_denunciarPublicación.name = "form_denunciarPublicacion"
     form_denunciarPublicación.id = "form_denunciarPublicacion"
@@ -837,7 +887,7 @@ async function denunciarPublicación(post, form, div_crearDenuncia, div_content2
         })
 
         const { msj_denunciaExitosa } = await res.json()
-        
+
         div_content2.innerHTML = ""
 
         let msj = document.createElement("h1")
@@ -845,7 +895,7 @@ async function denunciarPublicación(post, form, div_crearDenuncia, div_content2
 
         let div_btn_cerrarDiv = document.createElement("div")
         div_btn_cerrarDiv.className = "flex justify-center items-center mt-5"
-        
+
         let label_cerrarDiv = document.createElement("label")
         label_cerrarDiv.for = "cerrarDivDenuncia"
 
@@ -872,7 +922,7 @@ async function denunciarPublicación(post, form, div_crearDenuncia, div_content2
 }
 
 //Función que dispara un mensaje temporal personalizado, al guardar/quitar publicación como favorito/en una colección, al denunciar una publicación
-function display_msj(tipo_msj, data = undefined, ...otrosMensajes) {
+function display_msj(tipo_msj, data = undefined) {
     let div_msj = document.createElement("div")
 
     if (tipo_msj === "guardar_publicación_favoritos") {
@@ -895,12 +945,13 @@ function display_msj(tipo_msj, data = undefined, ...otrosMensajes) {
         div_msj.className = "mb-3 bg-red-600 px-5 py-2 font-bold"
         div_msj.textContent = `Publicación removida de ${data.nombreColección}`
 
-    } else if (tipo_msj === "denunciarPublicación") {
+    } else if (tipo_msj === "denunciaPublicaciónExistente") {
 
-        div_msj.className = "mb-3 bg-green-600 px-5 py-2 font-bold"
-        div_msj.textContent = otrosMensajes
+        div_msj.className = "mb-3 bg-red-600 px-5 py-2 font-bold"
+        div_msj.textContent = "Ya denunciaste esta publicación"
 
     }
+
     let posición_msj = document.body.querySelector(".msj")
 
     posición_msj.appendChild(div_msj)

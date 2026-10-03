@@ -1,4 +1,4 @@
-mixin renderPosts(sección, postsSección, esFavorito, guardada)
+mixin renderPosts(sección, postsSección, esFavorito, guardada, esDueño, postsDenunciados)
     if postsSección.length > 0               
         div(class=(postsSección.length === 1) ? "flex justify-center mt-6 mx-60" : "flex justify-center mt-6")
             .user_posts(class=(postsSección.length === 1) ? "grid grid-cols-1 mx-20 gap-4" : "grid grid-cols-2 mx-20 gap-4")
@@ -23,8 +23,9 @@ mixin renderPosts(sección, postsSección, esFavorito, guardada)
                                             label(for="btn_colección")
                                                 button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_colección") Guardar en Colección
                                         li(id="denunciar_publicacion")
-                                            label(for="denunciarPost")
-                                                button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación
+                                            form(action=`/usuarioPerfil/denuncias/publicacion/${post.id_post}/verificarPublicacionDenunciada`, method="get" name="verificarPublicacionDenunciada" id="verificarPublicacionDenunciada") 
+                                                label(for="denunciarPost")
+                                                    button(type="submit" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación
                                     
                                     else
                                         
@@ -36,8 +37,9 @@ mixin renderPosts(sección, postsSección, esFavorito, guardada)
                                             label(for="btn_colección")
                                                 button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_colección") Guardar en Colección                
                                         li(id="denunciar_publicacion")
-                                            label(for="denunciarPost")
-                                                button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación   
+                                            form(action=`/usuarioPerfil/denuncias/publicacion/${post.id_post}/verificarPublicacionDenunciada`, method="get" name="verificarPublicacionDenunciada" id="verificarPublicacionDenunciada")
+                                                label(for="denunciarPost")
+                                                    button(type="submit" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación   
                             
                             if esFavorito === false
                                 
@@ -49,8 +51,9 @@ mixin renderPosts(sección, postsSección, esFavorito, guardada)
                                     label(for="btn_colección")
                                         button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="btn_colección") Guardar en Colección                
                                 li(id="denunciar_publicacion")
-                                            label(for="denunciarPost")
-                                                button(type="button" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación
+                                    form(action=`/usuarioPerfil/denuncias/publicacion/${post.id_post}/verificarPublicacionDenunciada`, method="get" name="verificarPublicacionDenunciada" id="verificarPublicacionDenunciada") 
+                                        label(for="denunciarPost")
+                                            button(type="submit" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación
                         
                         ul(class="opciones2 hidden absolute bg-gray-200 top-7 right-2 mt-2 z-10", id=`post${post.id_post}`)
                             li(class="border-black border-b-2")
@@ -81,6 +84,12 @@ mixin renderPosts(sección, postsSección, esFavorito, guardada)
                                                                 path(d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z")
 
                         .post_usuario(class="text-center text-[20px]")
+                            if esDueño && postsDenunciados
+                                each pd in postsDenunciados
+                                    if pd.titulo === post.titulo
+                                        h1(class="font-bold text-red-700") Denuncias acumuladas: (#{pd.infoDenuncia.length}/3)
+                                        if pd.infoDenuncia.length === 3
+                                            h1(class="font-bold text-red-700") Publicación enviada al validador de contenidos!!!
                             p
                                 |   Publicado por  
                                 a(href=`/usuarioPerfil/${post.Usuario.id_usuario}/posts` class="hover:font-bold") #{post.Usuario.nombre_usuario}

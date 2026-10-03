@@ -12,11 +12,12 @@ block metadata
         title Perfil de #{usuario.nombre_usuario}
 
 block content
-    body(class="relative ")
+    body(class="relative")
     - const idPerfil = esDueño ? userSession.id : usuario.id_usuario
     - let esFavorito
     - let postsColeccionesCount 
     - let guardada
+
         div(class="msj fixed bottom-0 right-10 mb-10 z-20 text-white text-2xl")
 
         div(class="flex justify-center my-5")
@@ -92,7 +93,7 @@ block content
                                 div(class="relative bg-red-500 border-1 border-gray-400 rounded-[10px] px-6 py-1 font-bold hover:font-bold hover:outline-orange-400 hover:bg-red-700 hover:opacity-80 hover:text-white cursor-pointer h-fit text-center")
                                     label(for="borrarPublicación")
                                         button(class="text-center cursor-pointer" id="borrarPublicación") Borrar Publicación/es
-                    +renderPosts(sección, posts, esFavorito, guardada) 
+                    +renderPosts(sección, posts, esFavorito, guardada, esDueño, postsDenunciados) 
                 //- ==================== FOLLOWERS ====================
                 else if sección == "followers"
                     if esDueño
@@ -172,10 +173,10 @@ block content
                                                 button(type="submit" name="btn_seguir" id="btn_seguir" class="bg-green-700 hover:bg-green-800 text-violet-50 font-semibold px-5 py-1.5") Seguir
                 //- ==================== FAVORTIOS ====================
                 else if sección == "favoritos"
-                    +renderPosts(sección, favoritos, esFavorito, guardada)
+                    +renderPosts(sección, favoritos, esFavorito, guardada, esDueño, postsDenunciados)
                 //- ==================== PUBLICACIONES DE USUARIOS QUE SIGO ====================                              
                 else if sección == "postsFollowing"
-                    +renderPosts(sección, postsFollowing, esFavorito, guardada)
+                    +renderPosts(sección, postsFollowing, esFavorito, guardada, esDueño, postsDenunciados)
                 //- ==================== COLECCIONES ====================                              
                 else if sección == "colecciones"
                     if !postsColeccion
@@ -218,5 +219,5 @@ block content
                             if esDueño
                                 label(for="btn_modificarColección")
                                     button(class="bg-white px-6 py-1 hover:bg-orange-400 hover:text-white cursor-pointer font-bold" id="btn_modificarColección") Cambiar nombre de Colección
-                        +renderPosts(sección, postsColeccion, esFavorito, guardada)                     
+                        +renderPosts(sección, postsColeccion, esFavorito, guardada, esDueño, postsDenunciados)                     
     script(src="/script/userProfile/userProfile.js" defer) 

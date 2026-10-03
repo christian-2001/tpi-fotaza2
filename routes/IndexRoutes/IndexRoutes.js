@@ -2,7 +2,7 @@ import express from "express"
 import { pagIndex } from "../../controllers/pagIndex/pagIndex.js"
 import { guardarPost_favoritos, quitarPost_favoritos } from "../../controllers/pagIndex/pagIndex.js"
 import { crearColección, guardar_en_colección, quitar_de_colección } from "../../controllers/pagIndex/pagIndex.js"
-import { denunciarPublicación } from "../../controllers/pagIndex/pagIndex.js"
+import { denunciarPublicación, marcarDenunciasPublicacionNotificadas, verificarPublicacionDenunciada } from "../../controllers/pagIndex/pagIndex.js"
 import { buscarPost } from "../../controllers/buscarPost/buscarPostController.js"
 import { mostrarPost, actualizarImgPost, cerrarComentarios } from "../../controllers/mostrarPost/mostrarPostController.js"
 import { cerrarSesion } from "../../middleware/auth.js"
@@ -24,11 +24,15 @@ router.get("/buscar", buscarPost)
 
 router.get("/post/:id_post/:img_index", mostrarPost)
 
-router.post("/denunciarPublicacion", denunciarPublicación)
+router.post("/denuncias/publicacion/denunciarPublicacion", denunciarPublicación)
+
+router.post("/denuncias/publicacion/marcarLeidas", marcarDenunciasPublicacionNotificadas)
 
 router.post("/post/:id_post/:img_index", actualizarImgPost)
 
 router.post("/post/:id_post/imagen/:id_img/cerrarComentarios", cerrarComentarios)
+
+router.get("/denuncias/publicacion/:idPublicacion/verificarPublicacionDenunciada", verificarPublicacionDenunciada)
 
 router.post("/cerrarSesion", cerrarSesion)
 

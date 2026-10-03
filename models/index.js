@@ -66,8 +66,8 @@ Valorizacion.belongsTo(Imagen, { foreignKey: "id_img"})
 Usuario.hasMany(Valorizacion, { foreignKey: "id_usuario"})
 Valorizacion.belongsTo(Usuario, { foreignKey: "id_usuario"})
 //================================================================================
-Publicacion.hasMany(DenunciaPublicacion, { foreignKey: "id_post"})
-DenunciaPublicacion.belongsTo(Publicacion, { foreignKey: "id_post"})
+Publicacion.hasMany(DenunciaPublicacion, { foreignKey: "id_post", as: "DenunciaPublicación"})
+DenunciaPublicacion.belongsTo(Publicacion, { foreignKey: "id_post", as: "Publicación"})
 
 Usuario.hasMany(DenunciaPublicacion, { foreignKey: "id_usuario"})
 DenunciaPublicacion.belongsTo(Usuario, { foreignKey: "id_usuario"})

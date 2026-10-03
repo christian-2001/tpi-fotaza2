@@ -9,6 +9,8 @@ import { Publicacion_Favoritos } from "../../models/Publicacion_Favoritos.js"
 import { Op } from "sequelize"
 import { Publicacion_Colecciones } from "../../models/Publicacion_Colecciones.js"
 import { Colección } from "../../models/Colección.js"
+import { DenunciaPublicacion } from "../../models/DenunciaPublicacion.js"
+import { Motivo } from "../../models/Motivo.js"
 
 
 export async function mostrarPerfilUsuario(req, res) {
@@ -64,6 +66,8 @@ export async function mostrarPerfilUsuario(req, res) {
         const seguidos = await getFollowing(usuarioPerfil);
         const postsFollowing = await getPostsFollowing(seguidos)
         const favoritos = await getPostsFavoritos(usuarioPerfil)
+        const postsDenunciados = await getpostsDenunciados(usuarioPerfil)
+
         let yaEsSeguido = false;
 
         let misFollowing = [];
@@ -107,7 +111,7 @@ export async function mostrarPerfilUsuario(req, res) {
             }
         })
 
-        if(userColeccion){
+        if (userColeccion) {
             postsColeccion = await getPostsColección(userColeccion, usuarioPerfil.id_usuario)
         }
 
@@ -129,7 +133,6 @@ export async function mostrarPerfilUsuario(req, res) {
             }
         })
 
-
         res.render("./userProfile/userProfile", {
             sección,
             usuario: usuarioPerfil,
@@ -149,7 +152,8 @@ export async function mostrarPerfilUsuario(req, res) {
             userColeccion,
             postsColecciones,
             postsUserAuthColecciones,
-            postsColeccion
+            postsColeccion,
+            postsDenunciados
         });
     } catch (error) {
         res.status(400).send(`Ocurrió un error ${error}`)
@@ -237,6 +241,66 @@ export async function borrarColecciones(req, res) {
     }
 }
 
+export async function denunciarPublicación(req, res) {
+    const { motivo, descripción, publicación } = req.body.data
+    let { id_usuario_publicación } = req.body.data
+    id_usuario_publicación = parseInt(id_usuario_publicación)
+
+    try {
+
+        const _post = await Publicacion.findOne({
+            where: {
+                titulo: publicación,
+                id_usuario: id_usuario_publicación
+            },
+
+            attributes: ["id_post"]
+        })
+
+        const _motivo = await Motivo.findOne({
+            where: {
+                nombre: motivo
+            },
+
+            attributes: ["id_motivo"]
+        })
+
+        const denuncia = await DenunciaPublicacion.create({
+            id_post: _post.id_post,
+            id_denunciante: req.user.id_usuario,
+            id_motivo: _motivo.id_motivo,
+            descripción: descripción
+        })
+
+        res.json({ msj_denunciaExitosa: "Se ha realizado la denuncia hacia la publicación exitosamente" })
+
+    } catch (error) {
+        res.status(400).send(`Error al denunciar publicación ${error}`)
+    }
+}
+
+export async function verificarPublicacionDenunciada(req, res){
+    const _idPost = parseInt(req.params.idPublicacion)
+    const _idDenunciante = parseInt(req.user.id_usuario)
+
+    const result = await DenunciaPublicacion.findOne({
+        where: {
+            id_post: _idPost,
+            id_denunciante: _idDenunciante
+        }
+    })
+
+    let msj_confirmacion
+    
+    if(!result){
+        msj_confirmacion = "NO EXISTE DENUNCIA A LA PUBLICACION POR PARTE DEL USUARIO"
+    } else {
+        msj_confirmacion = "YA DENUNCIASTE ESTA PUBLICACION"
+    }
+    
+    res.json({ msj_confirmacion })
+}
+
 async function getPosts(usuario) {
     const publicaciones = await Publicacion.findAll({
 
@@ -268,7 +332,6 @@ async function getFollowers(usuario) {
 
     return seguidores
 }
-
 
 async function getFollowing(usuario) {
 
@@ -367,4 +430,55 @@ async function getPostsColección(_nombre_colección, _id_usuario) {
     })
 
     return posts
+}
+
+async function getpostsDenunciados(usuario) {
+
+    let posts = await Publicacion.findAll({
+        where: {
+            id_usuario: usuario.id_usuario
+        },
+
+        include: [
+            {
+                model: DenunciaPublicacion,
+                as: "DenunciaPublicación",
+                required: true,
+                order: [["fh_denuncia", "DESC"]]
+            },
+        ],
+    })
+
+    const postsDenunciados = await Promise.all(
+        posts.map(async (p) => ({
+            titulo: p.titulo,
+            infoDenuncia: await getInfoDenuncia(p.DenunciaPublicación)
+        }))
+    )
+
+    return postsDenunciados
+}
+
+async function getInfoDenuncia(DenunciaPublicación) {
+    const info = [];
+
+    for (let i = 0; i < DenunciaPublicación.length; i++) {
+        info.push({
+            motivo: await getMotivo(DenunciaPublicación[i]),
+            descripcion: DenunciaPublicación[i].descripción || "No hay descripción"
+        });
+    }
+
+    return info;
+}
+
+async function getMotivo(DenunciaPublicación){
+    
+    const motivo = await Motivo.findOne({
+        where: {
+            id_motivo: DenunciaPublicación.id_motivo
+        }
+    })
+    
+    return motivo.nombre
 }

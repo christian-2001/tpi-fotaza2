@@ -19,6 +19,8 @@ export async function pagIndex(req, res) {
     let userAuthColecciones
     let postsColecciones
     let postsUserAuthColecciones
+    let postsDenunciados
+    let postsDenunciadosLeidos
     //Publicaciones con: Titulo, Descripcion, Nombre del usuario, Fecha y hora de publicacion, Etiquetas, Imagenes
     const posts = await Publicacion.findAll({
         include: [
@@ -77,6 +79,12 @@ export async function pagIndex(req, res) {
                 }
             }
         })
+
+        postsDenunciados = await getpostsDenunciados(req.user)
+
+        if(postsDenunciados){
+            postsDenunciadosLeidos = await getPostsDenunciadosLeidos(req.user)
+        }
     }
 
     res.render("index", {
@@ -90,7 +98,9 @@ export async function pagIndex(req, res) {
         userColecciones,
         userAuthColecciones,
         postsColecciones,
-        postsUserAuthColecciones
+        postsUserAuthColecciones,
+        postsDenunciados,
+        postsDenunciadosLeidos
     })
 
 }
@@ -355,4 +365,122 @@ export async function denunciarPublicación(req, res) {
     } catch (error) {
         res.status(400).send(`Error al denunciar publicación ${error}`)
     }
+}
+
+export async function verificarPublicacionDenunciada(req, res){
+    const _idPost = parseInt(req.params.idPublicacion)
+    const _idDenunciante = parseInt(req.user.id_usuario)
+
+    const result = await DenunciaPublicacion.findOne({
+        where: {
+            id_post: _idPost,
+            id_denunciante: _idDenunciante
+        }
+    })
+
+    let msj_confirmacion
+    
+    if(!result){
+        msj_confirmacion = "NO EXISTE DENUNCIA A LA PUBLICACION POR PARTE DEL USUARIO"
+    } else {
+        msj_confirmacion = "YA DENUNCIASTE ESTA PUBLICACION"
+    }
+    
+    res.json({ msj_confirmacion })
+}
+
+async function getpostsDenunciados(usuario) {
+
+    let posts = await Publicacion.findAll({
+        where: {
+            id_usuario: usuario.id_usuario
+        },
+
+        include: [
+            {
+                model: DenunciaPublicacion,
+                as: "DenunciaPublicación",
+                required: true,
+                order: [["fh_denuncia", "DESC"]]
+            },
+        ],
+    })
+
+    const postsDenunciados = await Promise.all(
+        posts.map(async (p) => ({
+            titulo: p.titulo,
+            infoDenuncia: await getInfoDenuncia(p.DenunciaPublicación)
+        }))
+    )
+
+    return postsDenunciados
+}
+
+async function getInfoDenuncia(DenunciaPublicación) {
+    const info = [];
+
+    for (let i = 0; i < DenunciaPublicación.length; i++) {
+        info.push({
+            motivo: await getMotivo(DenunciaPublicación[i]),
+            descripcion: DenunciaPublicación[i].descripción || "No hay descripción"
+        });
+    }
+
+    return info;
+}
+
+async function getMotivo(DenunciaPublicación) {
+
+    const motivo = await Motivo.findOne({
+        where: {
+            id_motivo: DenunciaPublicación.id_motivo
+        }
+    })
+
+    return motivo.nombre
+}
+
+export async function marcarDenunciasPublicacionNotificadas(req, res) {
+
+    const posts = await Publicacion.findAll({
+        where: {
+            id_usuario: req.user.id_usuario
+        },
+
+        attributes: ["id_post"]
+    })
+    
+    const ids = posts.map(p => p.id_post);
+
+    await DenunciaPublicacion.update(
+        { notificada: true },
+        { where: { id_post: ids, notificada: false } }
+    );
+    res.sendStatus(204);
+}
+
+async function getPostsDenunciadosLeidos(usuario){
+
+    const posts = await Publicacion.findAll({
+        where: {
+            id_usuario: usuario.id_usuario
+        },
+
+        attributes: ["id_post"]
+    })
+
+    const ids = posts.map(p => p.id_post);
+
+    const postsDenunciadosLeidos = await DenunciaPublicacion.findAll({
+        where: {
+            id_post: {
+                [Op.in]: ids
+            },
+
+            notificada: true
+        }
+    })
+
+
+    return postsDenunciadosLeidos.length !== 0 ? true : false
 }

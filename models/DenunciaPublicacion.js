@@ -52,6 +52,12 @@ DenunciaPublicacion.init(
     estado: {
       type: DataTypes.STRING,
       defaultValue: "pendiente"
+    },
+
+    notificada: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
   },
   {

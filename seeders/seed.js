@@ -13,6 +13,7 @@ import { Seguidores } from "../models/Seguidores.js";
 import { Favoritos } from "../models/Favoritos.js";
 import { Publicacion_Favoritos } from "../models/Publicacion_Favoritos.js";
 import { Publicacion_Colecciones } from "../models/Publicacion_Colecciones.js";
+import { DenunciaPublicacion } from "../models/DenunciaPublicacion.js";
 import { Motivo } from "../models/Motivo.js";
 
 async function seed() {
@@ -225,16 +226,53 @@ async function seed() {
     ]);
 
 
-    await Motivo.bulkCreate([
+    // ─────────────────────────────────────────────
+    // MOTIVO  (9 motivos)
+    // ─────────────────────────────────────────────
+    const motivos = await Motivo.bulkCreate([
+        // motivos[0]
         { nombre: "Contenido sexual explícito o desnudos" },
+        // motivos[1]
         { nombre: "Violencia gráfica o contenido perturbador" },
+        // motivos[2]
         { nombre: "Discurso de odio o discriminación" },
+        // motivos[3]
         { nombre: "Acoso, bullying o amenazas" },
+        // motivos[4]
         { nombre: "Violación de derechos de autor" },
+        // motivos[5]
         { nombre: "Violación de privacidad (persona identificable fotografiada o publicada sin consentimiento)" },
+        // motivos[6]
         { nombre: "Spam o publicidad no deseada" },
+        // motivos[7]
         { nombre: "Información falsa o engañosa (foto manipulada presentada como real)" },
+        // motivos[8]
         { nombre: "Otro motivo" },
+    ]);
+
+    // ─────────────────────────────────────────────
+    // DENUNCIA_PUBLICACION  (8 denuncias)
+    //  Reglas:
+    //   - El autor del post NO se denuncia a sí mismo
+    //   - Un usuario denuncia un mismo post una sola vez (unique id_post + id_denunciante)
+    //  posts[0] → users[0] | posts[1] → users[1] | posts[2] → users[2]
+    //  posts[3] → users[3] | posts[4] → users[1]
+    // ─────────────────────────────────────────────
+    await DenunciaPublicacion.bulkCreate([
+        // posts[1] — Ciudad entre niebla: 3 denuncias (para probar el listado con varias)
+        { id_post: posts[1].id_post, id_denunciante: users[0].id_usuario, id_motivo: motivos[6].id_motivo, descripción: "Parece una publicación para promocionar algo.", estado: "pendiente", notificada: false },
+        { id_post: posts[1].id_post, id_denunciante: users[2].id_usuario, id_motivo: motivos[7].id_motivo, descripción: "La foto parece manipulada digitalmente.", estado: "pendiente", notificada: false },
+        { id_post: posts[1].id_post, id_denunciante: users[3].id_usuario, id_motivo: motivos[5].id_motivo, descripción: "Se ve una persona identificable en la imagen.", estado: "pendiente", notificada: false },
+
+        // posts[2] — Flores de primavera
+        { id_post: posts[2].id_post, id_denunciante: users[3].id_usuario, id_motivo: motivos[4].id_motivo, descripción: "Creo que esta imagen es de otro autor.", estado: "pendiente", notificada: false },
+
+        // posts[3] — Mar de fondo
+        { id_post: posts[3].id_post, id_denunciante: users[1].id_usuario, id_motivo: motivos[8].id_motivo, descripción: "No cumple con las normas de la comunidad.", estado: "pendiente", notificada: false },
+        { id_post: posts[3].id_post, id_denunciante: users[0].id_usuario, id_motivo: motivos[6].id_motivo, descripción: "", estado: "pendiente", notificada: false },
+
+        // posts[4] — Arquitectura moderna (denuncia ya revisada)
+        { id_post: posts[4].id_post, id_denunciante: users[3].id_usuario, id_motivo: motivos[4].id_motivo, descripción: "La fachada parece sacada de otra página.", estado: "aceptada", notificada: false },
     ]);
 
     console.log("✅ Seed completado con datos de prueba.");
