@@ -17,7 +17,8 @@ export async function authUserHome(req, res, next){
             if(usuario){
                 res.locals.userSession = {
                     id: usuario.id_usuario,
-                    user_name: usuario.nombre_usuario
+                    user_name: usuario.nombre_usuario,
+                    rol: usuario.rol
                 }             
             }
 
