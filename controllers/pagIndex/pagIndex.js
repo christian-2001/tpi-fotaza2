@@ -82,7 +82,7 @@ export async function pagIndex(req, res) {
 
         postsDenunciados = await getpostsDenunciados(req.user)
 
-        if(postsDenunciados){
+        if(!(postsDenunciados.length === 0)){
             postsDenunciadosLeidos = await getPostsDenunciadosLeidos(req.user)
         }
     }

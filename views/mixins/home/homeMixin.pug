@@ -30,47 +30,48 @@ mixin home(query = undefined)
         //- detallando las publicaciones denunciadas junto con los motivos y descripcion de la denuncia
         //- Tambien el mensaje le advierte al usuario de las consecuencias al recibir una o más denuncias, y a la vez,
         //- obtener un total de 3(tres) publicaciones bajadas o eliminadas resultando en la inhabilitacion de su cuenta permanentemente
-        if postsDenunciados && !postsDenunciadosLeidos
-            .div_denuncias(class=" fixed bg-black/50 flex items-center justify-center z-30 inset-0")
-                .div_content(class="border-3 border-red-500 bg-red-200 p-6 w-110 justify-center items-center")
-                    .div_msj
-                        h1(class="text-center") Tienes #{postsDenunciados.length} publicaciones con denuncias recibidas.
+        if postsDenunciados
+            if !(postsDenunciados.length === 0) && !postsDenunciadosLeidos
+                .div_denuncias(class=" fixed bg-black/50 flex items-center justify-center z-30 inset-0")
+                    .div_content(class="border-3 border-red-500 bg-red-200 p-6 w-110 justify-center items-center")
+                        .div_msj
+                            h1(class="text-center") Tienes #{postsDenunciados.length} publicaciones con denuncias recibidas.
 
-                        .div_infoDenuncias(class="bg-red-400/50 border p-4 my-4 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 overflow-y-auto pr-2 max-h-72 h-100 space-y-3")
-                            each pd in postsDenunciados
-                                if pd.infoDenuncia.length === 1
-                                    h1(class="font-bold") "#{pd.titulo}" (#{pd.infoDenuncia.length} denuncia)
-                                else
-                                    h1(class="font-bold") "#{pd.titulo}" (#{pd.infoDenuncia.length} denuncias)
+                            .div_infoDenuncias(class="bg-red-400/50 border p-4 my-4 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 overflow-y-auto pr-2 max-h-72 h-100 space-y-3")
+                                each pd in postsDenunciados
+                                    if pd.infoDenuncia.length === 1
+                                        h1(class="font-bold") "#{pd.titulo}" (#{pd.infoDenuncia.length} denuncia)
+                                    else
+                                        h1(class="font-bold") "#{pd.titulo}" (#{pd.infoDenuncia.length} denuncias)
 
-                                ul.list-disc.ml-6.my-4
-                                    each info in pd.infoDenuncia
-                                        div(class="my-3")
-                                            li 
-                                                span(class="font-bold") Motivo: 
-                                                | #{info.motivo}
-                                            li 
-                                                span(class="font-bold") Descripción: 
-                                                | #{info.descripcion}
-                        h1 Tu publicación se verá afectada si cumple uno o todos los siguientes requisitos:
+                                    ul.list-disc.ml-6.my-4
+                                        each info in pd.infoDenuncia
+                                            div(class="my-3")
+                                                li 
+                                                    span(class="font-bold") Motivo: 
+                                                    | #{info.motivo}
+                                                li 
+                                                    span(class="font-bold") Descripción: 
+                                                    | #{info.descripcion}
+                            h1 Tu publicación se verá afectada si cumple uno o todos los siguientes requisitos:
 
-                        ul.list-disc.ml-6.my-2
-                            li 
-                                span(class="font-bold") Una o dos denuncias 
-                                | → se bloquea la edición hasta que sean desestimadas
-                            li 
-                                span(class="font-bold") Tres denuncias 
-                                | → su publicación será revisada por el validador de contenidos quien tomara la decisión de 
-                                span(class="font-bold") dar de baja la publicación 
-                                | o 
-                                span(class="font-bold") desestimar las denuncias
+                            ul.list-disc.ml-6.my-2
+                                li 
+                                    span(class="font-bold") Una o dos denuncias 
+                                    | → se bloquea la edición hasta que sean desestimadas
+                                li 
+                                    span(class="font-bold") Tres denuncias 
+                                    | → su publicación será revisada por el validador de contenidos quien tomara la decisión de 
+                                    span(class="font-bold") dar de baja la publicación 
+                                    | o 
+                                    span(class="font-bold") desestimar las denuncias
 
-                        h1 Si usted acumula un total de 3 (tres) publicaciones eliminadas o dadas de baja, 
-                            span(class="font-bold text-red-800") tu cuenta quedará inhabilitada permanentemente. 
-                            | Tenga precaución acerca del contenido que publique
+                            h1 Si usted acumula un total de 3 (tres) publicaciones eliminadas o dadas de baja, 
+                                span(class="font-bold text-red-800") tu cuenta quedará inhabilitada permanentemente. 
+                                | Tenga precaución acerca del contenido que publique
 
-                    .div_btn_continuar(class="flex justify-center items-center mt-5")
-                        form(action="/denuncias/publicacion/marcarLeidas", method="post") 
-                            label(for="continuar")
-                                button(type="submit" class="border border-black hover:text-white hover:font-bold hover:bg-orange-600 px-2 py-1 cursor-pointer" id="continuar" name="continuar") Continuar
+                        .div_btn_continuar(class="flex justify-center items-center mt-5")
+                            form(action="/denuncias/publicacion/marcarLeidas", method="post") 
+                                label(for="continuar")
+                                    button(type="submit" class="border border-black hover:text-white hover:font-bold hover:bg-orange-600 px-2 py-1 cursor-pointer" id="continuar" name="continuar") Continuar
 
