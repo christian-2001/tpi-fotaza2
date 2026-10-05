@@ -21,6 +21,7 @@ export async function pagIndex(req, res) {
     let postsUserAuthColecciones
     let postsDenunciados
     let postsDenunciadosLeidos
+    
     //Publicaciones con: Titulo, Descripcion, Nombre del usuario, Fecha y hora de publicacion, Etiquetas, Imagenes
     const posts = await Publicacion.findAll({
         include: [
