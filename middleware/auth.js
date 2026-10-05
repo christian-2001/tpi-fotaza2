@@ -30,11 +30,10 @@ export async function authUserHome(req, res, next){
 }
 
 export function esValidador(req, res, next) {
-    console.log(req.user)
     if (req.user && req.user.rol === "validador") {
         return next()
     }
-    return res.status(403).render("error", { mensaje: "Acceso denegado" })
+    return res.status(403).send( "Acceso denegado" )
 }
 
 export async function cerrarSesion(req, res){

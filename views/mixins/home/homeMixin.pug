@@ -1,77 +1,80 @@
 mixin home(query = undefined)
-    body(class="bg-gray-200/70 relative")
-        .bar_naranja(class="bg-orange-400 px-10 text-2xl h-15 flex justify-between items-center")
-            a(href="/") 
-                p(class="hover:font-bold cursor-pointer") Home
-                
-            form(action="/buscar", method="get" id="form_buscar") 
-                .buscador(class="ml-56 items-center")
-                    if query
-                        input(class="bg-white text-[20px] p-2 mr-10 w-xl rounded-md focus:outline-orange-300" type="text" name="buscador" id="buscador" value=`${query}`) 
-                    else
-                        input(class="bg-white text-[20px] p-2 mr-10 w-xl rounded-md focus:outline-orange-300" type="text" name="buscador" id="buscador") 
-                    button#btn_buscador(type="submit" class="bg-white py-2 px-8 text-[20px] rounded-md hover:bg-amber-400") Buscar
-            .user(class="flex gap-10 items-center")
+        body(class= (userSession && userSession.rol === "validador") ? "bg-cyan-100/70 relative" : "bg-gray-200/70 relative")
+            .bar_naranja(class="bg-orange-400 px-10 text-2xl h-15 flex justify-between items-center")
                 if userSession
-                    a(href=`/usuarioPerfil/posts` class="py-2 hover:font-bold") 
-                        p= userSession.user_name
-                    form(action="/cerrarSesion", method="post") 
-                        button(type="submit" class="bg-white px-6 py-1 hover:bg-red-500 hover:text-white cursor-pointer") Cerrar Sesión
+                    a(href= (userSession.rol === "validador") ? "/validador" : "/" class="hover:font-bold") Home 
                 else
-                    a(href="/registrarse/crearPerfil" class="py-2 hover:font-bold") 
-                        p Registrarse
-                    a(href="/login" class="py-2 hover:font-bold") 
-                        p Iniciar Sesion
+                    a(href="/" class="hover:font-bold") Home 
+
+                unless ocultarBuscador
+                    form(action="/buscar", method="get" id="form_buscar") 
+                        .buscador(class="ml-56 items-center")
+                            if query
+                                input(class="bg-white text-[20px] p-2 mr-10 w-xl rounded-md focus:outline-orange-300" type="text" name="buscador" id="buscador" value=`${query}`) 
+                            else
+                                input(class="bg-white text-[20px] p-2 mr-10 w-xl rounded-md focus:outline-orange-300" type="text" name="buscador" id="buscador") 
+                            button#btn_buscador(type="submit" class="bg-white py-2 px-8 text-[20px] rounded-md hover:bg-amber-400") Buscar
+                .user(class="flex gap-10 items-center")
+                    if userSession
+                        a(href=`/usuarioPerfil/posts` class="py-2 hover:font-bold") 
+                            p= userSession.user_name
+                        form(action="/cerrarSesion", method="post") 
+                            button(type="submit" class="bg-white px-6 py-1 hover:bg-red-500 hover:text-white cursor-pointer") Cerrar Sesión
+                    else
+                        a(href="/registrarse/crearPerfil" class="py-2 hover:font-bold") 
+                            p Registrarse
+                        a(href="/login" class="py-2 hover:font-bold") 
+                            p Iniciar Sesion
         
-        //-Div usado para mostrar mensajes temporales
-        div(class="msj fixed bottom-0 right-10 mb-10 z-20 text-white text-2xl")
+            //-Div usado para mostrar mensajes temporales
+            div(class="msj fixed bottom-0 right-10 mb-10 z-20 text-white text-2xl")
 
-        //- Si el autor ha recibido una o más denuncias (de publicaciones por ahora) Se disparará el mensaje de alerta
-        //- detallando las publicaciones denunciadas junto con los motivos y descripcion de la denuncia
-        //- Tambien el mensaje le advierte al usuario de las consecuencias al recibir una o más denuncias, y a la vez,
-        //- obtener un total de 3(tres) publicaciones bajadas o eliminadas resultando en la inhabilitacion de su cuenta permanentemente
-        if postsDenunciados
-            if !(postsDenunciados.length === 0) && !postsDenunciadosLeidos
-                .div_denuncias(class=" fixed bg-black/50 flex items-center justify-center z-30 inset-0")
-                    .div_content(class="border-3 border-red-500 bg-red-200 p-6 w-110 justify-center items-center")
-                        .div_msj
-                            h1(class="text-center") Tienes #{postsDenunciados.length} publicaciones con denuncias recibidas.
+            //- Si el autor ha recibido una o más denuncias (de publicaciones por ahora) Se disparará el mensaje de alerta
+            //- detallando las publicaciones denunciadas junto con los motivos y descripcion de la denuncia
+            //- Tambien el mensaje le advierte al usuario de las consecuencias al recibir una o más denuncias, y a la vez,
+            //- obtener un total de 3(tres) publicaciones bajadas o eliminadas resultando en la inhabilitacion de su cuenta permanentemente
+            if postsDenunciados && userSession.rol === "usuario"
+                if !(postsDenunciados.length === 0) && !postsDenunciadosLeidos
+                    .div_denuncias(class=" fixed bg-black/50 flex items-center justify-center z-30 inset-0")
+                        .div_content(class="border-3 border-red-500 bg-red-200 p-6 w-110 justify-center items-center")
+                            .div_msj
+                                h1(class="text-center") Tienes #{postsDenunciados.length} publicaciones con denuncias recibidas.
 
-                            .div_infoDenuncias(class="bg-red-400/50 border p-4 my-4 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 overflow-y-auto pr-2 max-h-72 h-100 space-y-3")
-                                each pd in postsDenunciados
-                                    if pd.infoDenuncia.length === 1
-                                        h1(class="font-bold") "#{pd.titulo}" (#{pd.infoDenuncia.length} denuncia)
-                                    else
-                                        h1(class="font-bold") "#{pd.titulo}" (#{pd.infoDenuncia.length} denuncias)
+                                .div_infoDenuncias(class="bg-red-400/50 border p-4 my-4 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 overflow-y-auto pr-2 max-h-72 h-100 space-y-3")
+                                    each pd in postsDenunciados
+                                        if pd.infoDenuncia.length === 1
+                                            h1(class="font-bold") "#{pd.titulo}" (#{pd.infoDenuncia.length} denuncia)
+                                        else
+                                            h1(class="font-bold") "#{pd.titulo}" (#{pd.infoDenuncia.length} denuncias)
 
-                                    ul.list-disc.ml-6.my-4
-                                        each info in pd.infoDenuncia
-                                            div(class="my-3")
-                                                li 
-                                                    span(class="font-bold") Motivo: 
-                                                    | #{info.motivo}
-                                                li 
-                                                    span(class="font-bold") Descripción: 
-                                                    | #{info.descripcion}
-                            h1 Tu publicación se verá afectada si cumple uno o todos los siguientes requisitos:
+                                        ul.list-disc.ml-6.my-4
+                                            each info in pd.infoDenuncia
+                                                div(class="my-3")
+                                                    li 
+                                                        span(class="font-bold") Motivo: 
+                                                        | #{info.motivo}
+                                                    li 
+                                                        span(class="font-bold") Descripción: 
+                                                        | #{info.descripcion}
+                                h1 Tu publicación se verá afectada si cumple uno o todos los siguientes requisitos:
 
-                            ul.list-disc.ml-6.my-2
-                                li 
-                                    span(class="font-bold") Una o dos denuncias 
-                                    | → se bloquea la edición hasta que sean desestimadas
-                                li 
-                                    span(class="font-bold") Tres denuncias 
-                                    | → su publicación será revisada por el validador de contenidos quien tomara la decisión de 
-                                    span(class="font-bold") dar de baja la publicación 
-                                    | o 
-                                    span(class="font-bold") desestimar las denuncias
+                                ul.list-disc.ml-6.my-2
+                                    li 
+                                        span(class="font-bold") Una o dos denuncias 
+                                        | → se bloquea la edición hasta que sean desestimadas
+                                    li 
+                                        span(class="font-bold") Tres denuncias 
+                                        | → su publicación será revisada por el validador de contenidos quien tomara la decisión de 
+                                        span(class="font-bold") dar de baja la publicación 
+                                        | o 
+                                        span(class="font-bold") desestimar las denuncias
 
-                            h1 Si usted acumula un total de 3 (tres) publicaciones eliminadas o dadas de baja, 
-                                span(class="font-bold text-red-800") tu cuenta quedará inhabilitada permanentemente. 
-                                | Tenga precaución acerca del contenido que publique
+                                h1 Si usted acumula un total de 3 (tres) publicaciones eliminadas o dadas de baja, 
+                                    span(class="font-bold text-red-800") tu cuenta quedará inhabilitada permanentemente. 
+                                    | Tenga precaución acerca del contenido que publique
 
-                        .div_btn_continuar(class="flex justify-center items-center mt-5")
-                            form(action="/denuncias/publicacion/marcarLeidas", method="post") 
-                                label(for="continuar")
-                                    button(type="submit" class="border border-black hover:text-white hover:font-bold hover:bg-orange-600 px-2 py-1 cursor-pointer" id="continuar" name="continuar") Continuar
+                            .div_btn_continuar(class="flex justify-center items-center mt-5")
+                                form(action="/denuncias/publicacion/marcarLeidas", method="post") 
+                                    label(for="continuar")
+                                        button(type="submit" class="border border-black hover:text-white hover:font-bold hover:bg-orange-600 px-2 py-1 cursor-pointer" id="continuar" name="continuar") Continuar
 
