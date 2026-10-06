@@ -1,6 +1,88 @@
 extends ../layout.pug 
-
+include ../mixins/home/homeMixin
+include ../mixins/confirmarOperaciónValidador/confirmarOperaciónValidador
 //-block metadata
 
 block content
-    h1 BIENVENIDO
+    +home()
+
+    .divPostDenunciado(class="grid grid-cols-2 mx-100 mt-20 relative")
+        .post(class="relative bg-white border-1 border-gray-400 rounded-[10px] p-2 h-fit")
+            .post_usuario(class="text-center text-[20px]")
+                h1(class="font-bold text-red-700") Denuncias acumuladas: #{post.cantDenuncias}
+                p
+                    | Publicado por 
+                    a(href=`/usuarioPerfil/${post.Usuario.id_usuario}/posts` class="relative z-10 hover:font-bold") #{post.Usuario.nombre_usuario}
+                    |  - #{post.fh_publicacion.toLocaleDateString()} - #{post.fh_publicacion.toLocaleTimeString()}
+
+            .post_titulo(class="mt-3 text-center text-3xl font-bold")
+                h1 #{post.titulo}
+
+            .post_descripcion(class="mt-5 text-1xl")
+                p #{post.descripcion}
+
+            .post_etiquetas(class="mt-2")
+                p Etiquetas:
+                .etiquetas
+                    each etiqueta in post.Etiqueta
+                        span(class="font-bold text-blue-600 mr-[3px]") ##{etiqueta.nom_etiqueta}
+
+            .post_imagenes(class="bg-gray-400 border-[1px] border-gray-400/50")
+                .imagenes(class=(post.Imagens.length > 1 ? "grid grid-cols-2 gap-[1px]" : "grid grid-cols-1"))
+                    each post_img in post.Imagens
+                        .img_elem
+                            img(src=post_img.img_path)
+        
+        .panel_denuncias(class="bg-white border border-gray-400 rounded-[10px]")
+            h1(class="text-center text-2xl font-bold my-6") Detalles de las denuncias:
+            .divDetalles(class="p-1 my-4 mx-3 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 overflow-y-auto max-h-60")
+                ul(class="list-none")
+                    div(class="bg-red-200 border border-red-400 rounded-md p-3 mb-2")
+                        li 
+                            span(class="font-bold") Motivo: 
+                            | Lorem ipsum dolor sit amet....
+                        li 
+                            span(class="font-bold") Descripción: 
+                            | Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt, eos est at magni corporis adipisci earum cupiditate....
+                    div(class="bg-red-200 border border-red-400 rounded-md p-3 mb-2")
+                        li 
+                            span(class="font-bold") Motivo: 
+                            | Lorem ipsum dolor sit amet....
+                        li 
+                            span(class="font-bold") Descripción: 
+                            | Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt, eos est at magni corporis adipisci earum cupiditate....
+                    div(class="bg-red-200 border border-red-400 rounded-md p-3 mb-2")
+                        li 
+                            span(class="font-bold") Motivo: 
+                            | Lorem ipsum dolor sit amet....
+                        li 
+                            span(class="font-bold") Descripción: 
+                            | Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt, eos est at magni corporis adipisci earum cupiditate....
+                    div(class="bg-red-200 border border-red-400 rounded-md p-3 mb-2")
+                        li 
+                            span(class="font-bold") Motivo: 
+                            | Lorem ipsum dolor sit amet....
+                        li 
+                            span(class="font-bold") Descripción: 
+                            | Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt, eos est at magni corporis adipisci earum cupiditate....
+
+            .avisoUsuario(class="grid grid-row-1 justify-center bg-red-500 mx-3 mt-5 px-4 py-2")
+                h1(class="font-bold text-center text-3xl") ATENCIÓN
+                p Este usuario cuenta con 2(dos) publicaciones eliminadas, si usted le da de baja a esta publicación, el sistema inhabilitará la cuenta de este autor prohibiendo toda interacción en la pagina
+            
+            .acciones_validador(class="flex justify-center gap-4 mt-10")
+
+                form(action=`/validador/publicacion/darDeBajaPublicacion/${post.id_post}` method="post" name="darDeBajaPublicación" id="darDeBajaPublicación")
+                    .displayBotones(class="block")
+                        label(for="darDeBaja")
+                            button(type="button" id="darDeBaja" class="bg-red-400 hover:bg-red-600 hover:font-bold hover:text-white py-2 px-4 cursor-pointer") Dar de baja a la publicación
+                    .div_msjConfirmacion(class="fixed bg-black/50 flex items-center justify-center z-30 inset-0 hidden")
+                        +confirmarOperacionValidador(form)
+
+                form(action=`/validador/publicacion/desestimarDenuncias/${post.id_post}` method="post" name="desestimarDenuncias" id="desestimarDenuncias")
+                    .displayBotones(class="block")
+                        label(for="desestimar")
+                            button(type="button" id="desestimar" class="bg-green-400 hover:bg-green-600 hover:font-bold hover:text-white py-2 px-4 cursor-pointer") Desestimar denuncias
+                    .div_msjConfirmacion(class="fixed bg-black/50 flex items-center justify-center z-30 inset-0 hidden")
+                        +confirmarOperacionValidador(form)
+    script(src="/script/validador/publicaciónDenunciada.js" defer)

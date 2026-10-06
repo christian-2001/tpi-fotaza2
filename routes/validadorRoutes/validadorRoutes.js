@@ -5,6 +5,10 @@ const router = express.Router()
 
 router.get("/", indexValidador)
 
-router.get("/publicacion/:idPost", vistaPublicaciónDenunciada)
+router.get("/publicacion/:id_post", vistaPublicaciónDenunciada)
+
+//router.post("/publicacion/darDeBajaPublicacion/:id_post", darDeBajaPublicación)
+
+//router.post("/publicacion/desestimarDenuncias/:id_post", darDeBajaPublicación)
 
 export default router

@@ -1,0 +1,9 @@
+mixin confirmarOperacionValidador(form)
+    .div_content(class="border bg-white p-6 w-110 justify-center items-center")
+        .div_msj
+            h1(class="text-center") Esta seguro de realizar la acción?
+        .div_botones(class="flex justify-center items-center mt-5 gap-2")
+            label(for="confirmar")
+                button(type="submit" id="confirmar" class="border hover:bg-red-600 hover:font-bold hover:text-white py-2 px-4 cursor-pointer") Confirmar      
+            label(for="cancelar")
+                button(type="button" id="cancelar" class="border hover:bg-green-600 hover:font-bold hover:text-white py-2 px-4 cursor-pointer") Cancelar
