@@ -49,9 +49,9 @@ Usuario.init(
             defaultValue: 0
         },
 
-        estado_cuenta: {
+        estado: {
             type: DataTypes.STRING,
-            defaultValue: "Activo"
+            defaultValue: "activa"
         },
 
         id_persona: {
