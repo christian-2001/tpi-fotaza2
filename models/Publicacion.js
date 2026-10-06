@@ -27,14 +27,19 @@ Publicacion.init(
             type: DataTypes.TEXT,
             defaultValue: "Ninguna"
         },
-        
+
         id_usuario: {
             type: DataTypes.INTEGER,
             references: {
                 model: Usuario,
                 key: "id_usuario"
             }
-        }
+        },
+
+        estado: {
+            type: DataTypes.STRING,
+            defaultValue: "activa"
+        },
     },
     {
         sequelize,
