@@ -139,17 +139,17 @@ async function seed() {
 
         // ── Posts para probar el flujo del validador ──
         // posts[5] → user05 — YA dada de baja (baja 1 de 2)
-        { titulo: "Calles de otoño", descripcion: "Hojas secas y luz tenue en la avenida.", id_usuario: users[5].id_usuario },
+        { titulo: "Calles de otoño", descripcion: "Hojas secas y luz tenue en la avenida.", id_usuario: users[5].id_usuario, estado: "inactiva" },
         // posts[6] → user05 — YA dada de baja (baja 2 de 2)
-        { titulo: "Reflejos en el lago", descripcion: "El cielo duplicado sobre el agua.", id_usuario: users[5].id_usuario },
+        { titulo: "Reflejos en el lago", descripcion: "El cielo duplicado sobre el agua.", id_usuario: users[5].id_usuario, estado: "inactiva" },
         // posts[7] → user05 — 4 denuncias pendientes: dar de baja = 3ª baja → inactiva la cuenta
         { titulo: "Puente al amanecer", descripcion: "Primeras luces sobre el puente viejo.", id_usuario: users[5].id_usuario },
         // posts[8] → user06 — dada de baja (baja 1 de 3)
-        { titulo: "Sombras y luces", descripcion: "Juego de contrastes en el mediodía.", id_usuario: users[6].id_usuario },
+        { titulo: "Sombras y luces", descripcion: "Juego de contrastes en el mediodía.", id_usuario: users[6].id_usuario, estado: "inactiva" },
         // posts[9] → user06 — dada de baja (baja 2 de 3)
-        { titulo: "Retrato en blanco y negro", descripcion: "Una mirada que cuenta una historia.", id_usuario: users[6].id_usuario },
+        { titulo: "Retrato en blanco y negro", descripcion: "Una mirada que cuenta una historia.", id_usuario: users[6].id_usuario, estado: "inactiva" },
         // posts[10] → user06 — dada de baja (baja 3 de 3 → cuenta inactiva)
-        { titulo: "Mercado al aire libre", descripcion: "Colores y gente un sábado a la mañana.", id_usuario: users[6].id_usuario },
+        { titulo: "Mercado al aire libre", descripcion: "Colores y gente un sábado a la mañana.", id_usuario: users[6].id_usuario, estado: "inactiva" },
         // posts[11] → user04 — 5 denuncias pendientes (en la lista del validador)
         { titulo: "Montañas nevadas", descripcion: "El silencio del invierno en la cordillera.", id_usuario: users[4].id_usuario },
         // posts[12] → user03 — 4 denuncias YA desestimadas (no debe aparecer en la lista)

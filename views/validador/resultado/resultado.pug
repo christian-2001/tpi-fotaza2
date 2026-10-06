@@ -1,0 +1,8 @@
+extends ../../layout.pug 
+include ../../mixins/home/homeMixin
+include ../../mixins/validador/resultadoValidador/resultadoValidador
+block content
+
+    +home()
+
+    +resultadoValidador(resultado, titulo, detalle)

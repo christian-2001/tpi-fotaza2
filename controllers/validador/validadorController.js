@@ -4,6 +4,8 @@ import { Etiqueta } from "../../models/Etiqueta.js"
 import { Imagen } from "../../models/Imagen.js"
 import { DenunciaPublicacion } from "../../models/DenunciaPublicacion.js"
 import { Op, Sequelize } from "sequelize"
+import sequelize from "../../db/config.js"
+import { Motivo } from "../../models/Motivo.js"
 
 const UMBRAL_DENUNCIAS = 3
 
@@ -20,16 +22,18 @@ export async function indexValidador(req, res) {
 
     const ocultarBuscador = req.user.rol === "validador" ? true : false
 
-    res.render("indexValidador", {
+    res.render("./validador/indexValidador", {
         posts,
         ocultarBuscador
     })
 }
 
 export async function vistaPublicaciónDenunciada(req, res) {
-    const _idPost = req.params.id_post
+    const _idPost = Number(req.params.id_post)
 
     const agrupada = await getOne_DenunciasPublicaciones(_idPost, UMBRAL_DENUNCIAS)
+
+    const infoDenuncias = await getDenunciasPublicacion(_idPost)
 
     const postDenunciado = await getOne_PublicacionesDenunciadas(agrupada)
 
@@ -38,13 +42,113 @@ export async function vistaPublicaciónDenunciada(req, res) {
         cantDenuncias: agrupada.cantDenuncias
     }
 
+    const cantPublicacionesBajadas = await getCantPublicacionesBajadas(post.Usuario.id_usuario)
+
     const ocultarBuscador = req.user.rol === "validador" ? true : false
 
-    res.render("./publicaciónDenunciada/publicaciónDenunciada", {
+    res.render("./validador/publicaciónDenunciada/publicaciónDenunciada", {
         post,
+        cantPublicacionesBajadas,
+        infoDenuncias,
         ocultarBuscador
     })
 }
+
+export async function darDeBajaPublicación(req, res) {
+    const _idPost = Number(req.params.id_post)
+
+    try {
+        const { cuentaInhabilitada } = await sequelize.transaction(async t => {
+            let cuentaInhabilitada = false
+
+            const post = await Publicacion.findOne({
+                where: {
+                    id_post: _idPost,
+                    estado: "activa"
+                },
+                transaction: t
+            })
+
+            if (!post) {
+                throw new Error("La publicación ya fue revisada o no existe")
+            }
+
+            // baja lógica de la publicación: solo se cambia el estado
+            await Publicacion.update(
+                { estado: "inactiva" },
+                {
+                    where: {
+                        id_post: _idPost,
+                        estado: "activa"
+                    }
+                },
+                { transaction: t }
+            )
+
+            // las denuncias pendientes quedan confirmadas
+            await DenunciaPublicacion.update(
+                { estado: "aceptada" },
+                {
+                    where: {
+                        id_post: _idPost,
+                        estado: "pendiente"
+                    }
+                },
+                { transaction: t }
+            )
+
+            // Verificar si el autor llegó a las 3 bajas
+
+            //Cantidad de publicaciones del autor bajadas
+            const cantBajas = await Publicacion.count({
+                where: {
+                    id_usuario: post.id_usuario,
+                    estado: "inactiva"
+                },
+                transaction: t
+            })
+
+            //Dar de baja/inhabilitar la cuenta del autor en caso de alcanzar el umbral
+            //Baja logica, solo se cambia el estado (igual que con la publicación)
+            if (cantBajas >= 3) {
+                await Usuario.update(
+                    { estado: "inactiva" },
+                    {
+                        where: {
+                            id_usuario: post.id_usuario,
+                            estado: "activa"
+                        }
+                    },
+                    { transaction: t }
+                )
+                return { cuentaInhabilitada: true }
+            } else {
+                return { cuentaInhabilitada: false }
+            }
+        })
+
+        res.render("validador/resultado/resultado", {
+            resultado: "ok",
+            titulo: "Publicación dada de baja",
+            detalle: cuentaInhabilitada
+                ? "Además, la cuenta del autor fue inhabilitada por acumular 3 publicaciones dadas de baja."
+                : "La publicación ya no es visible para los usuarios."
+        })
+    } catch (error) {
+        console.log(error)
+
+        res.render("validador/resultado/resultado", {
+            resultado: "error",
+            titulo: "No se pudo completar la operación",
+            detalle: esperable ? error.message : "Ocurrió un error inesperado. Intentá nuevamente.",
+        })
+    }
+}
+
+export async function desestimarDenuncias(req, res) {
+
+}
+
 
 function getCantDenuncias(post, agrupadas) {
     const publicaciónHallada = agrupadas.find(i => i.id_post = post.id_post)
@@ -97,7 +201,8 @@ async function getAll_PublicacionesDenunciadas(agrupadas) {
         where: {
             id_post: {
                 [Op.in]: mapIdsPosts
-            }
+            },
+            estado: "activa"
         },
 
         include: [
@@ -113,7 +218,8 @@ async function getOne_PublicacionesDenunciadas(agrupada) {
 
     return await Publicacion.findAll({
         where: {
-            id_post: agrupada.id_post
+            id_post: agrupada.id_post,
+            estado: "activa"
         },
 
         include: [
@@ -122,5 +228,35 @@ async function getOne_PublicacionesDenunciadas(agrupada) {
             { model: Imagen, required: true },
         ],
         order: [['fh_publicacion', 'DESC']],
+    })
+}
+
+async function getCantPublicacionesBajadas(_idUsuario) {
+    const cantBajadas = await Publicacion.count({
+        where: {
+            id_usuario: _idUsuario,
+            estado: "inactiva"
+        }
+    })
+
+    return cantBajadas
+}
+
+async function getDenunciasPublicacion(_idPost) {
+    return await DenunciaPublicacion.findAll({
+        where: {
+            id_post: _idPost,
+            estado: "pendiente",
+        },
+
+        include: [
+            {
+                model: Motivo, 
+                attributes: ["nombre"] 
+            }
+        ],
+
+        attributes: ["id_motivo", "descripción"],
+        order: [["fh_denuncia", "ASC"]]
     })
 }

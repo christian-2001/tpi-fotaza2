@@ -1,13 +1,13 @@
-extends layout.pug 
-include mixins/home/homeMixin
+extends ../layout.pug 
+include ../mixins/home/homeMixin
 
 block content
     +home()
 
-    .div_contentValidador(class="mt-20")
+    .div_contentValidador(class="mt-20 grid grid-cols-1 justify-center items-center")
         h1(class="text-center text-3xl") Publicaciones pendientes de revisión
 
-        .revisarPosts(class=(posts.length === 1 ? "grid grid-cols-1" : "grid grid-cols-3") + " mx-60 mt-10 gap-4")
+        .revisarPosts(class=(posts.length === 1 ? "grid grid-cols-1 mx-170 mt-10 gap-4" : "grid grid-cols-3 mx-60 mt-10 gap-4"))
             each post in posts
                 .post(class="relative bg-white border-1 border-gray-400 rounded-[10px] p-2 hover:outline-3 hover:outline-orange-400 hover:opacity-80 h-fit")
                     a.urlPostRevision(href=`/validador/publicacion/${post.id_post}` class="absolute inset-0")

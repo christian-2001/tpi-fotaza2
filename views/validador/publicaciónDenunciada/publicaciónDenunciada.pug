@@ -1,6 +1,6 @@
-extends ../layout.pug 
-include ../mixins/home/homeMixin
-include ../mixins/confirmarOperaciónValidador/confirmarOperaciónValidador
+extends ../../layout.pug 
+include ../../mixins/home/homeMixin
+include ../../mixins/validador/confirmarOperaciónValidador/confirmarOperaciónValidador
 //-block metadata
 
 block content
@@ -37,38 +37,19 @@ block content
             h1(class="text-center text-2xl font-bold my-6") Detalles de las denuncias:
             .divDetalles(class="p-1 my-4 mx-3 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 overflow-y-auto max-h-60")
                 ul(class="list-none")
-                    div(class="bg-red-200 border border-red-400 rounded-md p-3 mb-2")
-                        li 
-                            span(class="font-bold") Motivo: 
-                            | Lorem ipsum dolor sit amet....
-                        li 
-                            span(class="font-bold") Descripción: 
-                            | Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt, eos est at magni corporis adipisci earum cupiditate....
-                    div(class="bg-red-200 border border-red-400 rounded-md p-3 mb-2")
-                        li 
-                            span(class="font-bold") Motivo: 
-                            | Lorem ipsum dolor sit amet....
-                        li 
-                            span(class="font-bold") Descripción: 
-                            | Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt, eos est at magni corporis adipisci earum cupiditate....
-                    div(class="bg-red-200 border border-red-400 rounded-md p-3 mb-2")
-                        li 
-                            span(class="font-bold") Motivo: 
-                            | Lorem ipsum dolor sit amet....
-                        li 
-                            span(class="font-bold") Descripción: 
-                            | Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt, eos est at magni corporis adipisci earum cupiditate....
-                    div(class="bg-red-200 border border-red-400 rounded-md p-3 mb-2")
-                        li 
-                            span(class="font-bold") Motivo: 
-                            | Lorem ipsum dolor sit amet....
-                        li 
-                            span(class="font-bold") Descripción: 
-                            | Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt, eos est at magni corporis adipisci earum cupiditate....
+                    each info in infoDenuncias
+                        div(class="bg-red-200 border border-red-400 rounded-md p-3 mb-2")
+                            li
+                                span(class="font-bold") Motivo: 
+                                | #{info.Motivo.nombre}
+                            li 
+                                span(class="font-bold") Descripción: 
+                                | #{info.descripción}
 
-            .avisoUsuario(class="grid grid-row-1 justify-center bg-red-500 mx-3 mt-5 px-4 py-2")
-                h1(class="font-bold text-center text-3xl") ATENCIÓN
-                p Este usuario cuenta con 2(dos) publicaciones eliminadas, si usted le da de baja a esta publicación, el sistema inhabilitará la cuenta de este autor prohibiendo toda interacción en la pagina
+            if cantPublicacionesBajadas == 2
+                .avisoUsuario(class="grid grid-row-1 justify-center bg-red-400 mx-3 mt-5 px-4 py-2")
+                    h1(class="font-bold text-center text-3xl") ATENCIÓN
+                    p Este usuario cuenta con 2(dos) publicaciones eliminadas, si usted le da de baja a esta publicación, el sistema inhabilitará la cuenta de este autor prohibiendo toda interacción en la pagina
             
             .acciones_validador(class="flex justify-center gap-4 mt-10")
 
