@@ -146,7 +146,47 @@ export async function darDeBajaPublicación(req, res) {
 }
 
 export async function desestimarDenuncias(req, res) {
+    const _idPost = Number(req.params.id_post)
 
+    try {
+        const result = await sequelize.transaction(async t => {
+            let denunciasDesestimadas = false
+
+            const post = await Publicacion.findByPk(_idPost, { transaction: t })
+
+            const desestimadas = await DenunciaPublicacion.update(
+                { estado: "desestimada" },
+                {
+                    where: {
+                        id_post: _idPost,
+                        estado: "pendiente"
+                    }
+                },
+                { transaction: t }
+            )
+
+            if(!post || !desestimadas){
+                throw new Error ("La publicación no existe o las denuncias ya han sido desestimadas")
+            }
+
+            return true
+        })
+
+        res.render("validador/resultado/resultado", {
+            resultado: "ok",
+            titulo: "Las denuncias fueron desestimadas",
+            detalle: "La publicación sale de tu lista de trabajo y seguirá siendo visible para los usuarios."
+        })
+
+    } catch (error) {
+        console.log(error)
+
+        res.render("validador/resultado/resultado", {
+            resultado: "error",
+            titulo: "No se pudo completar la operación",
+            detalle: esperable ? error.message : "Ocurrió un error inesperado. Intentá nuevamente.",
+        })
+    }
 }
 
 
@@ -251,8 +291,8 @@ async function getDenunciasPublicacion(_idPost) {
 
         include: [
             {
-                model: Motivo, 
-                attributes: ["nombre"] 
+                model: Motivo,
+                attributes: ["nombre"]
             }
         ],
 
