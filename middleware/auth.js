@@ -9,7 +9,7 @@ export async function authUserHome(req, res, next){
         try {   
 
             const usuario = await Usuario.findByPk(userId, {
-                attributes: ["id_usuario", "nombre_usuario", "rol"],
+                attributes: ["id_usuario", "nombre_usuario", "rol", "estado"],
             })
 
             req.user = usuario

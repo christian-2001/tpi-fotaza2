@@ -1,18 +1,18 @@
-import { Usuario } from "../../models/Usuario.js"
-import { Publicacion } from "../../models/Publicacion.js"
-import { Publicacion_Etiqueta } from "../../models/Publicacion_Etiqueta.js"
-import { Imagen } from "../../models/Imagen.js"
-import { Imagen_Etiqueta } from "../../models/Imagen_Etiqueta.js"
-import { Etiqueta } from "../../models/Etiqueta.js"
-import { Favoritos } from "../../models/Favoritos.js"
-import { Colección } from "../../models/Colección.js"
-import { Publicacion_Favoritos } from "../../models/Publicacion_Favoritos.js"
-import { Op, Sequelize } from "sequelize"
-import { Publicacion_Colecciones } from "../../models/Publicacion_Colecciones.js"
-import { Motivo } from "../../models/Motivo.js"
-import { DenunciaPublicacion } from "../../models/DenunciaPublicacion.js"
+import { Usuario } from '../../models/Usuario.js'
+import { Publicacion } from '../../models/Publicacion.js'
+import { Publicacion_Etiqueta } from '../../models/Publicacion_Etiqueta.js'
+import { Imagen } from '../../models/Imagen.js'
+import { Imagen_Etiqueta } from '../../models/Imagen_Etiqueta.js'
+import { Etiqueta } from '../../models/Etiqueta.js'
+import { Favoritos } from '../../models/Favoritos.js'
+import { Colección } from '../../models/Colección.js'
+import { Publicacion_Favoritos } from '../../models/Publicacion_Favoritos.js'
+import { Op, Sequelize } from 'sequelize'
+import { Publicacion_Colecciones } from '../../models/Publicacion_Colecciones.js'
+import { Motivo } from '../../models/Motivo.js'
+import { DenunciaPublicacion } from '../../models/DenunciaPublicacion.js'
 
-export async function pagIndex(req, res) {
+export async function pagIndex (req, res) {
     let postsFavorito
     let userColecciones
     let mapidsColecciones
@@ -21,20 +21,30 @@ export async function pagIndex(req, res) {
     let postsUserAuthColecciones
     let postsDenunciados
     let postsDenunciadosLeidos
-    
+
     //Publicaciones con: Titulo, Descripcion, Nombre del usuario, Fecha y hora de publicacion, Etiquetas, Imagenes
     const posts = await Publicacion.findAll({
         include: [
             { model: Usuario },
             { model: Etiqueta },
-            { model: Imagen, required: true },
+            { model: Imagen, required: true }
         ],
         order: [['fh_publicacion', 'DESC']]
     })
 
-    //Verificar en cada publicación si el usuario autenticado lo tiene guardado como favorito
-    //Primero se verifica que el usuario esté logueado
-    if (req.user) {
+    //Renderiza index con contenido disponible para usuario anonimo
+    if (!req.user) {
+        res.render('index', {
+            posts,
+            queryResult: null,
+            orden: null,
+            postTag: '',
+            imgTag: '',
+            query: ''
+        })
+    } else if (req.user.estado == "activa") {
+        //Verificar en cada publicación si el usuario autenticado lo tiene guardado como favorito
+        //Primero se verifica que el usuario esté logueado y su cuenta se encuentre activa
 
         //Publicaciones guardadas en favoritos del usuario autenticado
         postsFavorito = await Publicacion_Favoritos.findAll({
@@ -42,7 +52,7 @@ export async function pagIndex(req, res) {
                 id_favoritos: req.user.id_usuario
             },
 
-            order: [["id_post", "ASC"]]
+            order: [['id_post', 'ASC']]
         })
 
         //Colecciones creadas por el usuario autenticado
@@ -53,7 +63,9 @@ export async function pagIndex(req, res) {
         })
 
         //Ids de las colecciones obtenidas de la consulta anterior
-        mapidsColecciones = userColecciones.map(colección => colección.id_colección)
+        mapidsColecciones = userColecciones.map(
+            colección => colección.id_colección
+        )
 
         //Publicaciones guardadas en las colecciones creadas por el usuario autenticado
         postsColecciones = await Publicacion_Colecciones.findAll({
@@ -71,7 +83,9 @@ export async function pagIndex(req, res) {
             }
         })
 
-        const mapidsColecciones2 = userAuthColecciones.map(colección => colección.id_colección)
+        const mapidsColecciones2 = userAuthColecciones.map(
+            colección => colección.id_colección
+        )
 
         postsUserAuthColecciones = await Publicacion_Colecciones.findAll({
             where: {
@@ -83,32 +97,39 @@ export async function pagIndex(req, res) {
 
         postsDenunciados = await getpostsDenunciados(req.user)
 
-        if(!(postsDenunciados.length === 0)){
+        if (!(postsDenunciados.length === 0)) {
             postsDenunciadosLeidos = await getPostsDenunciadosLeidos(req.user)
         }
+
+        res.render('index', {
+            posts,
+            queryResult: null,
+            orden: null,
+            postTag: '',
+            imgTag: '',
+            query: '',
+            postsFavorito,
+            userColecciones,
+            userAuthColecciones,
+            postsColecciones,
+            postsUserAuthColecciones,
+            postsDenunciados,
+            postsDenunciadosLeidos
+        })
+    } else if(req.user.estado === "inactiva"){
+        res.render('cuentaInhabilitada')
     }
 
-    res.render("index", {
-        posts,
-        queryResult: null,
-        orden: null,
-        postTag: "",
-        imgTag: "",
-        query: "",
-        postsFavorito,
-        userColecciones,
-        userAuthColecciones,
-        postsColecciones,
-        postsUserAuthColecciones,
-        postsDenunciados,
-        postsDenunciadosLeidos
-    })
-
+    /*
+      
+    */
+    /*else if (req.user.estado === 'inactiva') {
+        res.render('cuentaInhabilitada')
+    }*/
 }
 
 //Guardar publicación en la seccion Favortios del usuario
-export async function guardarPost_favoritos(req, res) {
-
+export async function guardarPost_favoritos (req, res) {
     //Verifica si la publicación ya se enceuntra en la sección "Favoritos" del usuario
     let esFavorito = false
 
@@ -130,35 +151,31 @@ export async function guardarPost_favoritos(req, res) {
             }
         })
 
-        //Guardar publicación en Favoritos 
+        //Guardar publicación en Favoritos
         if (!esFavorito) {
-
             //Si no está en la sección lo guardamos
             await Publicacion_Favoritos.create({
                 id_post: post.id_post,
                 id_favoritos: id_fav.id_favoritos
             })
-            console.log("PUBLICACION GUARDADA EN FAVORITOS!!!!")
+            console.log('PUBLICACION GUARDADA EN FAVORITOS!!!!')
         } else {
             //En caso contrario, indica al usuario de la publicación perviamente guardada
-            console.log("YA GUARDASTE LA PUBLICACIÓN COMO FAVORITO")
+            console.log('YA GUARDASTE LA PUBLICACIÓN COMO FAVORITO')
         }
 
-        res.status(200).send("PUBLICACION GUARDADA EN FAVORITOS!!!!")
-
+        res.status(200).send('PUBLICACION GUARDADA EN FAVORITOS!!!!')
     } catch (error) {
         res.status(400).send(`Error al guardar la publicación ${error}`)
     }
 }
 
-export async function quitarPost_favoritos(req, res) {
-
-    //id de la publicación 
+export async function quitarPost_favoritos (req, res) {
+    //id de la publicación
     let post_id = req.params.id_post
 
     //Quitar la publicación de "Favoritos"
     try {
-
         //Obtener id de la sección Favoritos del usuario en sesion
         const id_fav = await Favoritos.findByPk(req.user.id_usuario)
 
@@ -173,14 +190,13 @@ export async function quitarPost_favoritos(req, res) {
         //Quitar publicación de la base de datos
         postFavorito.destroy()
 
-        res.status(200).send("PUBLICACIÓN ELIMINADA DE FAVORITOS")
-
+        res.status(200).send('PUBLICACIÓN ELIMINADA DE FAVORITOS')
     } catch (error) {
         res.status(400).send(`Error al quitar la publicación ${error}`)
     }
 }
 
-export async function crearColección(req, res) {
+export async function crearColección (req, res) {
     const n_colección = req.body.data
 
     const id_userSession = req.user.id_usuario
@@ -198,7 +214,9 @@ export async function crearColección(req, res) {
         })
 
         //Ids de las colecciones obtenidas de la consulta anterior
-        const mapidsColecciones = userColecciones.map(colección => colección.id_colección)
+        const mapidsColecciones = userColecciones.map(
+            colección => colección.id_colección
+        )
 
         //Publicaciones guardadas en las colecciones creadas por el usuario autenticado
         const postsColecciones = await Publicacion_Colecciones.findAll({
@@ -208,25 +226,26 @@ export async function crearColección(req, res) {
                 }
             }
         })
-        res.status(200).json({ nueva_colección, userColecciones, postsColecciones })
+        res.status(200).json({
+            nueva_colección,
+            userColecciones,
+            postsColecciones
+        })
     } catch (error) {
         res.status(400).send(`Error al crear colección ${error}`)
     }
-
 }
 
-export async function guardar_en_colección(req, res) {
-
+export async function guardar_en_colección (req, res) {
     const { nombreColección, postTitulo } = req.body
 
     try {
-
         const colección = await Colección.findOne({
             where: {
                 nombre_colección: nombreColección
             },
 
-            attributes: ["id_colección"]
+            attributes: ['id_colección']
         })
 
         const post = await Publicacion.findOne({
@@ -234,7 +253,7 @@ export async function guardar_en_colección(req, res) {
                 titulo: postTitulo
             },
 
-            attributes: ["id_post"]
+            attributes: ['id_post']
         })
 
         const result = await Publicacion_Colecciones.create({
@@ -249,7 +268,9 @@ export async function guardar_en_colección(req, res) {
         })
 
         //Ids de las colecciones obtenidas de la consulta anterior
-        const mapidsColecciones = userColecciones.map(colección => colección.id_colección)
+        const mapidsColecciones = userColecciones.map(
+            colección => colección.id_colección
+        )
 
         //Publicaciones guardadas en las colecciones creadas por el usuario autenticado
         const postsColecciones = await Publicacion_Colecciones.findAll({
@@ -261,24 +282,21 @@ export async function guardar_en_colección(req, res) {
         })
 
         res.status(200).json({ postsColecciones })
-
     } catch (error) {
         res.status(400).send(`Error al guardar publicación ${error}`)
     }
-
 }
 
-export async function quitar_de_colección(req, res) {
+export async function quitar_de_colección (req, res) {
     const { nombreColección, postTitulo } = req.body
 
     try {
-
         const colección = await Colección.findOne({
             where: {
                 nombre_colección: nombreColección
             },
 
-            attributes: ["id_colección"]
+            attributes: ['id_colección']
         })
 
         const post = await Publicacion.findOne({
@@ -286,7 +304,7 @@ export async function quitar_de_colección(req, res) {
                 titulo: postTitulo
             },
 
-            attributes: ["id_post"]
+            attributes: ['id_post']
         })
 
         const post_guardado = await Publicacion_Colecciones.findOne({
@@ -311,7 +329,9 @@ export async function quitar_de_colección(req, res) {
             })
 
             //Ids de las colecciones obtenidas de la consulta anterior
-            const mapidsColecciones = userColecciones.map(colección => colección.id_colección)
+            const mapidsColecciones = userColecciones.map(
+                colección => colección.id_colección
+            )
 
             //Publicaciones guardadas en las colecciones creadas por el usuario autenticado
             const postsColecciones = await Publicacion_Colecciones.findAll({
@@ -324,26 +344,24 @@ export async function quitar_de_colección(req, res) {
 
             res.status(200).json({ postsColecciones })
         }
-
     } catch (error) {
         res.status(400).send(`Error al quitar publicación ${error}`)
     }
 }
 
-export async function denunciarPublicación(req, res) {
+export async function denunciarPublicación (req, res) {
     const { motivo, descripción, publicación } = req.body.data
     let { id_usuario_publicación } = req.body.data
     id_usuario_publicación = parseInt(id_usuario_publicación)
 
     try {
-
         const _post = await Publicacion.findOne({
             where: {
                 titulo: publicación,
                 id_usuario: id_usuario_publicación
             },
 
-            attributes: ["id_post"]
+            attributes: ['id_post']
         })
 
         const _motivo = await Motivo.findOne({
@@ -351,7 +369,7 @@ export async function denunciarPublicación(req, res) {
                 nombre: motivo
             },
 
-            attributes: ["id_motivo"]
+            attributes: ['id_motivo']
         })
 
         const denuncia = await DenunciaPublicacion.create({
@@ -361,14 +379,16 @@ export async function denunciarPublicación(req, res) {
             descripción: descripción
         })
 
-        res.json({ msj_denunciaExitosa: "Se ha realizado la denuncia hacia la publicación exitosamente" })
-
+        res.json({
+            msj_denunciaExitosa:
+                'Se ha realizado la denuncia hacia la publicación exitosamente'
+        })
     } catch (error) {
         res.status(400).send(`Error al denunciar publicación ${error}`)
     }
 }
 
-export async function verificarPublicacionDenunciada(req, res){
+export async function verificarPublicacionDenunciada (req, res) {
     const _idPost = parseInt(req.params.idPublicacion)
     const _idDenunciante = parseInt(req.user.id_usuario)
 
@@ -380,18 +400,18 @@ export async function verificarPublicacionDenunciada(req, res){
     })
 
     let msj_confirmacion
-    
-    if(!result){
-        msj_confirmacion = "NO EXISTE DENUNCIA A LA PUBLICACION POR PARTE DEL USUARIO"
+
+    if (!result) {
+        msj_confirmacion =
+            'NO EXISTE DENUNCIA A LA PUBLICACION POR PARTE DEL USUARIO'
     } else {
-        msj_confirmacion = "YA DENUNCIASTE ESTA PUBLICACION"
+        msj_confirmacion = 'YA DENUNCIASTE ESTA PUBLICACION'
     }
-    
+
     res.json({ msj_confirmacion })
 }
 
-async function getpostsDenunciados(usuario) {
-
+async function getpostsDenunciados (usuario) {
     let posts = await Publicacion.findAll({
         where: {
             id_usuario: usuario.id_usuario
@@ -400,15 +420,15 @@ async function getpostsDenunciados(usuario) {
         include: [
             {
                 model: DenunciaPublicacion,
-                as: "DenunciaPublicación",
+                as: 'DenunciaPublicación',
                 required: true,
-                order: [["fh_denuncia", "DESC"]]
-            },
-        ],
+                order: [['fh_denuncia', 'DESC']]
+            }
+        ]
     })
 
     const postsDenunciados = await Promise.all(
-        posts.map(async (p) => ({
+        posts.map(async p => ({
             titulo: p.titulo,
             infoDenuncia: await getInfoDenuncia(p.DenunciaPublicación)
         }))
@@ -417,21 +437,21 @@ async function getpostsDenunciados(usuario) {
     return postsDenunciados
 }
 
-async function getInfoDenuncia(DenunciaPublicación) {
-    const info = [];
+async function getInfoDenuncia (DenunciaPublicación) {
+    const info = []
 
     for (let i = 0; i < DenunciaPublicación.length; i++) {
         info.push({
             motivo: await getMotivo(DenunciaPublicación[i]),
-            descripcion: DenunciaPublicación[i].descripción || "No hay descripción"
-        });
+            descripcion:
+                DenunciaPublicación[i].descripción || 'No hay descripción'
+        })
     }
 
-    return info;
+    return info
 }
 
-async function getMotivo(DenunciaPublicación) {
-
+async function getMotivo (DenunciaPublicación) {
     const motivo = await Motivo.findOne({
         where: {
             id_motivo: DenunciaPublicación.id_motivo
@@ -441,36 +461,34 @@ async function getMotivo(DenunciaPublicación) {
     return motivo.nombre
 }
 
-export async function marcarDenunciasPublicacionNotificadas(req, res) {
-
+export async function marcarDenunciasPublicacionNotificadas (req, res) {
     const posts = await Publicacion.findAll({
         where: {
             id_usuario: req.user.id_usuario
         },
 
-        attributes: ["id_post"]
+        attributes: ['id_post']
     })
-    
-    const ids = posts.map(p => p.id_post);
+
+    const ids = posts.map(p => p.id_post)
 
     await DenunciaPublicacion.update(
         { notificada: true },
         { where: { id_post: ids, notificada: false } }
-    );
-    res.sendStatus(204);
+    )
+    res.sendStatus(204)
 }
 
-async function getPostsDenunciadosLeidos(usuario){
-
+async function getPostsDenunciadosLeidos (usuario) {
     const posts = await Publicacion.findAll({
         where: {
             id_usuario: usuario.id_usuario
         },
 
-        attributes: ["id_post"]
+        attributes: ['id_post']
     })
 
-    const ids = posts.map(p => p.id_post);
+    const ids = posts.map(p => p.id_post)
 
     const postsDenunciadosLeidos = await DenunciaPublicacion.findAll({
         where: {
@@ -481,7 +499,6 @@ async function getPostsDenunciadosLeidos(usuario){
             notificada: true
         }
     })
-
 
     return postsDenunciadosLeidos.length !== 0 ? true : false
 }

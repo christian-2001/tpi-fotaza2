@@ -557,8 +557,38 @@
   .w-110 {
     width: calc(var(--spacing) * 110);
   }
+  .w-120 {
+    width: calc(var(--spacing) * 120);
+  }
   .w-125 {
     width: calc(var(--spacing) * 125);
+  }
+  .w-130 {
+    width: calc(var(--spacing) * 130);
+  }
+  .w-140 {
+    width: calc(var(--spacing) * 140);
+  }
+  .w-150 {
+    width: calc(var(--spacing) * 150);
+  }
+  .w-155 {
+    width: calc(var(--spacing) * 155);
+  }
+  .w-160 {
+    width: calc(var(--spacing) * 160);
+  }
+  .w-165 {
+    width: calc(var(--spacing) * 165);
+  }
+  .w-170 {
+    width: calc(var(--spacing) * 170);
+  }
+  .w-175 {
+    width: calc(var(--spacing) * 175);
+  }
+  .w-180 {
+    width: calc(var(--spacing) * 180);
   }
   .w-450 {
     width: calc(var(--spacing) * 450);
@@ -735,6 +765,9 @@
   }
   .border-orange-400 {
     border-color: var(--color-orange-400);
+  }
+  .border-red-300 {
+    border-color: var(--color-red-300);
   }
   .border-red-400 {
     border-color: var(--color-red-400);
