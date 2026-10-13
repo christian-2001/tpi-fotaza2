@@ -40,6 +40,11 @@ Publicacion.init(
             type: DataTypes.STRING,
             defaultValue: "activa"
         },
+
+        baja_notificada: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        }
     },
     {
         sequelize,
