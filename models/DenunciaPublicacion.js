@@ -58,6 +58,11 @@ DenunciaPublicacion.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+
+    desestimacion_notificada: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     }
   },
   {
