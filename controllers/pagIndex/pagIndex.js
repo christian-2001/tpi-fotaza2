@@ -19,9 +19,11 @@ export async function pagIndex (req, res) {
     let userAuthColecciones
     let postsColecciones
     let postsUserAuthColecciones
+    let postsDadasDeBaja
     let postsDenunciados
     let postsDenunciadosLeidos
-
+    let denunciasDesestimadas
+    let eventos = [] // Valores --> "postsDenunciados", "postsDadasDeBaja", "denunciasDesestimadas"
     //Publicaciones con: Titulo, Descripcion, Nombre del usuario, Fecha y hora de publicacion, Etiquetas, Imagenes
     const posts = await Publicacion.findAll({
         include: [
@@ -42,7 +44,7 @@ export async function pagIndex (req, res) {
             imgTag: '',
             query: ''
         })
-    } else if (req.user.estado == "activa") {
+    } else if (req.user.estado == 'activa') {
         //Verificar en cada publicación si el usuario autenticado lo tiene guardado como favorito
         //Primero se verifica que el usuario esté logueado y su cuenta se encuentre activa
 
@@ -95,10 +97,24 @@ export async function pagIndex (req, res) {
             }
         })
 
+        // Hallar pubicaciones del autor dadas de baja
+        postsDadasDeBaja = await getPostsDadasDeBaja(req.user)
+        if (postsDadasDeBaja) {
+            eventos.push('postsDadasDeBaja')
+        }
+
+        // Hallar publicaciones denunciadas del autor
         postsDenunciados = await getpostsDenunciados(req.user)
 
         if (!(postsDenunciados.length === 0)) {
             postsDenunciadosLeidos = await getPostsDenunciadosLeidos(req.user)
+            eventos.push('postsDenunciados')
+        }
+
+        // Hallar publicaciones con denuncias desestimadas
+        denunciasDesestimadas = await getdenunciasDesestimadas(req.user)
+        if (denunciasDesestimadas) {
+            eventos.push('denunciasDesestimadas')
         }
 
         res.render('index', {
@@ -114,18 +130,14 @@ export async function pagIndex (req, res) {
             postsColecciones,
             postsUserAuthColecciones,
             postsDenunciados,
-            postsDenunciadosLeidos
+            postsDenunciadosLeidos,
+            postsDadasDeBaja,
+            denunciasDesestimadas,
+            eventos
         })
-    } else if(req.user.estado === "inactiva"){
+    } else if (req.user.estado === 'inactiva') {
         res.render('cuentaInhabilitada')
     }
-
-    /*
-      
-    */
-    /*else if (req.user.estado === 'inactiva') {
-        res.render('cuentaInhabilitada')
-    }*/
 }
 
 //Guardar publicación en la seccion Favortios del usuario
@@ -411,6 +423,48 @@ export async function verificarPublicacionDenunciada (req, res) {
     res.json({ msj_confirmacion })
 }
 
+export async function marcarDenunciasPublicacionNotificadas (req, res) {
+    const posts = await Publicacion.findAll({
+        where: {
+            id_usuario: req.user.id_usuario
+        },
+
+        attributes: ['id_post']
+    })
+
+    const ids = posts.map(p => p.id_post)
+
+    await DenunciaPublicacion.update(
+        { notificada: true },
+        { where: { id_post: ids, notificada: false } }
+    )
+    res.sendStatus(204)
+}
+
+async function getPostsDenunciadosLeidos (usuario) {
+    const posts = await Publicacion.findAll({
+        where: {
+            id_usuario: usuario.id_usuario
+        },
+
+        attributes: ['id_post']
+    })
+
+    const ids = posts.map(p => p.id_post)
+
+    const postsDenunciadosLeidos = await DenunciaPublicacion.findAll({
+        where: {
+            id_post: {
+                [Op.in]: ids
+            },
+
+            notificada: true
+        }
+    })
+
+    return postsDenunciadosLeidos.length !== 0 ? true : false
+}
+
 async function getpostsDenunciados (usuario) {
     let posts = await Publicacion.findAll({
         where: {
@@ -461,44 +515,48 @@ async function getMotivo (DenunciaPublicación) {
     return motivo.nombre
 }
 
-export async function marcarDenunciasPublicacionNotificadas (req, res) {
-    const posts = await Publicacion.findAll({
+async function getPostsDadasDeBaja (usuario) {
+    const result = await Publicacion.findAll({
         where: {
-            id_usuario: req.user.id_usuario
-        },
-
-        attributes: ['id_post']
-    })
-
-    const ids = posts.map(p => p.id_post)
-
-    await DenunciaPublicacion.update(
-        { notificada: true },
-        { where: { id_post: ids, notificada: false } }
-    )
-    res.sendStatus(204)
-}
-
-async function getPostsDenunciadosLeidos (usuario) {
-    const posts = await Publicacion.findAll({
-        where: {
-            id_usuario: usuario.id_usuario
-        },
-
-        attributes: ['id_post']
-    })
-
-    const ids = posts.map(p => p.id_post)
-
-    const postsDenunciadosLeidos = await DenunciaPublicacion.findAll({
-        where: {
-            id_post: {
-                [Op.in]: ids
-            },
-
-            notificada: true
+            estado: 'inactiva',
+            baja_notificada: false
         }
     })
 
-    return postsDenunciadosLeidos.length !== 0 ? true : false
+    return result
+}
+
+async function getdenunciasDesestimadas (usuario) {
+    /*const result = await DenunciaPublicacion.findAll({
+        where: {
+            estado: 'desestimada',
+            desestimacion_notificada: false
+        },
+
+        include: [
+            {
+                model: Publicacion,
+                as: 'Publicación',
+            },
+        ],
+    })*/
+
+    const result = await Publicacion.findAll({
+
+        attributes: ['titulo'],
+
+        include: [
+            {
+                model: DenunciaPublicacion,
+                as: 'DenunciaPublicación',
+                where: {
+                    estado: "desestimada",
+                    desestimacion_notificada: false
+                },
+                required: true
+            }
+        ],
+    })
+
+    return result
 }
