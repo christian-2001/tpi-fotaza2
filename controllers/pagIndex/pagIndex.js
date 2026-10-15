@@ -99,23 +99,19 @@ export async function pagIndex (req, res) {
 
         // Hallar pubicaciones del autor dadas de baja
         postsDadasDeBaja = await getPostsDadasDeBaja(req.user)
-        if (postsDadasDeBaja) {
-            eventos.push('postsDadasDeBaja')
-        }
+        postsDadasDeBaja ? eventos.push('postsDadasDeBaja') : ""
 
         // Hallar publicaciones denunciadas del autor
         postsDenunciados = await getpostsDenunciados(req.user)
 
         if (!(postsDenunciados.length === 0)) {
             postsDenunciadosLeidos = await getPostsDenunciadosLeidos(req.user)
-            eventos.push('postsDenunciados')
+            !postsDenunciadosLeidos ? eventos.push('postsDenunciados') : ""
         }
 
         // Hallar publicaciones con denuncias desestimadas
         denunciasDesestimadas = await getdenunciasDesestimadas(req.user)
-        if (denunciasDesestimadas) {
-            eventos.push('denunciasDesestimadas')
-        }
+        denunciasDesestimadas ? eventos.push('denunciasDesestimadas') : ""
 
         res.render('index', {
             posts,
@@ -476,43 +472,25 @@ async function getpostsDenunciados (usuario) {
                 model: DenunciaPublicacion,
                 as: 'DenunciaPublicación',
                 required: true,
+                include: [
+                    { 
+                        model: Motivo,
+                    }
+                ],
                 order: [['fh_denuncia', 'DESC']]
             }
         ]
     })
 
-    const postsDenunciados = await Promise.all(
-        posts.map(async p => ({
-            titulo: p.titulo,
-            infoDenuncia: await getInfoDenuncia(p.DenunciaPublicación)
+    const postsDenunciados = posts.map(p => ({
+        titulo: p.titulo,
+        denuncia: p.DenunciaPublicación.map(info => ({
+            motivo: info.Motivo.nombre,
+            descripción: info.descripción
         }))
-    )
+    }));
 
     return postsDenunciados
-}
-
-async function getInfoDenuncia (DenunciaPublicación) {
-    const info = []
-
-    for (let i = 0; i < DenunciaPublicación.length; i++) {
-        info.push({
-            motivo: await getMotivo(DenunciaPublicación[i]),
-            descripcion:
-                DenunciaPublicación[i].descripción || 'No hay descripción'
-        })
-    }
-
-    return info
-}
-
-async function getMotivo (DenunciaPublicación) {
-    const motivo = await Motivo.findOne({
-        where: {
-            id_motivo: DenunciaPublicación.id_motivo
-        }
-    })
-
-    return motivo.nombre
 }
 
 async function getPostsDadasDeBaja (usuario) {
@@ -527,19 +505,6 @@ async function getPostsDadasDeBaja (usuario) {
 }
 
 async function getdenunciasDesestimadas (usuario) {
-    /*const result = await DenunciaPublicacion.findAll({
-        where: {
-            estado: 'desestimada',
-            desestimacion_notificada: false
-        },
-
-        include: [
-            {
-                model: Publicacion,
-                as: 'Publicación',
-            },
-        ],
-    })*/
 
     const result = await Publicacion.findAll({
 
@@ -559,4 +524,5 @@ async function getdenunciasDesestimadas (usuario) {
     })
 
     return result
+
 }
