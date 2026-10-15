@@ -373,10 +373,10 @@ async function seed() {
         { id_post: posts[11].id_post, id_denunciante: users[5].id_usuario, id_motivo: motivos[8].id_motivo, descripción: "No cumple con las normas de la comunidad.", estado: "pendiente", notificada: false, desestimacion_notificada: false },
 
         // posts[12] — Jardín botánico (user03): 4 denuncias ya desestimadas (no aparece en la lista)
-        { id_post: posts[12].id_post, id_denunciante: users[0].id_usuario, id_motivo: motivos[4].id_motivo, descripción: "Creo que esta imagen es de otro autor.", estado: "desestimada", notificada: false, desestimacion_notificada: false },
-        { id_post: posts[12].id_post, id_denunciante: users[1].id_usuario, id_motivo: motivos[6].id_motivo, descripción: "Parece una publicación para promocionar algo.", estado: "desestimada", notificada: false, desestimacion_notificada: false },
-        { id_post: posts[12].id_post, id_denunciante: users[2].id_usuario, id_motivo: motivos[7].id_motivo, descripción: "La foto parece manipulada digitalmente.", estado: "desestimada", notificada: false, desestimacion_notificada: false },
-        { id_post: posts[12].id_post, id_denunciante: users[4].id_usuario, id_motivo: motivos[5].id_motivo, descripción: "Se ve una persona identificable en la imagen.", estado: "desestimada", notificada: false, desestimacion_notificada: false },
+        { id_post: posts[12].id_post, id_denunciante: users[0].id_usuario, id_motivo: motivos[4].id_motivo, descripción: "Creo que esta imagen es de otro autor.", estado: "desestimada", notificada: false, desestimacion_notificada: true },
+        { id_post: posts[12].id_post, id_denunciante: users[1].id_usuario, id_motivo: motivos[6].id_motivo, descripción: "Parece una publicación para promocionar algo.", estado: "desestimada", notificada: false, desestimacion_notificada: true },
+        { id_post: posts[12].id_post, id_denunciante: users[2].id_usuario, id_motivo: motivos[7].id_motivo, descripción: "La foto parece manipulada digitalmente.", estado: "desestimada", notificada: false, desestimacion_notificada: true },
+        { id_post: posts[12].id_post, id_denunciante: users[4].id_usuario, id_motivo: motivos[5].id_motivo, descripción: "Se ve una persona identificable en la imagen.", estado: "desestimada", notificada: false, desestimacion_notificada: true },
 
         // posts[5] — Calles de otoño (user05, baja 1): denuncias aceptadas y denunciantes notificados
         { id_post: posts[5].id_post, id_denunciante: users[0].id_usuario, id_motivo: motivos[4].id_motivo, descripción: "Creo que esta imagen es de otro autor.", estado: "aceptada", notificada: true, desestimacion_notificada: false },
