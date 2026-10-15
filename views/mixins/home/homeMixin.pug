@@ -30,7 +30,7 @@ mixin home(query = undefined)
             div(class="msj fixed bottom-0 right-10 mb-10 z-20 text-white text-2xl")
 
             //- Mensajes de alerta (publicaciones dadas de baja, publicaciones denunciadas, denuncias desestimadas de una o más publicaciones)
-            if eventos
+            if eventos && eventos.length > 0
                 - 
                     const estilos = {
                         postsBajas: "border-3 border-red-500 bg-red-200 rounded-[20px] p-6 w-120 h-fit justify-center items-center", 
@@ -58,10 +58,13 @@ mixin home(query = undefined)
                                                                     span(class="font-bold") #{baja.titulo}
                                             h1 #{postsDadasDeBaja.length === 1 ? "La misma dejara de ser visible en tu perfil y en la pagina" : "Las mismas dejaran de ser visibles en su perfil y en la pagina"} 
                                             h1 Tu cuenta será inhabilitada si acumula un total de 3 publicaciones dadas de baja 
-                                else if e === "postsDenunciados" && (!(postsDenunciados.length === 0) && !postsDenunciadosLeidos)
+                                else if e === "postsDenunciados" 
                                     .content(class= estilos.postsDenunciados)
                                         .msj_postsDenunciados
-                                            h1(class="text-center") Tienes #{postsDenunciados.length} publicaciones con denuncias recibidas.
+                                            if postsDenunciados.length === 1
+                                                h1(class="text-center") Tienes #{postsDenunciados.length } publicacion con denuncia/s recibidas.
+                                            else
+                                                h1(class="text-center") Tienes #{postsDenunciados.length } publicaciones con denuncias recibidas.
 
                                             .infoDenuncias(class="bg-red-400/50 border px-4 py-2 my-2 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 overflow-y-auto pr-2 max-h-60 h-fit space-y-3")
                                                 each pd in postsDenunciados
@@ -83,16 +86,16 @@ mixin home(query = undefined)
 
                                             ul(class="list-none my-2")
                                                 li 
-                                                    span(class="font-bold") Una o dos denuncias 
+                                                    span(class="font-bold") Al menos 1(una) o hasta 3(tres) denuncias 
                                                     | → se bloquea la edición hasta que sean desestimadas
                                                 li 
-                                                    span(class="font-bold") Tres denuncias 
+                                                    span(class="font-bold") Más de 3(tres) denuncias 
                                                     | → su publicación será revisada por el validador de contenidos quien tomara la decisión de 
                                                     span(class="font-bold") dar de baja la publicación 
                                                     | o 
                                                     span(class="font-bold") desestimar las denuncias
 
-                                            h1 Si usted acumula un total de 3 (tres) publicaciones eliminadas o dadas de baja, 
+                                            h1 Si usted acumula un total de 3(tres) publicaciones eliminadas o dadas de baja, 
                                                 span(class="font-bold text-red-800") tu cuenta quedará inhabilitada permanentemente. 
                                                 | Tenga precaución acerca del contenido que publique
                                 else if e === "denunciasDesestimadas"
