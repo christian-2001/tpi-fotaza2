@@ -118,8 +118,8 @@ block content
                             if (val.Usuario.id_usuario === userSession.id) && postsDenunciados
                                 each pd in postsDenunciados
                                     if pd.titulo === val.titulo
-                                        h1(class="font-bold text-red-700") Denuncias acumuladas: (#{pd.infoDenuncia.length}/3)
-                                        if pd.infoDenuncia.length === 3
+                                        h1(class="font-bold text-red-700") Denuncias acumuladas: (#{pd.denuncia.length}/3)
+                                        if pd.denuncia.length === 3
                                             h1(class="font-bold text-red-700") Publicación enviada al validador de contenidos!!!
                         p
                             | Publicado por 
