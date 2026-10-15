@@ -29,13 +29,20 @@ mixin home(query = undefined)
             //-Div usado para mostrar mensajes temporales
             div(class="msj fixed bottom-0 right-10 mb-10 z-20 text-white text-2xl")
 
+            //- Mensajes de alerta (publicaciones dadas de baja, publicaciones denunciadas, denuncias desestimadas de una o más publicaciones)
             if eventos
-                .notificaciones(class="fixed bg-black/50 flex items-center justify-center z-30 inset-0")
+                - 
+                    const estilos = {
+                        postsBajas: "border-3 border-red-500 bg-red-200 rounded-[20px] p-6 w-120 h-fit justify-center items-center", 
+                        postsDenunciados: "border-3 border-red-500 bg-red-200 rounded-[20px] p-6 w-120 justify-center items-center",
+                        denunciasDesestimadas: "border-3 border-green-500 bg-green-200 rounded-[20px] p-6 w-120 h-fit justify-center items-center"
+                    }
+                .mensajes(class="fixed bg-black/50 flex items-center justify-center z-30 inset-0")
                     div(class="grid grid-cols-1")
-                        div(class=`grid grid-cols-${eventos.length} gap-4 flex justify-center`)
+                        div(class=`grid grid-cols-${eventos.length} gap-4 flex justify-center`)                         
                             each e in eventos
-                                .content(class=(e === "postsDenunciados" || e === "postsDadasDeBaja") ? "border-3 border-red-500 rounded-[20px] bg-red-200 p-6 w-120 justify-center items-center" : "border-3 border-green-500 rounded-[20px] bg-green-200 p-6 w-120 justify-center items-center")                               
-                                    if e === "postsDadasDeBaja"
+                                if e === "postsDadasDeBaja"
+                                    .content(class= estilos.postsBajas)                               
                                         .msj_postsDadasDeBaja
                                             if postsDadasDeBaja.length === 1
                                                 h1(class="text-center") La siguiente publicación fue dada de baja 
@@ -44,36 +51,37 @@ mixin home(query = undefined)
 
                                             div(class="flex justify-center items-center")
                                                 .infoBajas(class="bg-red-400/50 border px-4 my-4 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 overflow-y-auto pr-2 max-h-72 w-fit h-fit space-y-3")
-                                                    ul.list-none.my-4
+                                                    ul(class="list-none my-4")
                                                         each baja in postsDadasDeBaja
                                                             div(class="my-3")
                                                                 li 
                                                                     span(class="font-bold") #{baja.titulo}
                                             h1 #{postsDadasDeBaja.length === 1 ? "La misma dejara de ser visible en tu perfil y en la pagina" : "Las mismas dejaran de ser visibles en su perfil y en la pagina"} 
                                             h1 Tu cuenta será inhabilitada si acumula un total de 3 publicaciones dadas de baja 
-                                    else if e === "postsDenunciados" && (!(postsDenunciados.length === 0) && !postsDenunciadosLeidos)
+                                else if e === "postsDenunciados" && (!(postsDenunciados.length === 0) && !postsDenunciadosLeidos)
+                                    .content(class= estilos.postsDenunciados)
                                         .msj_postsDenunciados
                                             h1(class="text-center") Tienes #{postsDenunciados.length} publicaciones con denuncias recibidas.
 
-                                            .infoDenuncias(class="bg-red-400/50 border p-4 my-2 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 overflow-y-auto pr-2 max-h-72 h-fit space-y-3")
+                                            .infoDenuncias(class="bg-red-400/50 border px-4 py-2 my-2 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 overflow-y-auto pr-2 max-h-60 h-fit space-y-3")
                                                 each pd in postsDenunciados
-                                                    if pd.infoDenuncia.length === 1
-                                                        h1(class="font-bold text-center") #{pd.titulo} (#{pd.infoDenuncia.length} denuncia)
+                                                    if pd.denuncia.length === 1
+                                                        h1(class="font-bold text-center") #{pd.titulo} (#{pd.denuncia.length} denuncia)
                                                     else
-                                                        h1(class="font-bold text-center") #{pd.titulo} (#{pd.infoDenuncia.length} denuncias)
+                                                        h1(class="font-bold text-center") #{pd.titulo} (#{pd.denuncia.length} denuncias)
 
-                                                    ul.list-none.my-4
-                                                        each info in pd.infoDenuncia
+                                                    ul(class="list-none my-2")
+                                                        each denuncia in pd.denuncia
                                                             div(class="my-3")
                                                                 li 
                                                                     span(class="font-bold") Motivo: 
-                                                                    | #{info.motivo}
+                                                                    | #{denuncia.motivo}
                                                                 li 
                                                                     span(class="font-bold") Descripción: 
-                                                                    | #{info.descripcion}
+                                                                    | #{denuncia.descripción}
                                             h1 Tu publicación se verá afectada si cumple uno o todos los siguientes requisitos:
 
-                                            ul.list-none.my-2
+                                            ul(class="list-none my-2")
                                                 li 
                                                     span(class="font-bold") Una o dos denuncias 
                                                     | → se bloquea la edición hasta que sean desestimadas
@@ -87,16 +95,17 @@ mixin home(query = undefined)
                                             h1 Si usted acumula un total de 3 (tres) publicaciones eliminadas o dadas de baja, 
                                                 span(class="font-bold text-red-800") tu cuenta quedará inhabilitada permanentemente. 
                                                 | Tenga precaución acerca del contenido que publique
-                                    else if e === "denunciasDesestimadas"
-                                        .msj_postsDadasDeBaja
+                                else if e === "denunciasDesestimadas"
+                                    .content(class= estilos.denunciasDesestimadas)
+                                        .msj_denunciasDesestimadas
                                             if denunciasDesestimadas.length === 1
                                                 h1(class="text-center") Se desestimaron las denuncias de la siguiente publicacion
                                             else
                                                 h1(class="text-center") Se desestimaron las denuncias de las siguientes publicaciones
                                             
                                             div(class="flex justify-center items-center")
-                                                .infoDesestimadas(class="bg-green-400/50 border px-4 my-4 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 overflow-y-auto pr-2 max-h-72 w-fit h-fit space-y-3")
-                                                    ul.list-none.my-4
+                                                .infoDesestimadas(class="bg-green-400/50 border px-4 my-4 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 overflow-y-auto pr-2 max-h-25 w-fit h-fit space-y-3")
+                                                    ul(class="list-none my-4")
                                                         each d in denunciasDesestimadas
                                                             div(class="my-3")
                                                                 li 
@@ -106,50 +115,3 @@ mixin home(query = undefined)
                             form(action="", method="post") 
                                 label(for="continuar")
                                     button(type="submit" class="bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-md cursor-pointer") Continuar
-
-           
-//- 
-            if postsDenunciados && userSession.rol === "usuario"
-                if !(postsDenunciados.length === 0) && !postsDenunciadosLeidos
-                    .div_content(class="border-3 border-red-500 bg-red-200 p-6 w-110 justify-center items-center")
-                        .div_msj
-                            h1(class="text-center") Tienes #{postsDenunciados.length} publicaciones con denuncias recibidas.
-
-                            .div_infoDenuncias(class="bg-red-400/50 border p-4 my-4 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 overflow-y-auto pr-2 max-h-72 h-100 space-y-3")
-                                each pd in postsDenunciados
-                                    if pd.infoDenuncia.length === 1
-                                        h1(class="font-bold") "#{pd.titulo}" (#{pd.infoDenuncia.length} denuncia)
-                                    else
-                                        h1(class="font-bold") "#{pd.titulo}" (#{pd.infoDenuncia.length} denuncias)
-
-                                    ul.list-disc.ml-6.my-4
-                                        each info in pd.infoDenuncia
-                                            div(class="my-3")
-                                                li 
-                                                    span(class="font-bold") Motivo: 
-                                                    | #{info.motivo}
-                                                li 
-                                                    span(class="font-bold") Descripción: 
-                                                    | #{info.descripcion}
-                            h1 Tu publicación se verá afectada si cumple uno o todos los siguientes requisitos:
-
-                            ul.list-disc.ml-6.my-2
-                                li 
-                                    span(class="font-bold") Una o dos denuncias 
-                                    | → se bloquea la edición hasta que sean desestimadas
-                                li 
-                                    span(class="font-bold") Tres denuncias 
-                                    | → su publicación será revisada por el validador de contenidos quien tomara la decisión de 
-                                    span(class="font-bold") dar de baja la publicación 
-                                    | o 
-                                    span(class="font-bold") desestimar las denuncias
-
-                            h1 Si usted acumula un total de 3 (tres) publicaciones eliminadas o dadas de baja, 
-                                span(class="font-bold text-red-800") tu cuenta quedará inhabilitada permanentemente. 
-                                | Tenga precaución acerca del contenido que publique
-
-                        .div_btn_continuar(class="flex justify-center items-center mt-5")
-                            form(action="/denuncias/publicacion/marcarLeidas", method="post") 
-                                label(for="continuar")
-                                    button(type="submit" class="border border-black hover:text-white hover:font-bold hover:bg-orange-600 px-2 py-1 cursor-pointer" id="continuar" name="continuar") Continuar
-
