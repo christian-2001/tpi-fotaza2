@@ -1,111 +1,138 @@
 //Capturar todos los div que contiene una o más imagenes en todas las publicaciones
-let img_container = document.querySelectorAll(".post_imagenes")
+let img_container = document.querySelectorAll('.post_imagenes')
 
 //Guarda todas las publicaciones
-let posts = document.querySelectorAll(".post")
+let posts = document.querySelectorAll('.post')
 
 //Guarda todos los nodos que contiene "..." en todas las publiaciones
-let post_menu_all = document.querySelectorAll(".opciones")
-let post_menu_all2 = document.querySelectorAll(".opciones2") //--> Obtiene todos los nodos que contienen el boton "..." en todas las publicaciones
+let post_menu_all = document.querySelectorAll('.opciones')
+let post_menu_all2 = document.querySelectorAll('.opciones2') //--> Obtiene todos los nodos que contienen el boton "..." en todas las publicaciones
 
 //Listado de motivos disponibles para seleccionar al realizar una denuncia a una publicación
 let motivos = [
-    "Contenido sexual explícito o desnudos",
-    "Violencia gráfica o contenido perturbador",
-    "Discurso de odio o discriminación",
-    "Acoso, bullying o amenazas",
-    "Violación de derechos de autor",
-    "Violación de privacidad (persona identificable fotografiada o publicada sin consentimiento)",
-    "Spam o publicidad no deseada",
-    "Información falsa o engañosa (foto manipulada presentada como real)",
-    "Otro motivo"
+    'Contenido sexual explícito o desnudos',
+    'Violencia gráfica o contenido perturbador',
+    'Discurso de odio o discriminación',
+    'Acoso, bullying o amenazas',
+    'Violación de derechos de autor',
+    'Violación de privacidad (persona identificable fotografiada o publicada sin consentimiento)',
+    'Spam o publicidad no deseada',
+    'Información falsa o engañosa (foto manipulada presentada como real)',
+    'Otro motivo'
 ]
 
 //Div con el mensaje de alerta tras recibir una o más denuncias de una o más publciaciones
-const div_denuncias = document.querySelector(".div_denuncias")
+const div_denuncias = document.querySelector('.div_denuncias')
 
 //Si las denuncias no han sido leidas por el autor, se ejecuta el siguiente bloque de codigo
 if (div_denuncias) {
     //Formulario para acceder a la ruta que me lleva al metodo que marca las denuncias de las publicaciones como leidas
-    const form_marcarPublicacionDenunciasLeidas = div_denuncias.querySelector("form")
+    const form_marcarPublicacionDenunciasLeidas =
+        div_denuncias.querySelector('form')
 
     //Evento submit del form
-    form_marcarPublicacionDenunciasLeidas.addEventListener("submit", async (e) => {
+    form_marcarPublicacionDenunciasLeidas.addEventListener(
+        'submit',
+        async e => {
+            e.preventDefault()
+
+            await fetch(form_marcarPublicacionDenunciasLeidas.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+
+            //Cierra el mensaje de alerta
+            div_denuncias.remove()
+        }
+    )
+}
+
+/*
+div que contiene los mensajes de alerta hacia el autor, los eventos son:
+    1- Publicaciones dadas de baja
+    2- Publicaciones denunciadas
+    3- Denuncias desestimadas hacia una o más publicaciones
+*/
+const mensajes = document.querySelector('.mensajes')
+
+if (mensajes) {
+    const form_marcarLeidas = mensajes
+        .querySelector('.btn_continuar')
+        .querySelector('form')
+
+    form_marcarLeidas.addEventListener('submit', e => {
         e.preventDefault()
 
-        await fetch(form_marcarPublicacionDenunciasLeidas.action, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-
-        //Cierra el mensaje de alerta
-        div_denuncias.remove()
+        marcarLeidas(mensajes, form_marcarLeidas)
     })
 }
+
 //Iterar sobre todas las publicaciones
 for (const p of posts) {
-
     //Tiutlo de la publicación
-    let post_titulo = p.querySelector(".post_titulo").querySelector("h1").textContent
+    let post_titulo = p
+        .querySelector('.post_titulo')
+        .querySelector('h1').textContent
 
     //Lista de opciones disponibles en todas las publicaciones
-    let post_menu = p.querySelector(".opciones")
+    let post_menu = p.querySelector('.opciones')
 
-    let post_menu2 = p.querySelector(".opciones2")
+    let post_menu2 = p.querySelector('.opciones2')
 
-    let post_menu2_lis = p.querySelector(".opciones2").querySelectorAll(".coleccion")
+    let post_menu2_lis = p
+        .querySelector('.opciones2')
+        .querySelectorAll('.coleccion')
 
     //Boton "..." visible en la esquina superior derecha, en todas las publicaciones, que muestra/oculta las opciones
-    let button_post = p.querySelector(".boton_opciones")
+    let button_post = p.querySelector('.boton_opciones')
 
     //Obtiene el formulario que permite guardar la publicación en "Favoritos"
-    let form_guardarFavoritos = p.querySelector("#guardarFavoritos")
+    let form_guardarFavoritos = p.querySelector('#guardarFavoritos')
 
     //Obtiene el formulario que permite quitar la publicación de "Favoritos"
     //let form_quitarFavoritos = p.querySelector("#quitarFavoritos")
-    let form_quitarFavoritos_noduenio = p.querySelector("#quitarFavoritos_noduenio")
+    let form_quitarFavoritos_noduenio = p.querySelector(
+        '#quitarFavoritos_noduenio'
+    )
 
     //Boton que permite guardar una publicación en una colección
-    let btn_colección = p.querySelector("#btn_coleccion")
+    let btn_colección = p.querySelector('#btn_coleccion')
 
-    let list_btn_colección_guardar = post_menu2.querySelectorAll("#btn_colección")
+    let list_btn_colección_guardar =
+        post_menu2.querySelectorAll('#btn_colección')
 
-    let btn_crearColección = p.querySelector("#crearColeccion_opciones2")
+    let btn_crearColección = p.querySelector('#crearColeccion_opciones2')
 
-    let form_denunciarPost = p.querySelector("#verificarPublicacionDenunciada")
+    let form_denunciarPost = p.querySelector('#verificarPublicacionDenunciada')
 
-    btn_crearColección.addEventListener("click", (e) => {
+    btn_crearColección.addEventListener('click', e => {
         vista_crearColeccion(post_menu, p, post_menu2)
     })
 
     for (const btn_guardar of list_btn_colección_guardar) {
-
         btn_guardar.addEventListener('mouseenter', () => {
-            btn_guardar.innerHTML =
-                `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+            btn_guardar.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
             <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
         </svg>`
-        });
+        })
 
         btn_guardar.addEventListener('mouseleave', () => {
-            btn_guardar.innerHTML =
-                `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+            btn_guardar.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
             <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
         </svg>`
-        });
+        })
     }
 
     for (const li of post_menu2_lis) {
-
-        const form = li.querySelector("form")
-        form.addEventListener("submit", (e) => {
+        const form = li.querySelector('form')
+        form.addEventListener('submit', e => {
             e.preventDefault()
 
-            if (form.action.includes("/quitar-de-coleccion")) {
+            if (form.action.includes('/quitar-de-coleccion')) {
                 quitarPublicación_colección(form, p)
-            } else if (form.action.includes("/guardar-en-coleccion")) {
+            } else if (form.action.includes('/guardar-en-coleccion')) {
                 guardarPublicación_colección(form, p)
             }
         })
@@ -113,18 +140,20 @@ for (const p of posts) {
 
     //Quitar publicación de la seccion "Favoritos" del usuario mediante Fetch
     if (form_quitarFavoritos_noduenio) {
-
-        form_quitarFavoritos_noduenio.addEventListener("submit", (e) => {
+        form_quitarFavoritos_noduenio.addEventListener('submit', e => {
             e.preventDefault()
 
-            quitarPublicación_favoritos(post_menu, p, form_quitarFavoritos_noduenio)
+            quitarPublicación_favoritos(
+                post_menu,
+                p,
+                form_quitarFavoritos_noduenio
+            )
         })
-
     } else if (form_guardarFavoritos) {
-        let btn = form_guardarFavoritos.querySelector("#btn_favoritos")
+        let btn = form_guardarFavoritos.querySelector('#btn_favoritos')
 
         //Ejecuta la Función que guarda publicación como favorito al enviar formulario
-        form_guardarFavoritos.addEventListener("submit", async (event) => {
+        form_guardarFavoritos.addEventListener('submit', async event => {
             event.preventDefault()
 
             guardarPublicación_favoritos(post_menu, p, form_guardarFavoritos)
@@ -133,12 +162,10 @@ for (const p of posts) {
 
     //Oculta los botones "Guardar en Favoritos" y "Guardar en Colección" renderizando el boton para crear colección y el listado de colecciones creados por el usuario
     if (btn_colección) {
-
-        btn_colección.addEventListener("click", (e) => {
+        btn_colección.addEventListener('click', e => {
             //div_colecciones(btn_colección, post_menu, button_post, p)
             div_colecciones(post_menu, post_menu2)
         })
-
     }
 
     //Los usuarios anonimos no tendran el botón para acceder a las opciones en cada publicación
@@ -153,42 +180,54 @@ for (const p of posts) {
     //Mostrar y ocultar menu al clickear los puntos suspensivos (...)
     //dentro de la publciación
     if (button_post) {
-        button_post.addEventListener("click", () => {
-
-            if (post_menu.classList.contains("hidden") && post_menu2.classList.contains("hidden")) {
-                mostrarOpciones(post_menu_all, post_menu, post_menu_all2, post_menu2)
+        button_post.addEventListener('click', () => {
+            if (
+                post_menu.classList.contains('hidden') &&
+                post_menu2.classList.contains('hidden')
+            ) {
+                mostrarOpciones(
+                    post_menu_all,
+                    post_menu,
+                    post_menu_all2,
+                    post_menu2
+                )
             } else {
-                ocultarOpciones(post_menu_all, post_menu_all2, post_menu, post_menu2)
+                ocultarOpciones(
+                    post_menu_all,
+                    post_menu_all2,
+                    post_menu,
+                    post_menu2
+                )
             }
-
         })
     }
 
-    form_denunciarPost.addEventListener("submit", async (e) => {
+    form_denunciarPost.addEventListener('submit', async e => {
         e.preventDefault()
 
         try {
             const res = await fetch(form_denunciarPost.action, {
-                method: "GET",
+                method: 'GET',
                 headers: {
-                    "Content-Type": "application/json"
+                    'Content-Type': 'application/json'
                 }
             })
 
             const { msj_confirmacion } = await res.json()
 
-            if (msj_confirmacion === "NO EXISTE DENUNCIA A LA PUBLICACION POR PARTE DEL USUARIO") {
-
+            if (
+                msj_confirmacion ===
+                'NO EXISTE DENUNCIA A LA PUBLICACION POR PARTE DEL USUARIO'
+            ) {
                 div_denuncia(p)
-
-            } else if (msj_confirmacion === "YA DENUNCIASTE ESTA PUBLICACION") {
-
-                const tipo_msj = "denunciaPublicaciónExistente"
+            } else if (msj_confirmacion === 'YA DENUNCIASTE ESTA PUBLICACION') {
+                const tipo_msj = 'denunciaPublicaciónExistente'
                 display_msj(tipo_msj)
-
             }
         } catch (error) {
-            console.error(`ERROR AL VERIFICAR DENUNCIA A LA PUBLICACION --> ${error}`)
+            console.error(
+                `ERROR AL VERIFICAR DENUNCIA A LA PUBLICACION --> ${error}`
+            )
         }
     })
 }
@@ -201,27 +240,23 @@ for (const p of posts) {
 
 }*/
 
-function mostrarOpciones(post_menu_all, post_menu, post_menu_all2, post_menu2) {
-
-    post_menu.classList.remove("hidden")
-    post_menu.classList.toggle("block")
-
-
+function mostrarOpciones (post_menu_all, post_menu, post_menu_all2, post_menu2) {
+    post_menu.classList.remove('hidden')
+    post_menu.classList.toggle('block')
 
     for (const menu of post_menu_all) {
-        if (!menu.classList.contains("hidden") && menu.id !== post_menu.id) {
-            menu.classList.remove("block")
-            menu.classList.toggle("hidden")
+        if (!menu.classList.contains('hidden') && menu.id !== post_menu.id) {
+            menu.classList.remove('block')
+            menu.classList.toggle('hidden')
         }
     }
 
     for (const menu2 of post_menu_all2) {
-        if (!menu2.classList.contains("hidden") && menu2.id !== post_menu2.id) {
-            menu2.classList.remove("block")
-            menu2.classList.toggle("hidden")
+        if (!menu2.classList.contains('hidden') && menu2.id !== post_menu2.id) {
+            menu2.classList.remove('block')
+            menu2.classList.toggle('hidden')
         }
     }
-
 }
 
 //Función que oculta el menu de opciones de una publicación al clickear en "..." de otra publicación
@@ -236,65 +271,70 @@ function mostrarOpciones(post_menu_all, post_menu, post_menu_all2, post_menu2) {
 
 }*/
 
-function ocultarOpciones(post_menu_all, post_menu_all2, post_menu, post_menu2) {
-    if (post_menu.classList.contains("block")) {
-        post_menu.classList.remove("block")
-        post_menu.classList.toggle("hidden")
+function ocultarOpciones (post_menu_all, post_menu_all2, post_menu, post_menu2) {
+    if (post_menu.classList.contains('block')) {
+        post_menu.classList.remove('block')
+        post_menu.classList.toggle('hidden')
     }
-    if (post_menu2.classList.contains("block")) {
-        post_menu2.classList.remove("block")
-        post_menu2.classList.toggle("hidden")
+    if (post_menu2.classList.contains('block')) {
+        post_menu2.classList.remove('block')
+        post_menu2.classList.toggle('hidden')
     }
 }
 
-async function div_colecciones(post_menu, post_menu2) {
-    post_menu.classList.remove("block")
-    post_menu.classList.toggle("hidden")
+async function div_colecciones (post_menu, post_menu2) {
+    post_menu.classList.remove('block')
+    post_menu.classList.toggle('hidden')
 
-    post_menu2.classList.remove("hidden")
-    post_menu2.classList.toggle("block")
+    post_menu2.classList.remove('hidden')
+    post_menu2.classList.toggle('block')
 }
 
 //Función que guarda publicación como favorito
-async function guardarPublicación_favoritos(post_menu, post, form_guardarFavoritos) {
+async function guardarPublicación_favoritos (
+    post_menu,
+    post,
+    form_guardarFavoritos
+) {
     //Enviar datos con Fetch usando POST
     try {
         const res = await fetch(form_guardarFavoritos.action, {
-            method: "POST",
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json'
             }
         })
 
         //Creación del mensaje avisandole al usuario del guardado de la publicación
-        const tipo_msj = "guardar_publicación_favoritos"
+        const tipo_msj = 'guardar_publicación_favoritos'
         display_msj(tipo_msj)
 
         //Al guardar la publicación como favorito, el botón cambia de estado teniendo como texto "Eliminar de Favoritos"
         //Ademas cambia de formulario al de quitar la publicación como favorito
 
         //Recrear nodo padre y el resto de nodos hijo para la Función de quitar publicación como favorito
-        let li_guardarPost = post.querySelector("#agregar-a-favoritos")
+        let li_guardarPost = post.querySelector('#agregar-a-favoritos')
 
-        let li_eliminarPost = document.createElement("li")
-        li_eliminarPost.id = "quitar-de-favoritos"
+        let li_eliminarPost = document.createElement('li')
+        li_eliminarPost.id = 'quitar-de-favoritos'
 
-        let form_quitarFavoritos = document.createElement("form")
+        let form_quitarFavoritos = document.createElement('form')
 
-        let id_post = parseInt(post.querySelector("ul").id.match(/\d+/))
+        let id_post = parseInt(post.querySelector('ul').id.match(/\d+/))
 
         form_quitarFavoritos.action = `/quitar-de-favoritos/${id_post}`
-        form_quitarFavoritos.method = "post"
-        form_quitarFavoritos.name = "quitarFavoritos"
-        form_guardarFavoritos.id = "quitarFavoritos"
+        form_quitarFavoritos.method = 'post'
+        form_quitarFavoritos.name = 'quitarFavoritos'
+        form_guardarFavoritos.id = 'quitarFavoritos'
 
-        let label = document.createElement("label")
-        label.for = "btn_quitarFavoritos"
+        let label = document.createElement('label')
+        label.for = 'btn_quitarFavoritos'
 
-        let button = document.createElement("button")
-        button.className = "w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer"
-        button.id = "btn_quitarFavoritos"
-        button.textContent = "Eliminar de Favoritos"
+        let button = document.createElement('button')
+        button.className =
+            'w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer'
+        button.id = 'btn_quitarFavoritos'
+        button.textContent = 'Eliminar de Favoritos'
 
         li_eliminarPost.appendChild(form_quitarFavoritos)
         form_quitarFavoritos.appendChild(label)
@@ -302,56 +342,60 @@ async function guardarPublicación_favoritos(post_menu, post, form_guardarFavori
 
         post_menu.replaceChild(li_eliminarPost, li_guardarPost)
 
-        form_quitarFavoritos.addEventListener("submit", (e) => {
+        form_quitarFavoritos.addEventListener('submit', e => {
             e.preventDefault()
 
             quitarPublicación_favoritos(post_menu, post, form_quitarFavoritos)
         })
-
     } catch (error) {
         console.error(`ERROR AL GUARDAR PUBLICACIÓN --> ${error}`)
     }
 }
 
 //Función que quita publicación como favorito
-async function quitarPublicación_favoritos(post_menu, post, form_quitarFavoritos) {
+async function quitarPublicación_favoritos (
+    post_menu,
+    post,
+    form_quitarFavoritos
+) {
     //Enviar datos con Fetch usando POST
     try {
         const res = await fetch(form_quitarFavoritos.action, {
-            method: "POST",
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json"
-            },
+                'Content-Type': 'application/json'
+            }
         })
 
         //Creación del mensaje al quitar publicación como favorito
-        const tipo_msj = "quitar_publicación_favoritos"
+        const tipo_msj = 'quitar_publicación_favoritos'
         display_msj(tipo_msj)
 
         //Al quitar la publicación como favorito, el botón vuelve a cambiar de estado teniendo como texto "Guardar en Favoritos"
         //Ademas cambia de formulario al de guardar la publicación como favorito
 
         //Recrear nodo padre y el resto de nodos hijo para la Función de guardar publicación como favorito
-        let li_eliminarPost = post.querySelector("#quitar-de-favoritos")
+        let li_eliminarPost = post.querySelector('#quitar-de-favoritos')
 
-        let li_guardarPost = document.createElement("li")
-        li_guardarPost.id = "agregar-a-favoritos"
+        let li_guardarPost = document.createElement('li')
+        li_guardarPost.id = 'agregar-a-favoritos'
 
-        let form_guardarFavoritos = document.createElement("form")
-        let id_post = parseInt(post.querySelector("ul").id.match(/\d+/))
+        let form_guardarFavoritos = document.createElement('form')
+        let id_post = parseInt(post.querySelector('ul').id.match(/\d+/))
 
         form_guardarFavoritos.action = `/favoritos/${id_post}`
-        form_guardarFavoritos.method = "post"
-        form_guardarFavoritos.name = "guardarFavoritos"
-        form_guardarFavoritos.id = "guardarFavoritos"
+        form_guardarFavoritos.method = 'post'
+        form_guardarFavoritos.name = 'guardarFavoritos'
+        form_guardarFavoritos.id = 'guardarFavoritos'
 
-        let label = document.createElement("label")
-        label.for = "btn_favoritos"
+        let label = document.createElement('label')
+        label.for = 'btn_favoritos'
 
-        let button = document.createElement("button")
-        button.className = "w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer"
-        button.id = "btn_favoritos"
-        button.textContent = "Guardar en Favoritos"
+        let button = document.createElement('button')
+        button.className =
+            'w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer'
+        button.id = 'btn_favoritos'
+        button.textContent = 'Guardar en Favoritos'
 
         li_guardarPost.appendChild(form_guardarFavoritos)
         form_guardarFavoritos.appendChild(label)
@@ -359,7 +403,7 @@ async function quitarPublicación_favoritos(post_menu, post, form_quitarFavorito
 
         post_menu.replaceChild(li_guardarPost, li_eliminarPost)
 
-        form_guardarFavoritos.addEventListener("submit", async (event) => {
+        form_guardarFavoritos.addEventListener('submit', async event => {
             event.preventDefault()
 
             //Ejecuta la Función que guarda publicación como favorito al enviar formulario
@@ -423,11 +467,9 @@ async function quitarPublicación_favoritos(post_menu, post, form_quitarFavorito
 }*/
 
 //Agrupa las funciones para mostrar/ocultar menu de opciones en todas las publicaciones
-function postOpciones(button_post, post_menu_all, post_menu) {
-
-    button_post.addEventListener("click", () => {
-
-        if (post_menu.classList == "hidden") {
+function postOpciones (button_post, post_menu_all, post_menu) {
+    button_post.addEventListener('click', () => {
+        if (post_menu.classList == 'hidden') {
             mostrarOpciones(post_menu)
         } else {
             ocultarOpciones(post_menu_all, post_menu)
@@ -436,56 +478,59 @@ function postOpciones(button_post, post_menu_all, post_menu) {
 }
 
 //Renderizar div que contiene la Función para crear una colección
-async function vista_crearColeccion(post_menu, post, post_menu2) {
-    let pag_body = document.querySelector("body")
+async function vista_crearColeccion (post_menu, post, post_menu2) {
+    let pag_body = document.querySelector('body')
 
-    let div_crearColección = document.createElement("div")
-    div_crearColección.className = "div_crearColeccion fixed bg-black/50 flex items-center justify-center z-30 inset-0"
+    let div_crearColección = document.createElement('div')
+    div_crearColección.className =
+        'div_crearColeccion fixed bg-black/50 flex items-center justify-center z-30 inset-0'
 
-    let div_content = document.createElement("div")
-    div_content.className = "div_content border bg-white p-6"
+    let div_content = document.createElement('div')
+    div_content.className = 'div_content border bg-white p-6'
 
-    let div_btnVolver = document.createElement("div")
-    div_btnVolver.className = "flex justify-center mb-3"
-    let btn_volver = document.createElement("button")
-    btn_volver.type = "button"
-    btn_volver.title = "Volver"
-    let flecha = document.createElement("p")
-    flecha.className = "hover:bg-orange-400 hover:rounded-full w-fit p-1 font-bold cursor-pointer"
-    flecha.innerHTML =
-        `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    let div_btnVolver = document.createElement('div')
+    div_btnVolver.className = 'flex justify-center mb-3'
+    let btn_volver = document.createElement('button')
+    btn_volver.type = 'button'
+    btn_volver.title = 'Volver'
+    let flecha = document.createElement('p')
+    flecha.className =
+        'hover:bg-orange-400 hover:rounded-full w-fit p-1 font-bold cursor-pointer'
+    flecha.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M19 12H5" />
         <path d="M12 19l-7-7 7-7" />
     </svg>`
 
-    let form_crearColección = document.createElement("form")
-    form_crearColección.action = "/crearColeccion"
-    form_crearColección.method = "post"
-    form_crearColección.name = "form_crearColeccion"
-    form_crearColección.id = "form_crearColeccion"
+    let form_crearColección = document.createElement('form')
+    form_crearColección.action = '/crearColeccion'
+    form_crearColección.method = 'post'
+    form_crearColección.name = 'form_crearColeccion'
+    form_crearColección.id = 'form_crearColeccion'
 
-    let label_Input = document.createElement("label")
-    label_Input.for = "nombreColeccion"
-    label_Input.className = "text-lg mb-[5px]"
-    label_Input.textContent = "Ingrese el nombre para su nueva colección"
+    let label_Input = document.createElement('label')
+    label_Input.for = 'nombreColeccion'
+    label_Input.className = 'text-lg mb-[5px]'
+    label_Input.textContent = 'Ingrese el nombre para su nueva colección'
 
-    let input_colección = document.createElement("input")
-    input_colección.name = "nombreColeccion"
-    input_colección.id = "nombreColeccion"
+    let input_colección = document.createElement('input')
+    input_colección.name = 'nombreColeccion'
+    input_colección.id = 'nombreColeccion'
     input_colección.size = 50
     input_colección.maxLength = 50
-    input_colección.type = "text"
-    input_colección.className = "block w-fit p-1 border focus:ring-3 focus:ring-orange-500 focus:outline-none focus:border-none"
+    input_colección.type = 'text'
+    input_colección.className =
+        'block w-fit p-1 border focus:ring-3 focus:ring-orange-500 focus:outline-none focus:border-none'
 
-    let div_btnConfirmar = document.createElement("div")
-    div_btnConfirmar.className = "confirmar flex justify-center mt-6"
-    let label_btnConfirmar = document.createElement("label")
-    label_btnConfirmar.for = "btn_confirmar"
-    let btnConfirmar = document.createElement("button")
-    btnConfirmar.type = "submit"
-    btnConfirmar.className = "px-5 py-1 hover:bg-blue-500 hover:text-white hover:font-bold cursor-pointer border"
-    btnConfirmar.id = "btn_confirmar"
-    btnConfirmar.textContent = "Confirmar"
+    let div_btnConfirmar = document.createElement('div')
+    div_btnConfirmar.className = 'confirmar flex justify-center mt-6'
+    let label_btnConfirmar = document.createElement('label')
+    label_btnConfirmar.for = 'btn_confirmar'
+    let btnConfirmar = document.createElement('button')
+    btnConfirmar.type = 'submit'
+    btnConfirmar.className =
+        'px-5 py-1 hover:bg-blue-500 hover:text-white hover:font-bold cursor-pointer border'
+    btnConfirmar.id = 'btn_confirmar'
+    btnConfirmar.textContent = 'Confirmar'
 
     div_crearColección.appendChild(div_content)
     div_content.appendChild(div_btnVolver)
@@ -499,35 +544,39 @@ async function vista_crearColeccion(post_menu, post, post_menu2) {
     div_btnConfirmar.appendChild(label_btnConfirmar)
     label_btnConfirmar.appendChild(btnConfirmar)
 
-    flecha.addEventListener("click", () => {
+    flecha.addEventListener('click', () => {
         pag_body.removeChild(div_crearColección)
     })
 
     pag_body.appendChild(div_crearColección)
 
-    form_crearColección.addEventListener("submit", async (e) => {
+    form_crearColección.addEventListener('submit', async e => {
         e.preventDefault()
 
-        nuevaColección(form_crearColección, post_menu, post, post_menu2, div_crearColección, div_content)
+        nuevaColección(
+            form_crearColección,
+            post_menu,
+            post,
+            post_menu2,
+            div_crearColección,
+            div_content
+        )
     })
 }
 
 //Renderiza listado de colecciones con bookmark funcional asociado que guarda/quita una publicación de esa colección
-async function botonesColección(post_menu, post) {
-
+async function botonesColección (post_menu, post) {
     //Verifica si existen colecciones creadas por el usuario autenticado
     if (colecciones) {
-
         for (const c of colecciones) {
+            let li_colección = document.createElement('li')
+            li_colección.className = 'coleccion border-b-1 border-black'
 
-            let li_colección = document.createElement("li")
-            li_colección.className = "coleccion border-b-1 border-black"
+            let div_colección = document.createElement('div')
+            div_colección.className = 'flex justify-between items-center p-2'
 
-            let div_colección = document.createElement("div")
-            div_colección.className = "flex justify-between items-center p-2"
-
-            let nombre_colección = document.createElement("p")
-            nombre_colección.className = "mr-10"
+            let nombre_colección = document.createElement('p')
+            nombre_colección.className = 'mr-10'
             nombre_colección.textContent = c.nombre_colección
 
             li_colección.appendChild(div_colección)
@@ -535,40 +584,60 @@ async function botonesColección(post_menu, post) {
             post_menu.appendChild(li_colección)
 
             if (postsColecciones.length > 0) {
-                const post_href = post.querySelector(".url_post").href
-                let match = post_href.match(/\/post\/(\d+)\/\d+/);
+                const post_href = post.querySelector('.url_post').href
+                let match = post_href.match(/\/post\/(\d+)\/\d+/)
                 const idPublicación = parseInt(match[1])
 
                 const guardada = postsColecciones.some(
-                    pc => pc.id_colección === c.id_colección && pc.id_post === idPublicación
-                );
+                    pc =>
+                        pc.id_colección === c.id_colección &&
+                        pc.id_post === idPublicación
+                )
 
                 if (guardada) {
                     //Renderiza las colecciones del usuario junto con un bookmark lleno indicando la publicación guardada en la colección que a su vez tiene la funcion de quitar esa publicación de la colección
-                    form_quitarPublicación_colección_render(post, c.nombre_colección, div_colección)
+                    form_quitarPublicación_colección_render(
+                        post,
+                        c.nombre_colección,
+                        div_colección
+                    )
                 } else {
                     //Renderiza las colecciones del usuario junto con un bookmark hueco que permite guardar una publicación en una colección especifica
-                    form_guardarPublicación_colección_render(post, c.nombre_colección, div_colección)
+                    form_guardarPublicación_colección_render(
+                        post,
+                        c.nombre_colección,
+                        div_colección
+                    )
                 }
             } else {
-                form_guardarPublicación_colección_render(post, c.nombre_colección, div_colección)
+                form_guardarPublicación_colección_render(
+                    post,
+                    c.nombre_colección,
+                    div_colección
+                )
             }
         }
     }
 }
 
 //Función que crea una nueva colección con un bookmark funcional asociado
-async function nuevaColección(form_crearColección, post_menu, post, post_menu2, div_crearColección, div_content) {
-
+async function nuevaColección (
+    form_crearColección,
+    post_menu,
+    post,
+    post_menu2,
+    div_crearColección,
+    div_content
+) {
     //Dato a enviar en la peticion POST
-    const data = form_crearColección.querySelector("#nombreColeccion").value
+    const data = form_crearColección.querySelector('#nombreColeccion').value
 
     //Fetch con POST
     try {
         const res = await fetch(form_crearColección.action, {
-            method: "POST",
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json'
             },
 
             body: JSON.stringify({ data })
@@ -577,9 +646,8 @@ async function nuevaColección(form_crearColección, post_menu, post, post_menu2
         const result = await res.json()
 
         //Mensaje confirmando creación de la colección
-        div_content.innerHTML = ""
-        div_content.innerHTML =
-            `<p class="p-3 text-3xl"> Se ha creado la colección exitosamente </p>
+        div_content.innerHTML = ''
+        div_content.innerHTML = `<p class="p-3 text-3xl"> Se ha creado la colección exitosamente </p>
         <div class="flex justify-center items-center text-2xl pt-2"> 
             <label for="btn_salir"> 
                 <button type="button" class="cursor-pointer hover:font-bold" id="btn_salir"> Salir </button>
@@ -590,49 +658,49 @@ async function nuevaColección(form_crearColección, post_menu, post, post_menu2
         colecciones = result.userColecciones
 
         //Renderiza listado de colecciones en el menu de opciones de la publicación al tocar el boton para salir del div que crea una colección
-        document.querySelector("#btn_salir").addEventListener("click", () => {
+        document.querySelector('#btn_salir').addEventListener('click', () => {
+            let li_colección = document.createElement('li')
+            li_colección.className = 'coleccion border-b-1 border-black'
+            let div_colección = document.createElement('div')
+            div_colección.className = 'flex justify-between items-center p-2'
 
-            let li_colección = document.createElement("li")
-            li_colección.className = "coleccion border-b-1 border-black"
-            let div_colección = document.createElement("div")
-            div_colección.className = "flex justify-between items-center p-2"
-
-            let nombre_colección = document.createElement("p")
-            nombre_colección.className = "mr-10"
-            nombre_colección.textContent = result.nueva_colección.nombre_colección
+            let nombre_colección = document.createElement('p')
+            nombre_colección.className = 'mr-10'
+            nombre_colección.textContent =
+                result.nueva_colección.nombre_colección
 
             li_colección.appendChild(div_colección)
             div_colección.appendChild(nombre_colección)
             post_menu2.appendChild(li_colección)
 
             //Renderiza las colecciones del usuario junto con un bookmark hueco que permite guardar una publicación en una colección especifica
-            form_guardarPublicación_colección_render(post, result.nueva_colección.nombre_colección, div_colección)
+            form_guardarPublicación_colección_render(
+                post,
+                result.nueva_colección.nombre_colección,
+                div_colección
+            )
 
             div_crearColección.remove()
         })
-
     } catch (error) {
         console.error(`Ocurrió un error inesperado ${error}`)
     }
-
 }
 
 //Función para guardar publicación de una colección
-async function guardarPublicación_colección(form_colección, post) {
-
+async function guardarPublicación_colección (form_colección, post) {
     //Datos a enviar en la peticion POST
     const data = {
-        postTitulo: post.querySelector(".post_titulo").textContent.trim(),
+        postTitulo: post.querySelector('.post_titulo').textContent.trim(),
         nombreColección: form_colección.name
     }
 
     //Fetch con POST
     try {
-
         let res = await fetch(form_colección.action, {
-            method: "POST",
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
         })
@@ -641,32 +709,34 @@ async function guardarPublicación_colección(form_colección, post) {
         postsColecciones = result.postsColecciones
 
         //Creación del mensaje al guardar publicación en una colección
-        const tipo_msj = "guardar_publicación_colección"
+        const tipo_msj = 'guardar_publicación_colección'
         display_msj(tipo_msj, data)
 
         //Al guardar la publicación, reemplaza el bookmark hueco por uno lleno en la colección asociada
-        form_guardarPublicación_colección_replace(post, form_colección, form_colección.name)
-
+        form_guardarPublicación_colección_replace(
+            post,
+            form_colección,
+            form_colección.name
+        )
     } catch (error) {
         console.error(`Ocurrió un error inesperado ${error}`)
     }
 }
 
 //Función para quitar publicación de una colección
-async function quitarPublicación_colección(form_quitarPublicacion, post) {
-
+async function quitarPublicación_colección (form_quitarPublicacion, post) {
     //Datos a enviar en la peticion POST
     const data = {
-        postTitulo: post.querySelector(".post_titulo").textContent.trim(),
+        postTitulo: post.querySelector('.post_titulo').textContent.trim(),
         nombreColección: form_quitarPublicacion.name
     }
 
     //Fetch con POST
     try {
         let res = await fetch(form_quitarPublicacion.action, {
-            method: "POST",
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
         })
@@ -675,102 +745,121 @@ async function quitarPublicación_colección(form_quitarPublicacion, post) {
         postsColecciones = result.postsColecciones
 
         //Creación del mensaje al quitar publicación en una colección
-        const tipo_msj = "quitar_publicación_colección"
+        const tipo_msj = 'quitar_publicación_colección'
         display_msj(tipo_msj, data)
 
         //Al quitar la publicación, reemplaza el bookmark lleno por uno hueco en la colección asociada
-        form_quitarPublicación_colección_replace(post, form_quitarPublicacion, form_quitarPublicacion.name)
-
+        form_quitarPublicación_colección_replace(
+            post,
+            form_quitarPublicacion,
+            form_quitarPublicacion.name
+        )
     } catch (error) {
         console.error(`Ocurrió un error inesperado ${error}`)
     }
 }
 
-async function div_denuncia(post, div_content1 = undefined, div_content2 = undefined, motivo = undefined, descripcion = undefined) {
-    let pag_body = document.querySelector("body")
+async function div_denuncia (
+    post,
+    div_content1 = undefined,
+    div_content2 = undefined,
+    motivo = undefined,
+    descripcion = undefined
+) {
+    let pag_body = document.querySelector('body')
     let div_crearDenuncia
 
     if (div_content2) {
-
-        if (!div_content2.classList.contains("hidden")) {
-            div_content2.classList.remove("block")
-            div_content2.classList.toggle("hidden")
+        if (!div_content2.classList.contains('hidden')) {
+            div_content2.classList.remove('block')
+            div_content2.classList.toggle('hidden')
         }
     }
 
-    if (!pag_body.querySelector(".div_crearDenuncia")) {
-        div_crearDenuncia = document.createElement("div")
-        div_crearDenuncia.className = "div_crearDenuncia fixed bg-black/50 flex items-center justify-center z-30 inset-0"
+    if (!pag_body.querySelector('.div_crearDenuncia')) {
+        div_crearDenuncia = document.createElement('div')
+        div_crearDenuncia.className =
+            'div_crearDenuncia fixed bg-black/50 flex items-center justify-center z-30 inset-0'
     }
 
-    let form_denunciarPublicación = document.createElement("form")
-    form_denunciarPublicación.action = "/denuncias/publicacion/denunciarPublicacion"
-    form_denunciarPublicación.method = "post"
-    form_denunciarPublicación.name = "form_denunciarPublicacion"
-    form_denunciarPublicación.id = "form_denunciarPublicacion"
+    let form_denunciarPublicación = document.createElement('form')
+    form_denunciarPublicación.action =
+        '/denuncias/publicacion/denunciarPublicacion'
+    form_denunciarPublicación.method = 'post'
+    form_denunciarPublicación.name = 'form_denunciarPublicacion'
+    form_denunciarPublicación.id = 'form_denunciarPublicacion'
 
     if (!div_content1) {
-        div_content1 = document.createElement("div")
-        div_content1.className = "div_content1 border bg-white p-6"
+        div_content1 = document.createElement('div')
+        div_content1.className = 'div_content1 border bg-white p-6'
 
-        let div_motivo = document.createElement("div")
-        div_motivo.className = "div_motivo"
+        let div_motivo = document.createElement('div')
+        div_motivo.className = 'div_motivo'
 
-        let label_select = document.createElement("label")
-        label_select.for = "motivo"
-        label_select.className = "text-lg mb-[5px]"
-        label_select.textContent = "Elija el motivo de su denuncia"
+        let label_select = document.createElement('label')
+        label_select.for = 'motivo'
+        label_select.className = 'text-lg mb-[5px]'
+        label_select.textContent = 'Elija el motivo de su denuncia'
 
-        let select = document.createElement("select")
-        select.className = "block border w-100"
-        select.name = "motivo"
-        select.id = "motivo"
+        let select = document.createElement('select')
+        select.className = 'block border w-100'
+        select.name = 'motivo'
+        select.id = 'motivo'
 
         motivos.forEach(item => {
-            let motivoItem = document.createElement("option")
+            let motivoItem = document.createElement('option')
             motivoItem.value = item
             motivoItem.textContent = item
             select.appendChild(motivoItem)
         })
 
-        let div_descripcion = document.createElement("div")
-        div_descripcion.className = "div_descripcion mt-4"
+        let div_descripcion = document.createElement('div')
+        div_descripcion.className = 'div_descripcion mt-4'
 
-        let label_textarea = document.createElement("label")
-        label_textarea.for = "descripcion"
-        label_textarea.className = "text-lg mb-[5px]"
-        label_textarea.textContent = "Describa su denuncia"
+        let label_textarea = document.createElement('label')
+        label_textarea.for = 'descripcion'
+        label_textarea.className = 'text-lg mb-[5px]'
+        label_textarea.textContent = 'Describa su denuncia'
 
-        let textarea = document.createElement("textarea")
-        textarea.name = "descripcion"
-        textarea.id = "descripcion"
-        textarea.className = 'block border w-full resize-none p-2 scrollbar-none overflow-auto h-55'
-        textarea.textContent = descripcion || ""
+        let textarea = document.createElement('textarea')
+        textarea.name = 'descripcion'
+        textarea.id = 'descripcion'
+        textarea.className =
+            'block border w-full resize-none p-2 scrollbar-none overflow-auto h-55'
+        textarea.textContent = descripcion || ''
 
-        let div_botonesDenuncia = document.createElement("div")
-        div_botonesDenuncia.className = "div_botonesDenuncia flex justify-center items-center gap-2 mt-10"
+        let div_botonesDenuncia = document.createElement('div')
+        div_botonesDenuncia.className =
+            'div_botonesDenuncia flex justify-center items-center gap-2 mt-10'
 
-        let label_btn_realizarDenuncia = document.createElement("label")
-        label_btn_realizarDenuncia.for = "realizarDenuncia"
-        let btn_realizarDenuncia = document.createElement("button")
-        btn_realizarDenuncia.type = "button"
-        btn_realizarDenuncia.className = "border hover:text-white hover:font-bold hover:bg-blue-600 px-2 py-1 cursor-pointer"
-        btn_realizarDenuncia.id = "realizarDenuncia"
-        btn_realizarDenuncia.textContent = "Realizar Denuncia"
+        let label_btn_realizarDenuncia = document.createElement('label')
+        label_btn_realizarDenuncia.for = 'realizarDenuncia'
+        let btn_realizarDenuncia = document.createElement('button')
+        btn_realizarDenuncia.type = 'button'
+        btn_realizarDenuncia.className =
+            'border hover:text-white hover:font-bold hover:bg-blue-600 px-2 py-1 cursor-pointer'
+        btn_realizarDenuncia.id = 'realizarDenuncia'
+        btn_realizarDenuncia.textContent = 'Realizar Denuncia'
 
-        let label_btn_cancelarDenuncia = document.createElement("label")
-        label_btn_cancelarDenuncia.for = "cancelarDenuncia"
-        let btn_cancelarDenuncia = document.createElement("button")
-        btn_cancelarDenuncia.className = "border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer"
-        btn_cancelarDenuncia.type = "button"
-        btn_cancelarDenuncia.id = "cancelarDenuncia"
-        btn_cancelarDenuncia.textContent = "Cancelar"
+        let label_btn_cancelarDenuncia = document.createElement('label')
+        label_btn_cancelarDenuncia.for = 'cancelarDenuncia'
+        let btn_cancelarDenuncia = document.createElement('button')
+        btn_cancelarDenuncia.className =
+            'border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer'
+        btn_cancelarDenuncia.type = 'button'
+        btn_cancelarDenuncia.id = 'cancelarDenuncia'
+        btn_cancelarDenuncia.textContent = 'Cancelar'
 
-        btn_realizarDenuncia.addEventListener("click", (e) => {
-            div_confirmarDenuncia(post, div_crearDenuncia, form_denunciarPublicación, div_content1)
+        btn_realizarDenuncia.addEventListener('click', e => {
+            div_confirmarDenuncia(
+                post,
+                div_crearDenuncia,
+                form_denunciarPublicación,
+                div_content1
+            )
         })
 
-        btn_cancelarDenuncia.addEventListener("click", (e) => {
+        btn_cancelarDenuncia.addEventListener('click', e => {
             div_crearDenuncia.remove()
         })
 
@@ -790,60 +879,73 @@ async function div_denuncia(post, div_content1 = undefined, div_content2 = undef
 
         pag_body.appendChild(div_crearDenuncia)
     } else {
-        div_content1.classList.remove("hidden")
-        div_content1.classList.toggle("block")
+        div_content1.classList.remove('hidden')
+        div_content1.classList.toggle('block')
     }
-
 }
 
-async function div_confirmarDenuncia(post, div_crearDenuncia, form_denunciarPublicación, div_content1) {
-    div_content1.classList.add("hidden")
+async function div_confirmarDenuncia (
+    post,
+    div_crearDenuncia,
+    form_denunciarPublicación,
+    div_content1
+) {
+    div_content1.classList.add('hidden')
 
-    let div_content2 = div_crearDenuncia.querySelector(".div_content2")
+    let div_content2 = div_crearDenuncia.querySelector('.div_content2')
 
     if (!div_content2) {
-        div_content2 = document.createElement("div")
-        div_content2.className = "div_content2 border bg-white p-6"
+        div_content2 = document.createElement('div')
+        div_content2.className = 'div_content2 border bg-white p-6'
 
-        let text = document.createElement("h1")
-        text.className = "text-center"
-        text.textContent = "¿Confirmar denuncia?"
+        let text = document.createElement('h1')
+        text.className = 'text-center'
+        text.textContent = '¿Confirmar denuncia?'
 
-        let div_btnDenuncia2 = document.createElement("div")
-        div_btnDenuncia2.className = "flex justify-center items-center mt-5 gap-2"
+        let div_btnDenuncia2 = document.createElement('div')
+        div_btnDenuncia2.className =
+            'flex justify-center items-center mt-5 gap-2'
 
-        let label_btn_confirmar = document.createElement("label")
-        label_btn_confirmar.for = "confirmarDenuncia"
-        let btn_confirmar = document.createElement("button")
-        btn_confirmar.type = "submit"
-        btn_confirmar.className = "border hover:text-white hover:font-bold hover:bg-green-600 px-2 py-1 cursor-pointer"
-        btn_confirmar.textContent = "Confirmar"
+        let label_btn_confirmar = document.createElement('label')
+        label_btn_confirmar.for = 'confirmarDenuncia'
+        let btn_confirmar = document.createElement('button')
+        btn_confirmar.type = 'submit'
+        btn_confirmar.className =
+            'border hover:text-white hover:font-bold hover:bg-green-600 px-2 py-1 cursor-pointer'
+        btn_confirmar.textContent = 'Confirmar'
 
-        let label_btn_cancelar = document.createElement("label")
-        label_btn_cancelar.for = "cancelarDenuncia"
-        let btn_cancelar = document.createElement("button")
-        btn_cancelar.type = "button"
-        btn_cancelar.className = "border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer"
-        btn_cancelar.textContent = "Cancelar"
+        let label_btn_cancelar = document.createElement('label')
+        label_btn_cancelar.for = 'cancelarDenuncia'
+        let btn_cancelar = document.createElement('button')
+        btn_cancelar.type = 'button'
+        btn_cancelar.className =
+            'border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer'
+        btn_cancelar.textContent = 'Cancelar'
 
-        let label_btn_volver = document.createElement("label")
-        label_btn_volver.for = "volver"
-        let btn_volver = document.createElement("button")
-        btn_volver.type = "button"
-        btn_volver.className = "border hover:text-white hover:font-bold hover:bg-orange-600 px-2 py-1 cursor-pointer"
-        btn_volver.textContent = "Volver"
+        let label_btn_volver = document.createElement('label')
+        label_btn_volver.for = 'volver'
+        let btn_volver = document.createElement('button')
+        btn_volver.type = 'button'
+        btn_volver.className =
+            'border hover:text-white hover:font-bold hover:bg-orange-600 px-2 py-1 cursor-pointer'
+        btn_volver.textContent = 'Volver'
 
-        form_denunciarPublicación.addEventListener("submit", (e) => {
+        form_denunciarPublicación.addEventListener('submit', e => {
             e.preventDefault()
-            denunciarPublicación(post, form_denunciarPublicación, div_crearDenuncia, div_content2)
+            denunciarPublicación(
+                post,
+                form_denunciarPublicación,
+                div_crearDenuncia,
+                div_content2
+            )
         })
 
-        btn_volver.addEventListener("click", (e) => {
-            div_content2.classList.add("hidden")
-            div_content1.classList.remove("hidden")
+        btn_volver.addEventListener('click', e => {
+            div_content2.classList.add('hidden')
+            div_content1.classList.remove('hidden')
         })
 
-        btn_cancelar.addEventListener("click", (e) => {
+        btn_cancelar.addEventListener('click', e => {
             div_crearDenuncia.remove()
         })
 
@@ -858,18 +960,28 @@ async function div_confirmarDenuncia(post, div_crearDenuncia, form_denunciarPubl
 
         form_denunciarPublicación.appendChild(div_content2)
     } else {
-        div_content2.classList.remove("hidden")
+        div_content2.classList.remove('hidden')
     }
 }
 
-async function denunciarPublicación(post, form, div_crearDenuncia, div_content2) {
-    const motivo_denuncia = form.querySelector("select").value
-    const descripcion_denuncia = form.querySelector("textarea").value
-    const nombre_post = post.querySelector(".post_titulo").querySelector("h1").textContent
+async function denunciarPublicación (
+    post,
+    form,
+    div_crearDenuncia,
+    div_content2
+) {
+    const motivo_denuncia = form.querySelector('select').value
+    const descripcion_denuncia = form.querySelector('textarea').value
+    const nombre_post = post
+        .querySelector('.post_titulo')
+        .querySelector('h1').textContent
 
-    const user_href = post.querySelector(".post_usuario").querySelector("a").getAttribute("href")
-    const regex = /^\/usuarioPerfil\/(\d+)\/posts$/;
-    let match = user_href.match(regex);
+    const user_href = post
+        .querySelector('.post_usuario')
+        .querySelector('a')
+        .getAttribute('href')
+    const regex = /^\/usuarioPerfil\/(\d+)\/posts$/
+    let match = user_href.match(regex)
 
     const data = {
         motivo: motivo_denuncia,
@@ -879,80 +991,69 @@ async function denunciarPublicación(post, form, div_crearDenuncia, div_content2
     }
     try {
         const res = await fetch(form.action, {
-            method: "POST",
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ data })
         })
 
         const { msj_denunciaExitosa } = await res.json()
 
-        div_content2.innerHTML = ""
+        div_content2.innerHTML = ''
 
-        let msj = document.createElement("h1")
+        let msj = document.createElement('h1')
         msj.textContent = msj_denunciaExitosa
 
-        let div_btn_cerrarDiv = document.createElement("div")
-        div_btn_cerrarDiv.className = "flex justify-center items-center mt-5"
+        let div_btn_cerrarDiv = document.createElement('div')
+        div_btn_cerrarDiv.className = 'flex justify-center items-center mt-5'
 
-        let label_cerrarDiv = document.createElement("label")
-        label_cerrarDiv.for = "cerrarDivDenuncia"
+        let label_cerrarDiv = document.createElement('label')
+        label_cerrarDiv.for = 'cerrarDivDenuncia'
 
-        let btn_cerrarDiv = document.createElement("button")
-        btn_cerrarDiv.type = "button"
-        btn_cerrarDiv.className = "border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer"
-        btn_cerrarDiv.id = "cerrarDivDenuncia"
-        btn_cerrarDiv.name = "cerrarDivDenuncia"
-        btn_cerrarDiv.textContent = "Salir"
+        let btn_cerrarDiv = document.createElement('button')
+        btn_cerrarDiv.type = 'button'
+        btn_cerrarDiv.className =
+            'border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer'
+        btn_cerrarDiv.id = 'cerrarDivDenuncia'
+        btn_cerrarDiv.name = 'cerrarDivDenuncia'
+        btn_cerrarDiv.textContent = 'Salir'
 
         div_content2.appendChild(msj)
         div_content2.appendChild(div_btn_cerrarDiv)
         div_btn_cerrarDiv.appendChild(label_cerrarDiv)
         label_cerrarDiv.appendChild(btn_cerrarDiv)
 
-        btn_cerrarDiv.addEventListener("click", (e) => {
+        btn_cerrarDiv.addEventListener('click', e => {
             div_crearDenuncia.remove()
         })
-
-
     } catch (error) {
         console.error(`ERROR AL DENUNCIAR PUBLICACIÓN --> ${error}`)
     }
 }
 
 //Función que dispara un mensaje temporal personalizado, al guardar/quitar publicación como favorito/en una colección, al denunciar una publicación
-function display_msj(tipo_msj, data = undefined) {
-    let div_msj = document.createElement("div")
+function display_msj (tipo_msj, data = undefined) {
+    let div_msj = document.createElement('div')
 
-    if (tipo_msj === "guardar_publicación_favoritos") {
-
-        div_msj.className = "mb-3 bg-green-600 px-5 py-2 font-bold"
-        div_msj.textContent = "Publicación guardada en Favoritos"
-
-    } else if (tipo_msj === "quitar_publicación_favoritos") {
-
-        div_msj.className = "mb-3 bg-red-600 px-5 py-2 font-bold"
-        div_msj.textContent = "Publicación removida de Favoritos"
-
-    } else if (tipo_msj === "guardar_publicación_colección") {
-
-        div_msj.className = "mb-3 bg-blue-600 px-5 py-2 font-bold"
+    if (tipo_msj === 'guardar_publicación_favoritos') {
+        div_msj.className = 'mb-3 bg-green-600 px-5 py-2 font-bold'
+        div_msj.textContent = 'Publicación guardada en Favoritos'
+    } else if (tipo_msj === 'quitar_publicación_favoritos') {
+        div_msj.className = 'mb-3 bg-red-600 px-5 py-2 font-bold'
+        div_msj.textContent = 'Publicación removida de Favoritos'
+    } else if (tipo_msj === 'guardar_publicación_colección') {
+        div_msj.className = 'mb-3 bg-blue-600 px-5 py-2 font-bold'
         div_msj.textContent = `Publicación guardada en ${data.nombreColección}`
-
-    } else if (tipo_msj === "quitar_publicación_colección") {
-
-        div_msj.className = "mb-3 bg-red-600 px-5 py-2 font-bold"
+    } else if (tipo_msj === 'quitar_publicación_colección') {
+        div_msj.className = 'mb-3 bg-red-600 px-5 py-2 font-bold'
         div_msj.textContent = `Publicación removida de ${data.nombreColección}`
-
-    } else if (tipo_msj === "denunciaPublicaciónExistente") {
-
-        div_msj.className = "mb-3 bg-red-600 px-5 py-2 font-bold"
-        div_msj.textContent = "Ya denunciaste esta publicación"
-
+    } else if (tipo_msj === 'denunciaPublicaciónExistente') {
+        div_msj.className = 'mb-3 bg-red-600 px-5 py-2 font-bold'
+        div_msj.textContent = 'Ya denunciaste esta publicación'
     }
 
-    let posición_msj = document.body.querySelector(".msj")
+    let posición_msj = document.body.querySelector('.msj')
 
     posición_msj.appendChild(div_msj)
 
@@ -960,30 +1061,30 @@ function display_msj(tipo_msj, data = undefined) {
     let cont = 4
 
     const msj_temporizador = setInterval(() => {
-
         if (cont > 0) {
-            cont--;
+            cont--
         } else {
-            clearInterval(msj_temporizador);
+            clearInterval(msj_temporizador)
 
             posición_msj.removeChild(div_msj)
         }
-
-    }, 1000);
+    }, 1000)
 }
 
 //Funcion que renderiza las colecciones del usuario junto con un bookmark hueco que permite guardar una publicación en una colección especifica
-function form_guardarPublicación_colección_render(post, nombre_colección, div_colección) {
-
-    let form_guardarPublicacion = document.createElement("form")
-    form_guardarPublicacion.className = "ml-10"
-    form_guardarPublicacion.action = "/guardar-en-coleccion"
-    form_guardarPublicacion.method = "post"
+function form_guardarPublicación_colección_render (
+    post,
+    nombre_colección,
+    div_colección
+) {
+    let form_guardarPublicacion = document.createElement('form')
+    form_guardarPublicacion.className = 'ml-10'
+    form_guardarPublicacion.action = '/guardar-en-coleccion'
+    form_guardarPublicacion.method = 'post'
     form_guardarPublicacion.name = nombre_colección
     form_guardarPublicacion.id = nombre_colección
 
-    form_guardarPublicacion.innerHTML =
-        `<label for="btn_colección">
+    form_guardarPublicacion.innerHTML = `<label for="btn_colección">
             <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección">
                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
                     <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
@@ -991,45 +1092,44 @@ function form_guardarPublicación_colección_render(post, nombre_colección, div
             </button>
         </label>`
 
-    let btn = form_guardarPublicacion.querySelector("button")
+    let btn = form_guardarPublicacion.querySelector('button')
 
     btn.addEventListener('mouseenter', () => {
-        btn.innerHTML =
-            `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
             <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
         </svg>`
-    });
+    })
 
     btn.addEventListener('mouseleave', () => {
-        btn.innerHTML =
-            `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
             <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
         </svg>`
-    });
+    })
 
     div_colección.appendChild(form_guardarPublicacion)
 
     //Ejecuta la Función que guarda publicación en una colección al enviar formulario
-    form_guardarPublicacion.addEventListener("submit", (e) => {
+    form_guardarPublicacion.addEventListener('submit', e => {
         e.preventDefault()
 
         guardarPublicación_colección(form_guardarPublicacion, post)
     })
-
 }
 
 //Funcion que renderiza las colecciones del usuario junto con un bookmark lleno indicando la publicación guardada en la colección que a su vez tiene la funcion de quitar esa publicación de la colección
-function form_quitarPublicación_colección_render(post, nombre_colección, div_colección) {
-
-    let form_quitarPublicacion = document.createElement("form")
-    form_quitarPublicacion.className = "ml-10"
-    form_quitarPublicacion.action = "/quitar-de-coleccion"
-    form_quitarPublicacion.method = "post"
+function form_quitarPublicación_colección_render (
+    post,
+    nombre_colección,
+    div_colección
+) {
+    let form_quitarPublicacion = document.createElement('form')
+    form_quitarPublicacion.className = 'ml-10'
+    form_quitarPublicacion.action = '/quitar-de-coleccion'
+    form_quitarPublicacion.method = 'post'
     form_quitarPublicacion.name = nombre_colección
     form_quitarPublicacion.id = nombre_colección
 
-    form_quitarPublicacion.innerHTML =
-        `<label for="btn_colección_guardado">
+    form_quitarPublicacion.innerHTML = `<label for="btn_colección_guardado">
         <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección_guardado">
             <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
                 <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
@@ -1040,7 +1140,7 @@ function form_quitarPublicación_colección_render(post, nombre_colección, div_
     div_colección.appendChild(form_quitarPublicacion)
 
     //Ejecuta la Función para quitar publicación de una colección al enviar formulario
-    form_quitarPublicacion.addEventListener("submit", (e) => {
+    form_quitarPublicacion.addEventListener('submit', e => {
         e.preventDefault()
 
         quitarPublicación_colección(form_quitarPublicacion, post)
@@ -1048,17 +1148,19 @@ function form_quitarPublicación_colección_render(post, nombre_colección, div_
 }
 
 //Funcion que reemplaza el bookmark hueco por uno lleno luego de guardar una publicación en una colección asociada al bookmark
-function form_guardarPublicación_colección_replace(post, form_guardarPublicacion, nombre_colección) {
-
-    let form_quitarPublicacion = document.createElement("form")
-    form_quitarPublicacion.className = "ml-10"
-    form_quitarPublicacion.action = "/quitar-de-coleccion"
-    form_quitarPublicacion.method = "post"
+function form_guardarPublicación_colección_replace (
+    post,
+    form_guardarPublicacion,
+    nombre_colección
+) {
+    let form_quitarPublicacion = document.createElement('form')
+    form_quitarPublicacion.className = 'ml-10'
+    form_quitarPublicacion.action = '/quitar-de-coleccion'
+    form_quitarPublicacion.method = 'post'
     form_quitarPublicacion.name = nombre_colección
     form_quitarPublicacion.id = nombre_colección
 
-    form_quitarPublicacion.innerHTML =
-        `<label for="btn_colección_guardado">
+    form_quitarPublicacion.innerHTML = `<label for="btn_colección_guardado">
         <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección_guardado">
             <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
                 <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
@@ -1069,27 +1171,27 @@ function form_guardarPublicación_colección_replace(post, form_guardarPublicaci
     form_guardarPublicacion.replaceWith(form_quitarPublicacion)
 
     //Ejecuta la Función para quitar publicación de una colección al enviar formulario
-    form_quitarPublicacion.addEventListener("submit", (e) => {
+    form_quitarPublicacion.addEventListener('submit', e => {
         e.preventDefault()
 
         quitarPublicación_colección(form_quitarPublicacion, post)
     })
-
-
 }
 
 //Funcion que reemplaza el bookmark lleno por uno hueco luego de quitar una publicación de una colección asociada al bookmark
-function form_quitarPublicación_colección_replace(post, form_quitarPublicacion, nombre_colección) {
-
-    let form_guardarPublicacion = document.createElement("form")
-    form_guardarPublicacion.className = "ml-10"
-    form_guardarPublicacion.action = "/guardar-en-coleccion"
-    form_guardarPublicacion.method = "post"
+function form_quitarPublicación_colección_replace (
+    post,
+    form_quitarPublicacion,
+    nombre_colección
+) {
+    let form_guardarPublicacion = document.createElement('form')
+    form_guardarPublicacion.className = 'ml-10'
+    form_guardarPublicacion.action = '/guardar-en-coleccion'
+    form_guardarPublicacion.method = 'post'
     form_guardarPublicacion.name = form_quitarPublicacion.name
     form_guardarPublicacion.id = form_quitarPublicacion.id
 
-    form_guardarPublicacion.innerHTML =
-        `<label for="btn_colección">
+    form_guardarPublicacion.innerHTML = `<label for="btn_colección">
         <button class=" cursor-pointer px-2 py-1" type="submit" id="btn_colección">
             <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
                 <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
@@ -1097,63 +1199,114 @@ function form_quitarPublicación_colección_replace(post, form_quitarPublicacion
         </button>
     </label>`
 
-    let btn = form_guardarPublicacion.querySelector("button")
+    let btn = form_guardarPublicacion.querySelector('button')
 
     btn.addEventListener('mouseenter', () => {
-        btn.innerHTML =
-            `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
             <path d="M18.5,2h-13C5.224,2,5,2.224,5,2.5v19c0,0.171,0.087,0.329,0.23,0.421c0.143,0.093,0.324,0.104,0.479,0.033L12,19.051	l6.291,2.903C18.357,21.984,18.429,22,18.5,22c0.094,0,0.188-0.026,0.27-0.079C18.913,21.829,19,21.671,19,21.5v-19	C19,2.224,18.776,2,18.5,2z"></path>
         </svg>`
-    });
+    })
 
     btn.addEventListener('mouseleave', () => {
-        btn.innerHTML =
-            `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
             <path d="M 5.5 2 A 0.50005 0.50005 0 0 0 5 2.5 L 5 21.5 A 0.50005 0.50005 0 0 0 5.7089844 21.953125 L 12 19.050781 L 18.291016 21.953125 A 0.50005 0.50005 0 0 0 19 21.5 L 19 2.5 A 0.50005 0.50005 0 0 0 18.5 2 L 5.5 2 z M 6 3 L 18 3 L 18 20.71875 L 12.208984 18.046875 A 0.50005 0.50005 0 0 0 11.791016 18.046875 L 6 20.71875 L 6 3 z"></path>
         </svg>`
-    });
+    })
 
     form_quitarPublicacion.replaceWith(form_guardarPublicacion)
 
     //Ejecuta la Función que guarda publicación en una colección al enviar formulario
-    form_guardarPublicacion.addEventListener("submit", (e) => {
+    form_guardarPublicacion.addEventListener('submit', e => {
         e.preventDefault()
 
         guardarPublicación_colección(form_guardarPublicacion, post)
     })
 }
 
+async function marcarLeidas (mensajes, form_marcarLeidas) {
+    const eventos = mensajes.querySelectorAll('.content')
+
+    let arr_posts1 = []
+    let arr_posts2 = []
+    let arr_posts3 = []
+
+    for (const i of eventos) {
+        if (i.querySelector('.msj_postsDadasDeBaja')) {
+            const posts1 = i
+                .querySelector('.msj_postsDadasDeBaja')
+                .querySelectorAll('li')
+
+            posts1.forEach(post => arr_posts1.push(post.textContent.trim()))
+        }
+
+        if (i.querySelector('.msj_postsDenunciados')) {
+            const posts2 = i
+                .querySelector('.msj_postsDenunciados')
+                .querySelector('.infoDenuncias')
+                .querySelectorAll('h1')
+
+            posts2.forEach(post =>
+                arr_posts2.push(post.textContent.split('(')[0].trim())
+            )
+        }
+
+        if (i.querySelector('.msj_denunciasDesestimadas')) {
+            const posts3 = i
+                .querySelector('.msj_denunciasDesestimadas')
+                .querySelectorAll('li')
+
+            posts3.forEach(post => arr_posts3.push(post.textContent.trim()))
+        }
+    }
+
+    const postsObj = {
+        dadasDeBaja: arr_posts1,
+        denunciados: arr_posts2,
+        desestimadas: arr_posts3
+    }
+    try {
+        await fetch(form_marcarLeidas.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ postsObj })
+        })
+
+        mensajes.remove()
+    } catch (error) {
+        console.error(`error al marcar los mensajes como leidos --> ${error}`)
+    }
+}
+
 //Renderizar imagenes dentro de la publicación
 for (const i of img_container) {
-
-    let images = i.querySelectorAll(".imagenes")[0]
-    images = images.querySelectorAll(".img_elem")
+    let images = i.querySelectorAll('.imagenes')[0]
+    images = images.querySelectorAll('.img_elem')
 
     if (images.length > 4) {
         for (let a = 0; a < images.length; a++) {
-
             if (a === 3) {
-                images[3].classList.toggle("relative")
+                images[3].classList.toggle('relative')
 
-                const dark_bg = document.createElement("div")
-                dark_bg.classList.toggle("absolute")
-                dark_bg.classList.toggle("inset-0")
-                dark_bg.classList.toggle("bg-black/50")
+                const dark_bg = document.createElement('div')
+                dark_bg.classList.toggle('absolute')
+                dark_bg.classList.toggle('inset-0')
+                dark_bg.classList.toggle('bg-black/50')
 
                 images[3].appendChild(dark_bg)
-
             } else if (a > 3) {
-                images[a].classList.toggle("hidden")
+                images[a].classList.toggle('hidden')
             }
         }
-        const text_img = document.createElement("p")
-        text_img.classList.toggle("absolute")
-        text_img.classList.toggle("inset-0")
-        text_img.classList.toggle("items-center")
-        text_img.classList.toggle("flex")
-        text_img.classList.toggle("justify-center")
-        text_img.classList.toggle("text-white")
-        text_img.classList.toggle("text-4xl")
+        const text_img = document.createElement('p')
+        text_img.classList.toggle('absolute')
+        text_img.classList.toggle('inset-0')
+        text_img.classList.toggle('items-center')
+        text_img.classList.toggle('flex')
+        text_img.classList.toggle('justify-center')
+        text_img.classList.toggle('text-white')
+        text_img.classList.toggle('text-4xl')
         text_img.textContent = `+${images.length - 4}`
 
         images[3].appendChild(text_img)

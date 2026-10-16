@@ -100,15 +100,19 @@ export async function pagIndex (req, res) {
 
         // Hallar pubicaciones del autor dadas de baja
         postsDadasDeBaja = await getPostsDadasDeBaja(req.user.id_usuario)
-        postsDadasDeBaja.length > 0 ? eventos.push('postsDadasDeBaja') : ""
+        postsDadasDeBaja.length > 0 ? eventos.push('postsDadasDeBaja') : ''
 
         // Hallar publicaciones denunciadas del autor
         postsDenunciados = await getpostsDenunciados(req.user.id_usuario)
-        postsDenunciados.length > 0 ? eventos.push('postsDenunciados') : ""
+        postsDenunciados.length > 0 ? eventos.push('postsDenunciados') : ''
 
         // Hallar publicaciones con denuncias desestimadas
-        denunciasDesestimadas = await getdenunciasDesestimadas(req.user.id_usuario)
-        denunciasDesestimadas.length > 0 ? eventos.push('denunciasDesestimadas') : ""
+        denunciasDesestimadas = await getdenunciasDesestimadas(
+            req.user.id_usuario
+        )
+        denunciasDesestimadas.length > 0
+            ? eventos.push('denunciasDesestimadas')
+            : ''
 
         res.render('index', {
             posts,
@@ -415,29 +419,96 @@ export async function verificarPublicacionDenunciada (req, res) {
     res.json({ msj_confirmacion })
 }
 
-export async function marcarDenunciasPublicacionNotificadas (req, res) {
-    const posts = await Publicacion.findAll({
-        where: {
-            id_usuario: req.user.id_usuario
-        },
+export async function marcarLeidas (req, res) {
+    const { postsObj } = req.body
+    let dadasDeBaja
+    let denunciadas
+    let desestimadas
 
-        attributes: ['id_post']
-    })
+    try {
+        if (postsObj.hasOwnProperty('dadasDeBaja')) {
+            dadasDeBaja = await Publicacion.update(
+                { baja_notificada: true },
+                {
+                    where: {
+                        id_usuario: req.user.id_usuario,
+                        titulo: {
+                            [Op.in]: postsObj.dadasDeBaja
+                        },
+                        estado: 'inactiva',
+                        baja_notificada: false
+                    }
+                }
+            )
+        }
 
-    const ids = posts.map(p => p.id_post)
+        if (postsObj.hasOwnProperty('denunciados')) {
+            const posts = await Publicacion.findAll({
+                where: {
+                    id_usuario: req.user.id_usuario,
+                    titulo: {
+                        [Op.in]: postsObj.denunciados
+                    }
+                },
 
-    await DenunciaPublicacion.update(
-        { notificada: true },
-        { where: { id_post: ids, notificada: false } }
-    )
-    res.sendStatus(204)
+                attributes: ['id_post']
+            })
+
+            const idsPostsDenunciados = posts.map(p => p.id_post)
+
+            denunciadas = await DenunciaPublicacion.update(
+                { notificada: true },
+                {
+                    where: {
+                        id_post: {
+                            [Op.in]: idsPostsDenunciados
+                        },
+                        estado: 'pendiente',
+                        notificada: false
+                    }
+                }
+            )
+        }
+
+        if (postsObj.hasOwnProperty('desestimadas')) {
+            const posts = await Publicacion.findAll({
+                where: {
+                    id_usuario: req.user.id_usuario,
+                    titulo: {
+                        [Op.in]: postsObj.desestimadas
+                    }
+                },
+
+                attributes: ['id_post']
+            })
+
+            const idsPostsDesestimadas = posts.map(p => p.id_post)
+
+            desestimadas = await DenunciaPublicacion.update(
+                { desestimacion_notificada: true },
+                {
+                    where: {
+                        id_post: {
+                            [Op.in]: idsPostsDesestimadas
+                        },
+                        estado: 'desestimada',
+                        desestimacion_notificada: false
+                    }
+                }
+            )
+        }
+
+        res.sendStatus(204)
+    } catch (error) {
+        res.status(400).send(`Error al marcar los mensajes como leidos ${error}`)
+    }
 }
 
 async function getpostsDenunciados (_idUsuario) {
     let posts = await Publicacion.findAll({
         where: {
             id_usuario: _idUsuario,
-            estado: "activa"
+            estado: 'activa'
         },
 
         include: [
@@ -445,12 +516,13 @@ async function getpostsDenunciados (_idUsuario) {
                 model: DenunciaPublicacion,
                 as: 'DenunciaPublicación',
                 where: {
+                    estado: 'pendiente',
                     notificada: false
                 },
                 required: true,
                 include: [
-                    { 
-                        model: Motivo,
+                    {
+                        model: Motivo
                     }
                 ],
                 order: [['fh_denuncia', 'DESC']]
@@ -464,7 +536,7 @@ async function getpostsDenunciados (_idUsuario) {
             motivo: info.Motivo.nombre,
             descripción: info.descripción
         }))
-    }));
+    }))
 
     return postsDenunciados
 }
@@ -482,11 +554,10 @@ async function getPostsDadasDeBaja (_idUsuario) {
 }
 
 async function getdenunciasDesestimadas (_idUsuario) {
-
     const result = await Publicacion.findAll({
-
         where: {
-            id_usuario: _idUsuario
+            id_usuario: _idUsuario,
+            estado: 'activa'
         },
         attributes: ['titulo'],
 
@@ -495,14 +566,13 @@ async function getdenunciasDesestimadas (_idUsuario) {
                 model: DenunciaPublicacion,
                 as: 'DenunciaPublicación',
                 where: {
-                    estado: "desestimada",
+                    estado: 'desestimada',
                     desestimacion_notificada: false
                 },
                 required: true
             }
-        ],
+        ]
     })
 
     return result
-
 }

@@ -115,6 +115,6 @@ mixin home(query = undefined)
                                                                     span(class="font-bold") #{d.titulo}
                                             h1 La/s publicaciones detalladas seguiran visibles en la pagina y en su perfil
                         .btn_continuar(class="flex justify-center mt-5")
-                            form(action="", method="post") 
+                            form(action="/denuncias/publicacion/marcarLeidas", method="post") 
                                 label(for="continuar")
                                     button(type="submit" class="bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-md cursor-pointer") Continuar
