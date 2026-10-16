@@ -67,7 +67,7 @@ export async function mostrarPerfilUsuario(req, res) {
         const postsFollowing = await getPostsFollowing(seguidos)
         const favoritos = await getPostsFavoritos(usuarioPerfil)
         const postsDenunciados = await getpostsDenunciados(usuarioPerfil)
-
+        const cantPostsDadasDeBaja = await getcantPostsDadasDeBaja(usuarioPerfil)
         let yaEsSeguido = false;
 
         let misFollowing = [];
@@ -153,7 +153,8 @@ export async function mostrarPerfilUsuario(req, res) {
             postsColecciones,
             postsUserAuthColecciones,
             postsColeccion,
-            postsDenunciados
+            postsDenunciados,
+            cantPostsDadasDeBaja
         });
     } catch (error) {
         res.status(400).send(`Ocurrió un error ${error}`)
@@ -305,7 +306,8 @@ async function getPosts(usuario) {
     const publicaciones = await Publicacion.findAll({
 
         where: {
-            id_usuario: usuario.id_usuario
+            id_usuario: usuario.id_usuario,
+            estado: "activa"
         },
 
         include: [
@@ -481,4 +483,15 @@ async function getMotivo(DenunciaPublicación){
     })
     
     return motivo.nombre
+}
+
+async function getcantPostsDadasDeBaja(usuario){
+    const cant = await Publicacion.count({
+        where: {
+            id_usuario: usuario.id_usuario,
+            estado: "inactiva"
+        }
+    })
+
+    return cant
 }
