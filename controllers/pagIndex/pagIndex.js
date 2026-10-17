@@ -13,17 +13,9 @@ import { Motivo } from '../../models/Motivo.js'
 import { DenunciaPublicacion } from '../../models/DenunciaPublicacion.js'
 
 export async function pagIndex (req, res) {
-    let postsFavorito
-    let userColecciones
-    let mapidsColecciones
-    let userAuthColecciones
-    let postsColecciones
-    let postsUserAuthColecciones
-    let postsDadasDeBaja
-    let postsDenunciados
-    let postsDenunciadosLeidos
-    let denunciasDesestimadas
+    
     let eventos = [] // Valores --> "postsDenunciados", "postsDadasDeBaja", "denunciasDesestimadas"
+    
     //Publicaciones con: Titulo, Descripcion, Nombre del usuario, Fecha y hora de publicacion, Etiquetas, Imagenes
     const posts = await Publicacion.findAll({
         include: [
@@ -43,14 +35,14 @@ export async function pagIndex (req, res) {
             postTag: '',
             imgTag: '',
             query: '',
-            eventos: []
+            eventos
         })
     } else if (req.user.estado == 'activa') {
         //Verificar en cada publicación si el usuario autenticado lo tiene guardado como favorito
         //Primero se verifica que el usuario esté logueado y su cuenta se encuentre activa
 
         //Publicaciones guardadas en favoritos del usuario autenticado
-        postsFavorito = await Publicacion_Favoritos.findAll({
+        let postsFavorito = await Publicacion_Favoritos.findAll({
             where: {
                 id_favoritos: req.user.id_usuario
             },
@@ -59,19 +51,19 @@ export async function pagIndex (req, res) {
         })
 
         //Colecciones creadas por el usuario autenticado
-        userColecciones = await Colección.findAll({
+        let userColecciones = await Colección.findAll({
             where: {
                 id_usuario: req.user.id_usuario
             }
         })
 
         //Ids de las colecciones obtenidas de la consulta anterior
-        mapidsColecciones = userColecciones.map(
+        let mapidsColecciones = userColecciones.map(
             colección => colección.id_colección
         )
 
         //Publicaciones guardadas en las colecciones creadas por el usuario autenticado
-        postsColecciones = await Publicacion_Colecciones.findAll({
+        let postsColecciones = await Publicacion_Colecciones.findAll({
             where: {
                 id_colección: {
                     [Op.in]: mapidsColecciones
@@ -80,7 +72,7 @@ export async function pagIndex (req, res) {
         })
 
         //Colecciones creadas por el usuario AUTENTICADO
-        userAuthColecciones = await Colección.findAll({
+        let userAuthColecciones = await Colección.findAll({
             where: {
                 id_usuario: req.user.id_usuario
             }
@@ -90,7 +82,7 @@ export async function pagIndex (req, res) {
             colección => colección.id_colección
         )
 
-        postsUserAuthColecciones = await Publicacion_Colecciones.findAll({
+        let postsUserAuthColecciones = await Publicacion_Colecciones.findAll({
             where: {
                 id_colección: {
                     [Op.in]: mapidsColecciones2
@@ -99,15 +91,15 @@ export async function pagIndex (req, res) {
         })
 
         // Hallar pubicaciones del autor dadas de baja
-        postsDadasDeBaja = await getPostsDadasDeBaja(req.user.id_usuario)
+        let postsDadasDeBaja = await getPostsDadasDeBaja(req.user.id_usuario)
         postsDadasDeBaja.length > 0 ? eventos.push('postsDadasDeBaja') : ''
 
         // Hallar publicaciones denunciadas del autor
-        postsDenunciados = await getpostsDenunciados(req.user.id_usuario)
+        let postsDenunciados = await getpostsDenunciados(req.user.id_usuario)
         postsDenunciados.length > 0 ? eventos.push('postsDenunciados') : ''
 
         // Hallar publicaciones con denuncias desestimadas
-        denunciasDesestimadas = await getdenunciasDesestimadas(
+        let denunciasDesestimadas = await getdenunciasDesestimadas(
             req.user.id_usuario
         )
         denunciasDesestimadas.length > 0
@@ -116,6 +108,7 @@ export async function pagIndex (req, res) {
 
         res.render('index', {
             posts,
+            contenido: "publicación",
             queryResult: null,
             orden: null,
             postTag: '',
