@@ -90,6 +90,12 @@ export async function pagIndex (req, res) {
             }
         })
 
+        let motivos = await Motivo.findAll({
+            attributes: ["nombre"]
+        })
+
+        let arr_motivos = motivos.map(m => m.nombre)
+
         // Hallar pubicaciones del autor dadas de baja
         let postsDadasDeBaja = await getPostsDadasDeBaja(req.user.id_usuario)
         postsDadasDeBaja.length > 0 ? eventos.push('postsDadasDeBaja') : ''
@@ -105,7 +111,7 @@ export async function pagIndex (req, res) {
         denunciasDesestimadas.length > 0
             ? eventos.push('denunciasDesestimadas')
             : ''
-
+        
         res.render('index', {
             posts,
             contenido: "publicación",
@@ -119,6 +125,7 @@ export async function pagIndex (req, res) {
             userAuthColecciones,
             postsColecciones,
             postsUserAuthColecciones,
+            arr_motivos,
             postsDenunciados,
             postsDadasDeBaja,
             denunciasDesestimadas,

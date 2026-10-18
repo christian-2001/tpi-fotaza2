@@ -8,8 +8,10 @@ let posts = document.querySelectorAll('.post')
 let post_menu_all = document.querySelectorAll('.opciones')
 let post_menu_all2 = document.querySelectorAll('.opciones2') //--> Obtiene todos los nodos que contienen el boton "..." en todas las publicaciones
 
+const div_crearDenuncia = document.querySelector(".div_crearDenuncia")
+let postDenuncia
 //Listado de motivos disponibles para seleccionar al realizar una denuncia a una publicación
-let motivos = [
+/*let motivos = [
     'Contenido sexual explícito o desnudos',
     'Violencia gráfica o contenido perturbador',
     'Discurso de odio o discriminación',
@@ -19,16 +21,15 @@ let motivos = [
     'Spam o publicidad no deseada',
     'Información falsa o engañosa (foto manipulada presentada como real)',
     'Otro motivo'
-]
+]*/
 
 //Div con el mensaje de alerta tras recibir una o más denuncias de una o más publciaciones
-const div_denuncias = document.querySelector('.div_denuncias')
+//const div_denuncias = document.querySelector('.div_denuncias')
 
 //Si las denuncias no han sido leidas por el autor, se ejecuta el siguiente bloque de codigo
-if (div_denuncias) {
+/*if (div_denuncias) {
     //Formulario para acceder a la ruta que me lleva al metodo que marca las denuncias de las publicaciones como leidas
-    const form_marcarPublicacionDenunciasLeidas =
-        div_denuncias.querySelector('form')
+    const form_marcarPublicacionDenunciasLeidas = div_denuncias.querySelector('form')
 
     //Evento submit del form
     form_marcarPublicacionDenunciasLeidas.addEventListener(
@@ -47,7 +48,7 @@ if (div_denuncias) {
             div_denuncias.remove()
         }
     )
-}
+}*/
 
 /*
 div que contiene los mensajes de alerta hacia el autor, los eventos son:
@@ -205,32 +206,11 @@ for (const p of posts) {
     form_denunciarPost.addEventListener('submit', async e => {
         e.preventDefault()
 
-        try {
-            const res = await fetch(form_denunciarPost.action, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-
-            const { msj_confirmacion } = await res.json()
-
-            if (
-                msj_confirmacion ===
-                'NO EXISTE DENUNCIA A LA PUBLICACION POR PARTE DEL USUARIO'
-            ) {
-                div_denuncia(p)
-            } else if (msj_confirmacion === 'YA DENUNCIASTE ESTA PUBLICACION') {
-                const tipo_msj = 'denunciaPublicaciónExistente'
-                display_msj(tipo_msj)
-            }
-        } catch (error) {
-            console.error(
-                `ERROR AL VERIFICAR DENUNCIA A LA PUBLICACION --> ${error}`
-            )
-        }
+        denunciarPost(p, form_denunciarPost)
     })
 }
+
+div_denuncia(div_crearDenuncia)
 
 //Función que muestra/oculta menu de opciones disponibles en todas las publicaciones
 /*function mostrarOpciones(post_menu) {
@@ -759,7 +739,7 @@ async function quitarPublicación_colección (form_quitarPublicacion, post) {
     }
 }
 
-async function div_denuncia (
+/*async function div_denuncia (
     post,
     div_content1 = undefined,
     div_content2 = undefined,
@@ -882,9 +862,99 @@ async function div_denuncia (
         div_content1.classList.remove('hidden')
         div_content1.classList.toggle('block')
     }
+}*/
+
+async function denunciarPost(post, form_denunciarPost){
+    try {
+        const res = await fetch(form_denunciarPost.action, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+
+        const { msj_confirmacion } = await res.json()
+
+        if (
+            msj_confirmacion ===
+            'NO EXISTE DENUNCIA A LA PUBLICACION POR PARTE DEL USUARIO'
+        ) {
+
+            //div_denuncia(div_crearDenuncia, post)
+            abrirDenuncia()
+            postDenuncia = post
+        } else if (msj_confirmacion === 'YA DENUNCIASTE ESTA PUBLICACION') {
+            const tipo_msj = 'denunciaPublicaciónExistente'
+            display_msj(tipo_msj)
+        }
+    } catch (error) {
+        console.error(
+            `ERROR AL VERIFICAR DENUNCIA A LA PUBLICACION --> ${error}`
+        )
+    }
 }
 
-async function div_confirmarDenuncia (
+function div_denuncia(div_crearDenuncia, post){
+    //div_crearDenuncia.classList.remove("hidden")
+    //div_crearDenuncia.classList.add("block") 
+
+    const form_denunciarPublicacion = div_crearDenuncia.querySelector("form")
+    console.log(form_denunciarPublicacion.querySelector("select").value)
+
+    const div_content1 = div_crearDenuncia.querySelector(".div_content1")
+    const div_content2 = div_crearDenuncia.querySelector(".div_content2")
+
+    const btn_realizarDenuncia = div_content1.querySelector("#realizarDenuncia")
+    const btn_cancelarDenuncia = div_content1.querySelector("#cancelarDenuncia")
+
+    if(div_content1.classList.contains("hidden")){
+        div_content1.classList.remove("hidden")
+        div_content1.classList.add("block")
+    }
+
+    if(div_content2.classList.contains("block")){
+        div_content2.classList.remove("block")
+        div_content2.classList.add("hidden")
+    }
+    //==========================================================================================================
+    btn_realizarDenuncia.addEventListener("click", (e) => {
+        div_content1.classList.remove("block")
+        div_content1.classList.add("hidden")
+
+        div_content2.classList.remove("hidden")
+        div_content2.classList.add("block")
+    })
+
+    btn_cancelarDenuncia.addEventListener("click", cerrarDenuncia)
+    //==========================================================================================================
+
+    //========================================================================================================== 
+    const btn_confirmarDenuncia = div_content2.querySelector("#confirmarDenuncia")
+    const btn_cancelarDenuncia2 = div_content2.querySelector("#cancelarDenuncia2")
+    const btn_retroceder = div_content2.querySelector("#volver")
+    console.log(btn_confirmarDenuncia)
+
+    form_denunciarPublicacion.addEventListener("submit", (e) => {
+            
+        e.preventDefault()
+        denunciarPublicación(postDenuncia, form_denunciarPublicacion, div_crearDenuncia, div_content2, div_content1)
+    })
+
+    //btn_confirmarDenuncia.addEventListener("submit", denunciarPublicación)
+
+    btn_cancelarDenuncia2.addEventListener("click", cerrarDenuncia)
+
+    btn_retroceder.addEventListener("click", (e) => {
+        div_content2.classList.remove("block")
+        div_content2.classList.add("hidden")
+
+        div_content1.classList.remove("hidden")
+        div_content1.classList.add("block")
+    })
+    //==========================================================================================================
+}
+
+/*async function div_confirmarDenuncia (
     post,
     div_crearDenuncia,
     form_denunciarPublicación,
@@ -962,9 +1032,9 @@ async function div_confirmarDenuncia (
     } else {
         div_content2.classList.remove('hidden')
     }
-}
+}*/
 
-async function denunciarPublicación (
+/*async function denunciarPublicación (
     post,
     form,
     div_crearDenuncia,
@@ -1026,6 +1096,91 @@ async function denunciarPublicación (
 
         btn_cerrarDiv.addEventListener('click', e => {
             div_crearDenuncia.remove()
+        })
+    } catch (error) {
+        console.error(`ERROR AL DENUNCIAR PUBLICACIÓN --> ${error}`)
+    }
+}*/
+
+function abrirDenuncia(){
+    div_crearDenuncia.classList.remove("hidden")
+    div_crearDenuncia.classList.add("block")
+}
+
+function cerrarDenuncia(){
+    div_crearDenuncia.classList.remove("block")
+    div_crearDenuncia.classList.add("hidden")
+    console.log(div_crearDenuncia)
+}
+
+async function denunciarPublicación(post, form_denunciarPublicacion, div_crearDenuncia, div_content2, div_content1){
+    
+    const motivoDenuncia = form_denunciarPublicacion.querySelector("select").value
+    const descripcionDenuncia = form_denunciarPublicacion.querySelector('textarea').value
+    console.log(motivoDenuncia)
+    const nombrePost = post.querySelector('.post_titulo').querySelector('h1').textContent
+
+    const user_href = post.querySelector('.post_usuario').querySelector('a').getAttribute('href')
+    const regex = /^\/usuarioPerfil\/(\d+)\/posts$/
+    let match = user_href.match(regex)
+
+    const data = {
+        motivo: motivoDenuncia,
+        descripción: descripcionDenuncia,
+        publicación: nombrePost,
+        id_usuario_publicación: match[1]
+    }
+    console.log(data)
+    try {
+        const res = await fetch(form_denunciarPublicacion.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data })
+        })
+
+        const { msj_denunciaExitosa } = await res.json()
+
+        const div_content2_aux = div_content2.innerHTML
+        div_content2.innerHTML = ''
+
+        let msj = document.createElement('h1')
+        msj.textContent = msj_denunciaExitosa
+
+        let div_btn_cerrarDiv = document.createElement('div')
+        div_btn_cerrarDiv.className = 'flex justify-center items-center mt-5'
+
+        let label_cerrarDiv = document.createElement('label')
+        label_cerrarDiv.for = 'cerrarDivDenuncia'
+
+        let btn_cerrarDiv = document.createElement('button')
+        btn_cerrarDiv.type = 'button'
+        btn_cerrarDiv.className ='border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer'
+        btn_cerrarDiv.id = 'cerrarDivDenuncia'
+        btn_cerrarDiv.name = 'cerrarDivDenuncia'
+        btn_cerrarDiv.textContent = 'Salir'
+
+        div_content2.appendChild(msj)
+        div_content2.appendChild(div_btn_cerrarDiv)
+        div_btn_cerrarDiv.appendChild(label_cerrarDiv)
+        label_cerrarDiv.appendChild(btn_cerrarDiv)
+
+        btn_cerrarDiv.addEventListener('click', e => {
+
+            form_denunciarPublicacion.querySelector("select").value = "Contenido sexual explícito o desnudos"
+            form_denunciarPublicacion.querySelector("textarea").value = ""
+
+            div_content2.innerHTML = div_content2_aux
+
+            div_content2.classList.remove("block")
+            div_content2.classList.toggle("hidden")
+
+            div_content1.classList.remove("hidden")
+            div_content1.classList.toggle("block")
+
+            div_crearDenuncia.classList.remove("block")
+            div_crearDenuncia.classList.add("hidden")
         })
     } catch (error) {
         console.error(`ERROR AL DENUNCIAR PUBLICACIÓN --> ${error}`)

@@ -1,0 +1,32 @@
+mixin formularioDenuncia(contenido = undefined)
+    - const esPublicacion = contenido === "publicación"
+    - const ruta = esPublicacion ? "/denuncias/publicacion/denunciarPublicacion" : "/denuncias/comentario/denunciarComentario"
+    - const nombreForm = esPublicacion ? "form_denunciarPublicacion" : "form_denunciarComentario"
+    div(class="div_crearDenuncia fixed bg-black/50 flex items-center justify-center z-30 inset-0 hidden")
+        form(action=ruta method="post" name=nombreForm id=nombreForm)
+            div(class="div_content1 border bg-white p-6")
+                div(class="div_motivo")
+                    label(class="text-lg mb-[5px]") Elija el motivo de su denuncia
+                        select(class="block border w-100" name="motivo" id="motivo")
+                            each m in arr_motivos
+                                option(value=m)=m
+                        
+                div(class="div_descripcion mt-4")
+                    label(class="text-lg mb-[5px]") Describa su denuncia
+                        textarea(class="block border w-full resize-none p-2 scrollbar-none overflow-auto h-55" name="descripcion" id="descripcion")
+
+                div(class="div_botonesDenuncia flex justify-center items-center gap-2 mt-10")
+                    label
+                        button(type="button" class="border hover:text-white hover:font-bold hover:bg-blue-600 px-2 py-1 cursor-pointer" id="realizarDenuncia") Realizar Denuncia
+                    label
+                        button(type="button" class="border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer" id="cancelarDenuncia") Cancelar
+
+            div(class="div_content2 border bg-white p-6 hidden")
+                h1(class="text-center") ¿Confirmar denuncia?
+                div(class="flex justify-center items-center mt-5 gap-2")
+                    label
+                        button(type="submit" class="border hover:text-white hover:font-bold hover:bg-green-600 px-2 py-1 cursor-pointer" id="confirmarDenuncia") Confirmar
+                    label
+                        button(type="button" class="border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer" id="cancelarDenuncia2") Cancelar
+                    label
+                        button(type="button" class="border hover:text-white hover:font-bold hover:bg-orange-600 px-2 py-1 cursor-pointer" id="volver") Volver

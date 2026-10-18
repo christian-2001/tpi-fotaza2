@@ -1,6 +1,7 @@
 extends layout.pug 
 include mixins/home/homeMixin
 include mixins/home/QueryTagsMixin
+include mixins/home/formularioDenuncia
 
 block metadata
     script.
@@ -10,7 +11,9 @@ block metadata
 
 block content
     +home(query)
-           
+
+    if userSession    
+        +formularioDenuncia("publicación")
     - const queryStr = query || ""
     - const params = postTag ? `etiqueta=${postTag}` : imgTag ? `img_etiqueta=${imgTag}` : `buscador=${queryStr}`
     - const ordenArr = Array.isArray(orden) ? orden : (orden ? [orden] : [])
@@ -56,7 +59,7 @@ block content
                                         li(id="denunciar_publicacion")
                                             form(action=`/denuncias/publicacion/${val.id_post}/verificarPublicacionDenunciada`, method="get" name="verificarPublicacionDenunciada" id="verificarPublicacionDenunciada") 
                                                 label(for="denunciarPost")
-                                                    button(type="submit" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación  
+                                                    button(type="submit" class="w-45 text-center py-[3px] border-b-1 border-black hover:bg-orange-400 cursor-pointer" id="denunciarPost") Denunciar Publicación
                                     
                                     else
 
