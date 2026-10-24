@@ -14,7 +14,7 @@ export async function mostrarPost(req, res) {
     let img = Number(req.params.img_index)
 
     const current_url = req.originalUrl
-
+    let img_tags
     try {
         let imgs = await Imagen.findAll({
 
@@ -55,20 +55,24 @@ export async function mostrarPost(req, res) {
 
         const tags = await Imagen_Etiqueta.findAll({
             where: {
-                '$Imagen_Etiqueta.id_img$': {
+                id_img: {
                     [Op.eq]: imgsMod[img].id_img
                 }
             }
         })
-
-        const img_tags = await Etiqueta.findAll({
-            where: {
-                '$Etiqueta.id_etiqueta$': {
-                    [Op.eq]: tags[0].id_etiqueta
-                }
-            },
-            attributes: ["nom_etiqueta"]
-        })
+        
+        if(tags.length > 0){
+            img_tags = await Etiqueta.findAll({
+                where: {
+                    '$Etiqueta.id_etiqueta$': {
+                        [Op.eq]: tags[0].id_etiqueta
+                    }
+                },
+                attributes: ["nom_etiqueta"]
+            })
+        } else {
+            img_tags = "Sin etiquetas"
+        }
 
         const cant = await Valorizacion.count({
             where: {

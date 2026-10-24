@@ -35,9 +35,12 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, i
                                 div(class="py-3 text-center")
                                     p Etiquetas: 
                                     form(action="/buscar" method="get" id="form_img_tag" name="form_img_tag") 
-                                        each tag in img_tags
-                                            label(for=`${tag.nom_etiqueta}`)
-                                            button(type="submit" name="img_etiqueta" id="img_etiqueta" class="cursor-pointer" value=`${tag.nom_etiqueta}`) ##{tag.nom_etiqueta}
+                                        if typeof(img_tags) === "object"
+                                            each tag in img_tags
+                                                label(for=`${tag.nom_etiqueta}`)
+                                                button(type="submit" name="img_etiqueta" id="img_etiqueta" class="cursor-pointer" value=`${tag.nom_etiqueta}`) ##{tag.nom_etiqueta}
+                                        else
+                                            h1= img_tags
                             .botones(class="bg-orange-600/85 py-5 px-20 flex justify-center")
                                 if userSession
                                     if !(userSession.id == id_post_user)
@@ -142,9 +145,12 @@ mixin imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, i
                                 div(class="py-3 text-center")
                                     p Etiquetas: 
                                     form(action="/buscar" method="get" id="form_img_tag" name="form_img_tag") 
-                                        each tag in img_tags
-                                            label(for=`${tag.nom_etiqueta}`)
-                                            button(type="submit" name="img_etiqueta" id="img_etiqueta" value= `${tag.nom_etiqueta}` class="cursor-pointer") ##{tag.nom_etiqueta}
+                                        if typeof(img_tags) === "object"
+                                            each tag in img_tags
+                                                label(for=`${tag.nom_etiqueta}`)
+                                                button(type="submit" name="img_etiqueta" id="img_etiqueta" class="cursor-pointer" value=`${tag.nom_etiqueta}`) ##{tag.nom_etiqueta}
+                                        else
+                                            h1= img_tags
                             .botones(class="bg-orange-600/85 py-5 px-20 flex justify-center")
                                 if userSession
                                     if !(userSession.id == id_post_user)
