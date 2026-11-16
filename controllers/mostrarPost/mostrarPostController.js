@@ -8,6 +8,9 @@ import { Imagen_Etiqueta } from "../../models/Imagen_Etiqueta.js"
 import { Comentario } from "../../models/Comentario.js"
 import { Valorizacion } from "../../models/Valorizacion.js"
 import { getImagenUrl } from "../../utils/cloudinaryHelper.js"
+import { Motivo } from "../../models/Motivo.js"
+import { DenunciaComentario } from "../../models/DenunciaComentario.js"
+
 
 export async function mostrarPost(req, res) {
     const id = req.params.id_post
@@ -105,11 +108,18 @@ export async function mostrarPost(req, res) {
 
         }
 
+        let motivos = await Motivo.findAll({
+            attributes: ["nombre"]
+        })
+
+        let arr_motivos = motivos.map(m => m.nombre)
+
         if (img > 0 && img < (imgsMod.length - 1)) {
             const img_prev = img - 1
             const img_next = img + 1
 
             res.render("./post/postView", {
+                nombreUsuario: req.user.nombre_usuario,
                 postImages: imgsMod,
                 post_id: id,
                 id_post_user: post_user.id_usuario,
@@ -122,10 +132,12 @@ export async function mostrarPost(req, res) {
                 miValorizacion,
                 img_tags,
                 comments: img_coments,
-                current_url
+                current_url,
+                arr_motivos
             })
         } else {
             res.render("./post/postView", {
+                nombreUsuario: req.user.nombre_usuario,
                 postImages: imgsMod,
                 post_id: id,
                 id_post_user: post_user.id_usuario,
@@ -136,7 +148,8 @@ export async function mostrarPost(req, res) {
                 miValorizacion,
                 img_tags,
                 comments: img_coments,
-                current_url
+                current_url,
+                arr_motivos
             })
         }
     } catch (error) {
@@ -229,6 +242,56 @@ export async function actualizarImgPost(req, res) {
         } catch (error) {
             res.status(400).send(`Error al crear comentario ${error}`)
         }
+    }
+}
+
+export async function verificarComentarioDenunciado(req, res){
+    const _idComentario = parseInt(req.params.id_comentario)
+    const _idDenunciante = parseInt(req.user.id_usuario)
+
+    const result = await DenunciaComentario.findOne({
+        where: {
+            id_comentario: _idComentario,
+            id_denunciante: _idDenunciante
+        }
+    })
+
+    let msj_confirmacion
+
+    if (!result) {
+        msj_confirmacion = 'NO EXISTE DENUNCIA HACIA EL COMENTARIO POR PARTE DEL USUARIO'
+    } else {
+        msj_confirmacion = 'YA DENUNCIASTE ESTE COMENTARIO'
+    }
+
+    res.json({ msj_confirmacion })
+}
+
+export async function denunciarComentario(req, res){
+    const { motivo, descripción } = req.body.data
+    let { _id_comentario } = req.body.data
+    _id_comentario = parseInt(_id_comentario)
+
+    try {
+
+        const _motivo = await Motivo.findOne({
+            where: {
+                nombre: motivo
+            },
+
+            attributes: ['id_motivo']
+        })
+
+        const denuncia = await DenunciaComentario.create({
+            id_comentario: _id_comentario,
+            id_denunciante: req.user.id_usuario,
+            id_motivo: _motivo.id_motivo,
+            descripcion: descripción
+        })
+
+        res.json({ msj_denunciaExitosa: 'Se ha realizado la denuncia al comentario exitosamente'})
+    } catch (error) {
+        res.status(400).send(`Error al denunciar publicación ${error}`)
     }
 }
 

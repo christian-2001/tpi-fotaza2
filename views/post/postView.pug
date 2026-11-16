@@ -1,11 +1,15 @@
 extends ../layout.pug 
 include ../mixins/post/renderPostView
+include ../mixins/home/formularioDenuncia
 
 block metadata
     script.
         const id_img = !{JSON.stringify(postImages[imgIndex].id_img)}
         const usuarioPuntaje = !{JSON.stringify(miValorizacion ? miValorizacion.puntaje : 0)}
+        const back_nombreUsuario = !{JSON.stringify(nombreUsuario)}
     title Inicio
 
 block content
     +imagesPost(postImages, cant_valorizaciones, prom_valorizacion, imgIndex, img_index_aux, post_id, prev, next, comments, current_url)
+    if userSession
+        +formularioDenuncia("denuncia")

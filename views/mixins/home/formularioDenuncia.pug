@@ -2,7 +2,7 @@ mixin formularioDenuncia(contenido = undefined)
     - const esPublicacion = contenido === "publicación"
     - const ruta = esPublicacion ? "/denuncias/publicacion/denunciarPublicacion" : "/denuncias/comentario/denunciarComentario"
     - const nombreForm = esPublicacion ? "form_denunciarPublicacion" : "form_denunciarComentario"
-    div(class="div_crearDenuncia fixed bg-black/50 flex items-center justify-center z-30 inset-0 hidden")
+    div(class="div_crearDenuncia fixed bg-black/50 flex items-center justify-center z-30 inset-0 hidden z-40")
         form(action=ruta method="post" name=nombreForm id=nombreForm)
             div(class="div_content1 border bg-white p-6")
                 div(class="div_motivo")

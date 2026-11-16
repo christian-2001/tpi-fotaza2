@@ -1,5 +1,5 @@
-const comment_content = document.querySelectorAll(".comentario_usuario")
-let comments = document.querySelectorAll(".comment_options")
+const post_comments = document.querySelectorAll(".comentario_usuario")
+let comment_options = document.querySelectorAll(".comment_options")
 const post_content = document.querySelector(".post_content")
 const text_valorizacion = document.querySelector(".text_valorizacion p")
 const notas = document.querySelector(".notas")
@@ -7,6 +7,13 @@ const stars = document.querySelectorAll(".stars")
 const comment_input = document.querySelector("#comment_input")
 const cant_valorizaciones = document.querySelector(".cant_valorizaciones")
 const prom_valorizacion = document.querySelector(".prom_valorizacion")
+const div_crearDenuncia_comentario = document.querySelector(".div_crearDenuncia")
+
+if(comment_options){
+    denunciarComentario_option()
+}
+
+//div_denuncia(div_crearDenuncia_comentario)
 
 //Variables globales que activan/desactivan clases para el textarea que contiene el comentario
 //y para activar/desactivar el mensaje cuando el comentario alcanza el limite de caracteres respectivamente
@@ -101,8 +108,8 @@ async function subirComentario() {
         div_comments_content.appendChild(div_comentario_usuario)
 
         //Actualizamos las opciones disponibles en todos los comentarios incluyendo el nuevo
-        //comments = document.querySelectorAll(".comment_options")
-        //commentOptions()
+        comment_options = document.querySelectorAll(".comment_options")
+        denunciarComentario_option()
 
 
         if (div_comments_content.childNodes.length >= 6) {
@@ -247,57 +254,274 @@ function enviarValorizacion(stars) {
         })
 
 }
-
-
-
-//Funcion que despliega opciones disponibles para todos los comentarios(de momento denuncia) NO SE TENDRÁ EN CUENTA PARA LA ENTREGA PARCIAL 
 /*
-function commentOptions() {
-    //if (!com.querySelector(".options")) {}
-    for (const com of comment_content) {
+for(const c of post_comments){
+    
+    let div_btnDenuncia
 
-        const id_comentario = com.id
-        const comment_options = com.querySelector(".comment_options")
+    const id_comentario = c.id
+    const comment_options = c.querySelector(".comment_options")
+    const svgItem = c.querySelector("svg")
 
-        comment_options.addEventListener("click", () => {
-            if (!comment_options.querySelector(".options")) {
-                const div_options = document.createElement("div")
-                div_options.classList.add("options")
-                div_options.classList.add("absolute")
-                div_options.classList.add("top-5")
-                div_options.classList.add("-right-4")
+    svgItem.addEventListener("click", () => {
 
-                div_options.classList.add("bg-white")
+    })
 
-                const ul_options = document.createElement("ul")
-                const li = document.createElement("li")
-                ul_options.appendChild(li)
+}
+*/
+//Funcion que despliega opciones disponibles para todos los comentarios(de momento denuncia) NO SE TENDRÁ EN CUENTA PARA LA ENTREGA PARCIAL 
 
-                li.classList.add("border-b-2")
-                li.classList.add("p-[3px]")
-                li.classList.add("border-gray-400")
+function denunciarComentario_option() {
+    for (const c of post_comments) {
 
-                const anchor = document.createElement("a")
-                anchor.href = `/denuncia?idComentario=${id_comentario}`
+        let div_btnDenuncia
+        div_btnDenuncia = document.createElement("div")
+        div_btnDenuncia.className = "options hidden bg-white absolute text-center top-6 left-13 z-10 w-45 p-[3px] hover:bg-orange-400"
 
-                const btn_denuncia = document.createElement("button")
-                btn_denuncia.type = "button"
-                btn_denuncia.classList.add("hover:cursor-pointer")
-                btn_denuncia.classList.add("hover:font-bold")
-                btn_denuncia.classList.add("hover:text-1xl")
-                btn_denuncia.textContent = "Denunciar comentario"
+        const id_comentario = c.querySelector('input[type="hidden"]').id
+        const comment_options = c.querySelector(".comment_options")
+        const svgItem = c.querySelector("svg")
+        const front_nombreUsuario = c.querySelector(".nombre_usuario").textContent.trim()
+        console.log(front_nombreUsuario === back_nombreUsuario)
+        svgItem.addEventListener("click", () => {
+            debugger;
 
+            //Si el nombre del usuario en sesion es igual al del autor de la imagen quien escribió el comentario, Bloquea el boton para denunciar el comentario
+            if(front_nombreUsuario !== back_nombreUsuario){
+                crear_btnDenuncia(div_btnDenuncia, comment_options, id_comentario, c)
+            }
+        })
+    }
+}
 
-                anchor.appendChild(btn_denuncia)
-                li.appendChild(anchor)
+function crear_btnDenuncia(div_btnDenuncia, comment_options, id_comentario, c){
 
-                div_options.appendChild(ul_options)
-                comment_options.appendChild(div_options)
+    let post_img_url = document.querySelector(".img_content").querySelector('input[type="hidden"]').id
+    form_action_url = `/post/${post_img_url}/${id_comentario}/verificarComentarioDenunciado`
 
-            } else if (comment_options.querySelector(".options")) {
-                comment_options.querySelector(".options").remove()
+    if(!c.querySelector(".options")){   
+        const form = document.createElement("form")
+        form.action = form_action_url
+        form.method = "get"
+        form.name = "form_denunciarComentario"
+        form.id = "form_denunciarComentario"
+        
+        const label = document.createElement("label")
+        label.for = "btn_denunciarComentario"
+    
+        const btn_denunciarComentario = document.createElement("button")
+        btn_denunciarComentario.type = "submit"
+        btn_denunciarComentario.className = "hover:cursor-pointer"
+        btn_denunciarComentario.textContent = "Denunciar comentario"
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault()
+
+            verificarComentario(form, c, id_comentario)
+        })
+
+        comment_options.appendChild(div_btnDenuncia)
+        div_btnDenuncia.appendChild(form)
+        form.appendChild(label)
+        label.appendChild(btn_denunciarComentario)
+    }
+
+    if(div_btnDenuncia.classList.contains("hidden")){
+        mostrar_btnDenunciar(div_btnDenuncia)
+    } else {
+        ocultar_btnDenunciar(div_btnDenuncia)
+    }
+}
+
+function mostrar_btnDenunciar(div_btnDenuncia){
+    div_btnDenuncia.classList.remove("hidden")
+    div_btnDenuncia.classList.add("block")
+}
+
+function ocultar_btnDenunciar(div_btnDenuncia){
+    div_btnDenuncia.classList.remove("block")
+    div_btnDenuncia.classList.add("hidden")
+}
+
+async function verificarComentario(form, comentario, id_comentario){
+    try {
+        const res = await fetch(form.action, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
             }
         })
 
+        const { msj_confirmacion } = await res.json()
+
+        if (
+            msj_confirmacion === 'NO EXISTE DENUNCIA HACIA EL COMENTARIO POR PARTE DEL USUARIO'
+        ) {
+            div_denuncia(div_crearDenuncia_comentario, comentario, id_comentario)
+            abrirDenuncia()
+            //postDenuncia = post
+        } else if (msj_confirmacion === 'YA DENUNCIASTE ESTE COMENTARIO') {
+            const tipo_msj = 'denunciaComentarioExistente'
+            display_msj(tipo_msj)
+        }
+    } catch (error) {
+        console.error(
+            `ERROR AL VERIFICAR DENUNCIA AL COMENTARIO --> ${error}`
+        )
     }
-}*/
+}
+
+function div_denuncia(div_crearDenuncia_comentario, comentario, id_comentario){
+    console.log(id_comentario)
+    const form_denunciarComentario = div_crearDenuncia_comentario.querySelector("form")
+
+    const div_content1 = div_crearDenuncia_comentario.querySelector(".div_content1")
+    const div_content2 = div_crearDenuncia_comentario.querySelector(".div_content2")
+
+    const btn_realizarDenuncia = div_content1.querySelector("#realizarDenuncia")
+    const btn_cancelarDenuncia = div_content1.querySelector("#cancelarDenuncia")
+
+     if(div_content1.classList.contains("hidden")){
+        div_content1.classList.remove("hidden")
+        div_content1.classList.add("block")
+    }
+
+    if(div_content2.classList.contains("block")){
+        div_content2.classList.remove("block")
+        div_content2.classList.add("hidden")
+    }
+
+    btn_realizarDenuncia.addEventListener("click", (e) => {
+        div_content1.classList.remove("block")
+        div_content1.classList.add("hidden")
+
+        div_content2.classList.remove("hidden")
+        div_content2.classList.add("block")
+    })
+
+    btn_cancelarDenuncia.addEventListener("click", cerrarDenuncia)
+
+    const btn_confirmarDenuncia = div_content2.querySelector("#confirmarDenuncia")
+    const btn_cancelarDenuncia2 = div_content2.querySelector("#cancelarDenuncia2")
+    const btn_retroceder = div_content2.querySelector("#volver")
+
+    form_denunciarComentario.addEventListener("submit", (e) => {
+            
+        e.preventDefault()
+        denunciarComentario(comentario, form_denunciarComentario, div_crearDenuncia_comentario, div_content2, div_content1, id_comentario)
+    })
+
+    btn_cancelarDenuncia2.addEventListener("click", cerrarDenuncia)
+
+    btn_retroceder.addEventListener("click", (e) => {
+        div_content2.classList.remove("block")
+        div_content2.classList.add("hidden")
+
+        div_content1.classList.remove("hidden")
+        div_content1.classList.add("block")
+    })
+}
+
+function abrirDenuncia(){
+    div_crearDenuncia_comentario.classList.remove("hidden")
+    div_crearDenuncia_comentario.classList.add("block")
+}
+
+function cerrarDenuncia(){
+    div_crearDenuncia_comentario.classList.remove("block")
+    div_crearDenuncia_comentario.classList.add("hidden")
+}
+
+async function denunciarComentario(comentario, form_denunciarComentario, div_crearDenuncia_comentario, div_content2, div_content1, id_comentario){
+    debugger;
+    const motivoDenuncia = form_denunciarComentario.querySelector("select").value
+    const descripcionDenuncia = form_denunciarComentario.querySelector('textarea').value
+
+    const data = {
+        motivo: motivoDenuncia,
+        descripción: descripcionDenuncia,
+        _id_comentario: id_comentario
+    }
+    console.log(data)
+
+    try {
+        const res = await fetch(form_denunciarComentario.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data })
+        })
+
+        const { msj_denunciaExitosa } = await res.json()
+
+        const div_content2_aux = div_content2.innerHTML
+        div_content2.innerHTML = ''
+
+        let msj = document.createElement('h1')
+        msj.textContent = msj_denunciaExitosa
+
+        let div_btn_cerrarDiv = document.createElement('div')
+        div_btn_cerrarDiv.className = 'flex justify-center items-center mt-5'
+
+        let label_cerrarDiv = document.createElement('label')
+        label_cerrarDiv.for = 'cerrarDivDenuncia'
+
+        let btn_cerrarDiv = document.createElement('button')
+        btn_cerrarDiv.type = 'button'
+        btn_cerrarDiv.className ='border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer'
+        btn_cerrarDiv.id = 'cerrarDivDenuncia'
+        btn_cerrarDiv.name = 'cerrarDivDenuncia'
+        btn_cerrarDiv.textContent = 'Salir'
+
+        div_content2.appendChild(msj)
+        div_content2.appendChild(div_btn_cerrarDiv)
+        div_btn_cerrarDiv.appendChild(label_cerrarDiv)
+        label_cerrarDiv.appendChild(btn_cerrarDiv)
+
+        btn_cerrarDiv.addEventListener('click', e => {
+
+            form_denunciarComentario.querySelector("select").value = "Contenido sexual explícito o desnudos"
+            form_denunciarComentario.querySelector("textarea").value = ""
+
+            div_content2.innerHTML = div_content2_aux
+
+            div_content2.classList.remove("block")
+            div_content2.classList.toggle("hidden")
+
+            div_content1.classList.remove("hidden")
+            div_content1.classList.toggle("block")
+
+            div_crearDenuncia_comentario.classList.remove("block")
+            div_crearDenuncia_comentario.classList.add("hidden")
+        })
+    } catch (error) {
+        console.error(`ERROR AL DENUNCIAR COMENTARIO --> ${error}`)
+    }
+}
+
+function display_msj(tipo_msj){
+    let div_msj = document.createElement('div')
+
+    if (tipo_msj === 'denunciaComentarioExistente') {
+        div_msj.className = 'mb-3 bg-red-600 px-5 py-2 font-bold'
+        div_msj.textContent = 'Ya denunciaste este comentario'
+    } 
+
+    let posición_msj = document.body.querySelector('.msj')
+
+    posición_msj.appendChild(div_msj)
+
+    //Dispara el mensaje creado y desaparece luego de 4 segundos
+    let cont = 4
+
+    const msj_temporizador = setInterval(() => {
+        if (cont > 0) {
+            cont--
+        } else {
+            clearInterval(msj_temporizador)
+
+            posición_msj.removeChild(div_msj)
+        }
+    }, 1000)
+}
