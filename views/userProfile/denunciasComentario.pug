@@ -1,0 +1,101 @@
+extends ../layout.pug 
+
+block metadata
+
+block content
+    body(class="bg-gray-200/50")
+        div(class="flex justify-center items-center")
+            .content(class="grid grid-cols-1 gap-4 mt-3 mb-15")
+                p(class="text-center text-[30px] font-bold text-gray-700") Imagen
+                div(class="flex justify-center items-center")
+                    .imgDiv(class="bg-white border border-gray-300 w-125")
+                        img(src=imgPath)
+                div(class="flex justify-center items-center")
+                    .comentarioDenunciado(class="bg-red-50 border border-red-300 border-l-4 border-l-red-500 rounded-lg px-5 py-4 w-150 flex flex-col gap-2")
+                        p(class="font-bold") Nombre de la imagen: 
+                            span(class="font-normal")=nombreImg
+                        p(class="font-bold") Publicacion perteneciente: 
+                            span(class="font-normal")=nombrePost
+                        p(class="font-bold") Comentario denunciado: 
+                            span(class="font-normal")=comentario
+                div(class="flex justify-center items-center")
+                    .accionesDenuncia(class="grid grid-cols-2 gap-3 w-100")
+                        form(method="post" action=`/usuarioPerfil/denuncias/comentario/${idComentario}/desestimar` id="desestimarDenunciasComentario" name="desestimarDenunciasComentario")
+                            button(type="button" class="w-full bg-gray-200 hover:bg-gray-300 border border-gray-400 rounded-lg px-4 py-2 font-semibold cursor-pointer" id="btn_desestimar") Desestimar
+                            .mensajeConfirmacionDesestimar(class="hidden fixed bg-black/50 flex items-center justify-center z-30 inset-0")  
+                                div(class="flex justify-center items-center")
+                                    div(class="border bg-white p-6")
+                                        p ¿Esta seguro? 
+                                            span(class="font-bold") Esta acción no se puede deshacer!!
+                                        .botones(class="flex justify-center items-center gap-2 mt-5")
+                                            label
+                                                button(type="submit" class="border hover:text-white hover:font-bold hover:bg-green-600 px-2 py-1 cursor-pointer" id="confirmar") Confirmar
+                                            label
+                                                button(type="button" class="border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer" id="cancelar") Cancelar
+                        
+                        form(method="post" action=`/usuarioPerfil/denuncias/comentario/${idComentario}/borrar` id="borrarComentario" name="borrarComentario")
+                            button(type="button" class="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg px-4 py-2 font-semibold cursor-pointer" id="btn_borrar") Borrar comentario
+                            .mensajeConfirmacionBorrar(class="hidden fixed bg-black/50 flex items-center justify-center z-30 inset-0")  
+                                div(class="flex justify-center items-center")
+                                    div(class="border bg-white p-6")
+                                        p ¿Esta seguro? 
+                                            span(class="font-bold") Esta acción no se puede deshacer!!
+                                        .botones(class="flex justify-center items-center gap-2 mt-5")
+                                            label
+                                                button(type="submit" class="border hover:text-white hover:font-bold hover:bg-green-600 px-2 py-1 cursor-pointer" id="confirmar") Confirmar
+                                            label
+                                                button(type="button" class="border hover:text-white hover:font-bold hover:bg-red-600 px-2 py-1 cursor-pointer" id="cancelar") Cancelar
+                p(class="text-center mt-5 text-[30px] font-bold text-gray-700") Listado de denuncias al comentario
+                div(class= (denunciasComentario.length == 1) ? "grid grid-cols-1 gap-4" : "grid grid-cols-2 gap-4")
+                    each denuncia in denunciasComentario
+                        .listadoDenuncias(class="bg-white border border-amber-300 border-l-4 rounded-lg px-6 py-4 w-160 flex flex-col gap-2")
+                            p(class="font-bold bg-amber-100 text-amber-800 p-2") Motivo: 
+                                span(class="font-normal")=denuncia.Motivo.nombre
+                            div(class="bg-amber-100 text-amber-800 wrap-anywhere overflow-y-auto max-h-40 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 h-fit p-2")
+                                p(class="font-bold") Descripción: 
+                                    span(class="font-normal")=denuncia.descripcion
+    script.
+        const form_desestimar = document.forms["desestimarDenunciasComentario"]
+        const form_borrar = document.forms["borrarComentario"]
+        const div_msjConfirmaciónDesestimar = document.querySelector(".mensajeConfirmacionDesestimar")
+        const div_msjConfirmaciónBorrar = document.querySelector(".mensajeConfirmacionBorrar")
+
+        form_desestimar.querySelector('button[id="btn_desestimar"]').addEventListener("click", () => {
+            msjConfirmación("mostrar", "desestimar")
+
+            div_msjConfirmaciónDesestimar.querySelector('button[id="cancelar"]').addEventListener("click", () => {
+                msjConfirmación("ocultar", "desestimar")
+            })
+        })
+
+        form_borrar.querySelector('button[id="btn_borrar"]').addEventListener("click", () => {
+            msjConfirmación("mostrar", "borrar")
+
+            div_msjConfirmaciónBorrar.querySelector('button[id="cancelar"]').addEventListener("click", () => {
+                msjConfirmación("ocultar", "borrar")
+            })
+        })
+
+        function msjConfirmación(acción, tipoMsj){
+            if(acción === "mostrar"){
+
+                if(tipoMsj === "desestimar"){
+                    div_msjConfirmaciónDesestimar.classList.remove("hidden")
+                    div_msjConfirmaciónDesestimar.classList.add("block")
+                } else if (tipoMsj === "borrar"){
+                    div_msjConfirmaciónBorrar.classList.remove("hidden")
+                    div_msjConfirmaciónBorrar.classList.add("block")
+                }
+
+            } else if (acción === "ocultar"){
+
+                if(tipoMsj === "desestimar"){
+                    div_msjConfirmaciónDesestimar.classList.remove("block")
+                    div_msjConfirmaciónDesestimar.classList.add("hidden")
+                } else if (tipoMsj === "borrar"){
+                    div_msjConfirmaciónBorrar.classList.remove("block")
+                    div_msjConfirmaciónBorrar.classList.add("hidden")
+                }
+
+            }
+        }

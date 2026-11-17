@@ -1,0 +1,20 @@
+extends ../layout.pug 
+
+block metadata
+
+block content
+    body(class="bg-gray-200/50")
+        .div_resultado(class="flex items-center justify-center mt-35 px-4")
+            - 
+                const styles = {
+                    resultadoDesestimadas: "bg-white border-2 border-green-500 rounded-2xl p-10 w-full max-w-lg text-center flex flex-col items-center gap-4",
+                    resultadoBorrado: "bg-white border-2 border-red-500 rounded-2xl p-10 w-full max-w-lg text-center flex flex-col items-center gap-4",
+                    tituloDesestimadas: "text-3xl font-bold text-green-700",
+                    tituloBorrado: "text-3xl font-bold text-red-700"
+                }
+            .resultado(class= (titulo === "Denuncias desestimadas") ? styles.resultadoDesestimadas : styles.resultadoBorrado)
+
+                h1(class= (titulo === "Denuncias desestimadas") ? styles.tituloDesestimadas : styles.tituloBorrado) #{titulo}
+                p(class="text-lg text-gray-600") #{mensaje}
+
+                a(href=urlVolver class="mt-4 inline-block bg-white hover:bg-orange-400 hover:border-orange-400 hover:text-white text-black border-1 border-gray-400 font-semibold py-2 px-6 rounded-full") Volver al listado de comentarios denunciados

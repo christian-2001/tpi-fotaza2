@@ -247,6 +247,7 @@ export async function actualizarImgPost(req, res) {
 
 export async function verificarComentarioDenunciado(req, res){
     const _idComentario = parseInt(req.params.id_comentario)
+    const _idPost = parseInt(req.params.id_post)
     const _idDenunciante = parseInt(req.user.id_usuario)
 
     const result = await DenunciaComentario.findOne({
@@ -256,8 +257,15 @@ export async function verificarComentarioDenunciado(req, res){
         }
     })
 
-    let msj_confirmacion
+    const userPost = await Publicacion.findOne({
+        where: {
+            id_post: _idPost
+        }
+    })
 
+    if(userPost.id_usuario === _idDenunciante) return res.json({ msj_confirmacion: 'El autor no puede denunciar' })
+    return res.json({ msj_confirmacion: !result ? 'No existe denuncia hacia el comentario por parte del usuario' : 'Ya denunciaste este comentario' })
+/*
     if (!result) {
         msj_confirmacion = 'NO EXISTE DENUNCIA HACIA EL COMENTARIO POR PARTE DEL USUARIO'
     } else {
@@ -265,6 +273,7 @@ export async function verificarComentarioDenunciado(req, res){
     }
 
     res.json({ msj_confirmacion })
+*/
 }
 
 export async function denunciarComentario(req, res){

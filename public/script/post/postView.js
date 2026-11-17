@@ -284,7 +284,6 @@ function denunciarComentario_option() {
         const front_nombreUsuario = c.querySelector(".nombre_usuario").textContent.trim()
         console.log(front_nombreUsuario === back_nombreUsuario)
         svgItem.addEventListener("click", () => {
-            debugger;
 
             //Si el nombre del usuario en sesion es igual al del autor de la imagen quien escribió el comentario, Bloquea el boton para denunciar el comentario
             if(front_nombreUsuario !== back_nombreUsuario){
@@ -353,7 +352,19 @@ async function verificarComentario(form, comentario, id_comentario){
         })
 
         const { msj_confirmacion } = await res.json()
+        let tipo_msj
 
+        if(msj_confirmacion === 'El autor no puede denunciar'){
+            tipo_msj = 'autorNoDenuncia'
+            display_msj(tipo_msj)
+        } else if (msj_confirmacion === 'Ya denunciaste este comentario') {
+            tipo_msj = 'denunciaComentarioExistente'
+            display_msj(tipo_msj)
+        } else {
+            div_denuncia(div_crearDenuncia_comentario, comentario, id_comentario)
+            abrirDenuncia()
+        }
+/*
         if (
             msj_confirmacion === 'NO EXISTE DENUNCIA HACIA EL COMENTARIO POR PARTE DEL USUARIO'
         ) {
@@ -361,9 +372,10 @@ async function verificarComentario(form, comentario, id_comentario){
             abrirDenuncia()
             //postDenuncia = post
         } else if (msj_confirmacion === 'YA DENUNCIASTE ESTE COMENTARIO') {
-            const tipo_msj = 'denunciaComentarioExistente'
+            tipo_msj = 'denunciaComentarioExistente'
             display_msj(tipo_msj)
         }
+*/
     } catch (error) {
         console.error(
             `ERROR AL VERIFICAR DENUNCIA AL COMENTARIO --> ${error}`
@@ -433,7 +445,6 @@ function cerrarDenuncia(){
 }
 
 async function denunciarComentario(comentario, form_denunciarComentario, div_crearDenuncia_comentario, div_content2, div_content1, id_comentario){
-    debugger;
     const motivoDenuncia = form_denunciarComentario.querySelector("select").value
     const descripcionDenuncia = form_denunciarComentario.querySelector('textarea').value
 
@@ -503,7 +514,10 @@ async function denunciarComentario(comentario, form_denunciarComentario, div_cre
 function display_msj(tipo_msj){
     let div_msj = document.createElement('div')
 
-    if (tipo_msj === 'denunciaComentarioExistente') {
+    if(tipo_msj === 'autorNoDenuncia'){
+        div_msj.className = 'mb-3 bg-red-600 px-5 py-2 font-bold'
+        div_msj.textContent = 'El autor no puede denunciar'
+    } else if (tipo_msj === 'denunciaComentarioExistente') {
         div_msj.className = 'mb-3 bg-red-600 px-5 py-2 font-bold'
         div_msj.textContent = 'Ya denunciaste este comentario'
     } 

@@ -28,6 +28,11 @@ Comentario.init(
             type: DataTypes.TEXT
         },
 
+        estado: {
+            type: DataTypes.STRING,
+            defaultValue: "activo"
+        },
+
         id_img: {
             type: DataTypes.INTEGER,
             references: {

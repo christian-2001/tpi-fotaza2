@@ -56,20 +56,23 @@ block content
                         if cantPostsDadasDeBaja === 2
                             h1(class="bg-red-300 text-red-700 font-bold text-2xl mt-2 py-3 px-6 rounded-lg") Una baja más y tu cuenta será inhabilitada
 
-            .user_content_options(class="mt-5 mx-10 grid-row-3 text-center justify-center border-b-1 gap-2 px-5")
+            .user_content_options(class="mt-5 mx-5 text-center justify-center border-b-1 gap-2")
             
                 a(href=`/usuarioPerfil/${idPerfil}/posts`)
-                    button(type="button" class=(sección == "posts") ? "posts bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "posts cursor-pointer hover:font-bold mx-5") Publicaciones (#{posts.length})
+                    button(type="button" class=(sección == "posts") ? "posts bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "posts cursor-pointer hover:font-bold mx-3") Publicaciones (#{posts.length})
                 a(href=`/usuarioPerfil/${idPerfil}/followers`)
-                    button(type="button" class=(sección == "followers") ? "followers bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "followers cursor-pointer hover:font-bold mx-5") Seguidores (#{seguidores.length})
+                    button(type="button" class=(sección == "followers") ? "followers bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "followers cursor-pointer hover:font-bold mx-3") Seguidores (#{seguidores.length})
                 a(href=`/usuarioPerfil/${idPerfil}/following`)
-                    button(type="button" class=(sección == "following") ? "following bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "following cursor-pointer hover:font-bold mx-5") Siguiendo (#{seguidos.length})
+                    button(type="button" class=(sección == "following") ? "following bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "following cursor-pointer hover:font-bold mx-3") Siguiendo (#{seguidos.length})
 
                 if esDueño
                     a(href=`/usuarioPerfil/${idPerfil}/favoritos`)
-                        button(type="button" class=(sección == "favoritos") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "favoritos cursor-pointer hover:font-bold mx-5") Favoritos (#{favoritos.length})
+                        button(type="button" class=(sección == "favoritos") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "favoritos cursor-pointer hover:font-bold mx-3") Favoritos (#{favoritos.length})
                     a(href=`/usuarioPerfil/${idPerfil}/postsFollowing`)
-                        button(type="button" class=(sección == "postsFollowing") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "favoritos cursor-pointer hover:font-bold mx-5") Publicaciones de usuarios que sigo (#{postsFollowing.length})
+                        button(type="button" class=(sección == "postsFollowing") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "favoritos cursor-pointer hover:font-bold mx-3") Publicaciones de usuarios que sigo (#{postsFollowing.length})
+                    a(href=`/usuarioPerfil/${idPerfil}/comentariosDenunciados`)
+                        button(type="button" class=(sección == "comentariosDenunciados") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "favoritos cursor-pointer hover:font-bold mx-3") Comentarios denunciados (#{displayComentarios.length})
+
                 a(href=`/usuarioPerfil/${idPerfil}/colecciones`)
                     button(type="button" class=(sección == "colecciones") ? "colecciones bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "colecciones cursor-pointer hover:font-bold mx-5") Colecciones (#{userColecciones.length})
 
@@ -184,6 +187,36 @@ block content
                 //- ==================== PUBLICACIONES DE USUARIOS QUE SIGO ====================                              
                 else if sección == "postsFollowing"
                     +renderPosts(sección, postsFollowing, esFavorito, guardada, esDueño, postsDenunciados)
+                //- ==================== COMENTARIOS DENUNCIADOS ====================
+                else if sección == "comentariosDenunciados"
+                    //-
+                    if displayComentarios.length > 0
+                        p(class="text-center text-[2rem] my-5 font-medium") Comentarios denunciados de imagenes de tus publicaciones
+                        div(class="flex justify-center items-center")
+                            .divComentariosDenunciados(class="grid grid-cols-1 gap-6 mx-60 mt-7")
+                                each denuncia in displayComentarios
+
+                                    article(class="flex flex-col md:flex-row gap-6 bg-white border-1 border-black rounded-lg p-4")
+
+                                        //- Imagen
+                                        div(class="md:w-1/2 border-1 border-black overflow-hidden")
+                                           img(src=`${denuncia.Comentario.Imagen.img_path}` class="w-full h-full object-cover")
+
+                                        //- Detalles + boton
+                                        div(class="md:w-1/2 flex flex-col justify-between gap-4")
+                                            div(class="flex flex-col gap-2")
+                                                h4(class="font-bold text-lg") Nombre de la imagen: #{denuncia.Comentario.Imagen.nombre_img}
+                                                h1(class="font-semibold") Nombre de la publicacion: #{denuncia.Comentario.Imagen.Publicacion.titulo}
+                                                p(class="font-bold text-lg text-center mt-1") Comentario
+                                                p(class="text-base wrap-anywhere overflow-y-auto max-h-35 scrollbar-thin scrollbar-thumb-orange-600 scrollbar-track-orange-100 h-fit") #{denuncia.Comentario.texto}
+                                            
+                                            div(class="flex justify-center items-center")
+                                                a(href=`/usuarioPerfil/denuncias/comentario/mostrarDenuncias/${denuncia.Comentario.id_comentario}`)
+                                                    button(class="w-50 bg-gray-200 hover:bg-gray-400 border border-black rounded px-4 py-2 font-semibold cursor-pointer") Ver denuncias
+
+                    else
+                        p(class="text-center text-[2rem] my-5 font-medium") No hay comentarios denunciados
+
                 //- ==================== COLECCIONES ====================                              
                 else if sección == "colecciones"
                     if !postsColeccion

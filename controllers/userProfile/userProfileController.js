@@ -3,13 +3,16 @@ import { Persona } from "../../models/Persona.js"
 import { Usuario } from "../../models/Usuario.js"
 import { Etiqueta } from "../../models/Etiqueta.js"
 import { Imagen } from "../../models/Imagen.js"
+import { Comentario } from "../../models/Comentario.js"
 import { Seguidores } from "../../models/Seguidores.js"
 import { Favoritos } from "../../models/Favoritos.js"
 import { Publicacion_Favoritos } from "../../models/Publicacion_Favoritos.js"
 import { Op } from "sequelize"
+import sequelize from "../../db/config.js"
 import { Publicacion_Colecciones } from "../../models/Publicacion_Colecciones.js"
 import { Colección } from "../../models/Colección.js"
 import { DenunciaPublicacion } from "../../models/DenunciaPublicacion.js"
+import { DenunciaComentario } from "../../models/DenunciaComentario.js"
 import { Motivo } from "../../models/Motivo.js"
 
 
@@ -26,6 +29,8 @@ export async function mostrarPerfilUsuario(req, res) {
     let postsUserAuthColecciones
     let postsFavorito
     let postsColeccion
+    let idsComentariosVistos = new Set()
+    let displayComentarios = []
     if (!req.user) {
         return res.redirect("/login");
     }
@@ -68,6 +73,22 @@ export async function mostrarPerfilUsuario(req, res) {
         const favoritos = await getPostsFavoritos(usuarioPerfil)
         const postsDenunciados = await getpostsDenunciados(usuarioPerfil)
         const cantPostsDadasDeBaja = await getcantPostsDadasDeBaja(usuarioPerfil)
+
+        //Armar array con comentarios denunciados sin repetir
+        const comentariosDenunciados = await getComentariosDenunciados(usuarioPerfil.id_usuario)
+        comentariosDenunciados.forEach(d => {
+            const id = d.Comentario.id_comentario
+
+            if (!idsComentariosVistos.has(id)) {
+                idsComentariosVistos.add(id)
+                displayComentarios.push(d)
+            }
+        })
+
+        //Ordenar array por id_comentario de forma ascendente
+        displayComentarios.sort((a, b) => a.Comentario.id_comentario - b.Comentario.id_comentario)
+
+        
         let yaEsSeguido = false;
 
         let misFollowing = [];
@@ -154,7 +175,9 @@ export async function mostrarPerfilUsuario(req, res) {
             postsUserAuthColecciones,
             postsColeccion,
             postsDenunciados,
-            cantPostsDadasDeBaja
+            cantPostsDadasDeBaja,
+            displayComentarios,
+            comentariosDenunciados
         });
     } catch (error) {
         res.status(400).send(`Ocurrió un error ${error}`)
@@ -300,6 +323,104 @@ export async function verificarPublicacionDenunciada(req, res){
     }
     
     res.json({ msj_confirmacion })
+}
+
+export async function mostrarDenunciasComentario(req, res){
+
+    const _id_comentario = parseInt(req.params.id_comentario)
+
+    //Obtener todas las denuncias de todos los comentarios
+    const comentariosDenunciados = await getComentariosDenunciados(req.user.id_usuario)
+
+    const denunciasComentario = []
+
+    //Obtener unicamente las denuncias de un comentario segun su id obtenido como parametro en la url
+    comentariosDenunciados.forEach(d => {
+        if(d.Comentario.id_comentario === _id_comentario){
+            denunciasComentario.push(d)
+        } 
+    })
+
+    res.render("./userProfile/denunciasComentario", {
+        imgPath: denunciasComentario[0].Comentario.Imagen.img_path, 
+        nombreImg: denunciasComentario[0].Comentario.Imagen.nombre_img,
+        nombrePost: denunciasComentario[0].Comentario.Imagen.Publicacion.titulo,
+        comentario: denunciasComentario[0].Comentario.texto,
+        idComentario: denunciasComentario[0].Comentario.id_comentario,
+        denunciasComentario 
+    })
+}
+
+export async function desestimarDenunciasComentario(req, res){
+    const _id_comentario = req.params.id_comentario
+
+    try {
+        await DenunciaComentario.update(
+            { estado: "desestimada" },
+            {
+                where: {
+                    [Op.and]: [{id_comentario: _id_comentario}, {estado: "pendiente"}]
+                }
+            }
+        )
+
+        res.redirect(`/usuarioPerfil/denuncias/comentario/mostrarDenuncias/resultado/desestimadas`)
+    } catch (error) {
+        console.error(error)
+        res.status(500).send('No se pudo borrar el comentario')
+    }
+}
+
+export async function borrarComentario(req, res){
+    const _id_comentario = req.params.id_comentario
+
+    try {
+        const { comentarioBorrado, denunciasValidadas } = await sequelize.transaction(async t => {
+
+            const comentarioBorrado = await Comentario.update(
+                { estado: "inactivo" },
+                {
+                    where: {
+                        id_comentario: _id_comentario
+                    }
+                },
+                { transaction: t }
+            )
+
+            const denunciasValidadas = await DenunciaComentario.update(
+                { estado: "aceptada" },
+                {
+                    where: {
+                        [Op.and]: [{id_comentario: _id_comentario}, {estado: "pendiente"}]
+                    }
+                },
+                { transaction: t }
+            )
+
+            return { comentarioBorrado, denunciasValidadas };
+        });
+
+        res.redirect(`/usuarioPerfil/denuncias/comentario/mostrarDenuncias/resultado/borrado`)
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).send('No se pudo borrar el comentario')
+    }
+
+}
+
+export async function mostrarVistaResultadoDenuncia(req, res){
+    const { accion } = req.params
+    const _id_usuario = req.user.id_usuario
+
+    res.render('./userProfile/accionExitosa', {
+        titulo: accion === "desestimadas" ? 'Denuncias desestimadas' : 'Comentario borrado',
+        mensaje: accion === "desestimadas" 
+            ? 'Las denuncias del comentario se desestimaron correctamente.' 
+            : 'El comentario se borró y sus denuncias quedaron resueltas.',
+        
+        urlVolver: `/usuarioPerfil/${_id_usuario}/comentariosDenunciados`
+    })
 }
 
 async function getPosts(usuario) {
@@ -495,3 +616,69 @@ async function getcantPostsDadasDeBaja(usuario){
 
     return cant
 }
+
+async function getComentariosDenunciados(_id_usuario){
+    const result = await DenunciaComentario.findAll({
+        where: {
+            estado: "pendiente"
+        },
+        attributes: ["id", "descripcion", "fh_denuncia"],
+        include: [
+            { model: Motivo, attributes: ["id_motivo", "nombre"] },
+            { model: Comentario, 
+                attributes: ["id_comentario", "texto"], 
+                required: true, 
+                include: [
+                    { model: Imagen,
+                        attributes: ["id_img", "nombre_img", "img_path", "id_post"],
+                        required: true,
+                        include: [
+                            { model: Publicacion, 
+                                attributes: ["id_post", "titulo"],
+                                where: { 
+                                    id_usuario: _id_usuario
+                                },
+                                required: true
+                            }
+                        ]
+                    }
+                ]}
+        ],
+        order: [["fh_denuncia", "DESC"]],
+    })
+
+    return result
+}
+
+/*
+async function getComentariosDenunciados(_id_usuario){
+    const result = await DenunciaComentario.findAll({
+        where: {
+            estado: "pendiente"
+        },
+        attributes: ["id"],
+        include: [
+            { model: Comentario, 
+                attributes: ["id_comentario", "texto"], 
+                required: true, 
+                include: [
+                    { model: Imagen,
+                        attributes: ["id_img", "nombre_img", "img_path", "id_post"],
+                        required: true,
+                        include: [
+                            { model: Publicacion, 
+                                attributes: ["id_post", "titulo"],
+                                where: { 
+                                    id_usuario: _id_usuario
+                                },
+                                required: true
+                            }
+                        ]
+                    }
+                ]}
+        ],
+        order: [["fh_denuncia", "DESC"]],
+    })
+
+    return result
+}*/
