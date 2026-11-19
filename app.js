@@ -7,6 +7,7 @@ import ProfileRoutes from "./routes/ProfileRoutes/ProfileRoutes.js"
 import loginRoutes from "./routes/loginRoutes/loginRoutes.js"
 import registrerRoutes from "./routes/registrer/registrer.js"
 import postRoutes from "./routes/postRoutes/postRoutes.js"
+import UserPostRoutes from "./routes/UserPostRoutes/UserPostRoutes.js"
 import { authUserHome, esValidador } from "./middleware/auth.js";
 import { db_conexion } from "./models/index.js";
 
@@ -43,11 +44,11 @@ app.use("/usuarioPerfil", authUserHome, ProfileRoutes)
 
 app.use("/subirPost", authUserHome, postRoutes)
 
+app.use("/post", authUserHome, UserPostRoutes)
+
 app.use("/validador", authUserHome, esValidador, validadorRoutes)
 
 app.use("/", authUserHome, IndexRoutes)
-
-
 
 
 db_conexion()

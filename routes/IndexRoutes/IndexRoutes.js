@@ -4,8 +4,6 @@ import { guardarPost_favoritos, quitarPost_favoritos } from "../../controllers/p
 import { crearColección, guardar_en_colección, quitar_de_colección } from "../../controllers/pagIndex/pagIndex.js"
 import { denunciarPublicación, marcarLeidas, verificarPublicacionDenunciada } from "../../controllers/pagIndex/pagIndex.js"
 import { buscarPost } from "../../controllers/buscarPost/buscarPostController.js"
-import { mostrarPost, actualizarImgPost} from "../../controllers/mostrarPost/mostrarPostController.js"
-import { verificarComentarioDenunciado, denunciarComentario, cerrarComentarios } from "../../controllers/mostrarPost/mostrarPostController.js"
 import { cerrarSesion } from "../../middleware/auth.js"
 
 const router = express.Router()
@@ -24,19 +22,9 @@ router.post("/quitar-de-coleccion", quitar_de_colección)
 
 router.get("/buscar", buscarPost)
 
-router.get("/post/:id_post/:img_index", mostrarPost)
-
 router.post("/denuncias/publicacion/denunciarPublicacion", denunciarPublicación)
 
-router.post("/denuncias/comentario/denunciarComentario", denunciarComentario)
-
 router.post("/denuncias/publicacion/marcarLeidas", marcarLeidas)
-
-router.post("/post/:id_post/:img_index", actualizarImgPost)
-
-router.post("/post/:id_post/imagen/:id_img/cerrarComentarios", cerrarComentarios)
-
-router.get("/post/:id_post/:img_index/:id_comentario/verificarComentarioDenunciado", verificarComentarioDenunciado)
 
 router.get("/denuncias/publicacion/:idPublicacion/verificarPublicacionDenunciada", verificarPublicacionDenunciada)
 
