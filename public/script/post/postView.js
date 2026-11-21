@@ -7,7 +7,16 @@ const stars = document.querySelectorAll(".stars")
 const comment_input = document.querySelector("#comment_input")
 const cant_valorizaciones = document.querySelector(".cant_valorizaciones")
 const prom_valorizacion = document.querySelector(".prom_valorizacion")
+const form_marcarInteres = document.forms["marcarInteres"]
+const btnMarcarInteres = document.querySelector("#btnMarcarInteres")
 const div_crearDenuncia_comentario = document.querySelector(".div_crearDenuncia")
+
+if(form_marcarInteres){
+    form_marcarInteres.addEventListener("submit", (e) => {
+        e.preventDefault()
+        marcarInteresImagen(form_marcarInteres, btnMarcarInteres)
+    })
+}
 
 if(comment_options){
     denunciarComentario_option()
@@ -254,6 +263,40 @@ function enviarValorizacion(stars) {
         })
 
 }
+
+async function marcarInteresImagen(form_marcarInteres, btnMarcarInteres){
+
+    try {
+        const res = await fetch(form_marcarInteres.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+
+        const { msj_confirmacion } = await res.json()
+        let tipo_msj
+
+        if(msj_confirmacion === "Marcaste tu interes en la imagen, se lo notificaremos al autor"){
+            tipo_msj = 'interesMarcado'
+            display_msj(tipo_msj)
+            btnMarcarInteres.textContent = "Interesado"
+
+        } else if (msj_confirmacion === "Retiraste tu interes en la imagen") {
+            tipo_msj = 'interesRetirado'
+            display_msj(tipo_msj)
+            btnMarcarInteres.textContent = "Me interesa"
+        }
+
+
+    } catch (error) {
+        console.error(
+            `ERROR AL MARCAR O RETIRAR INTERES EN LA IMAGEN --> ${error}`
+        )
+    }
+    
+}
+
 /*
 for(const c of post_comments){
     
@@ -282,7 +325,6 @@ function denunciarComentario_option() {
         const comment_options = c.querySelector(".comment_options")
         const svgItem = c.querySelector("svg")
         const front_nombreUsuario = c.querySelector(".nombre_usuario").textContent.trim()
-        console.log(front_nombreUsuario === back_nombreUsuario)
         svgItem.addEventListener("click", () => {
 
             //Si el nombre del usuario en sesion es igual al del autor de la imagen quien escribió el comentario, Bloquea el boton para denunciar el comentario
@@ -364,27 +406,26 @@ async function verificarComentario(form, comentario, id_comentario){
             div_denuncia(div_crearDenuncia_comentario, comentario, id_comentario)
             abrirDenuncia()
         }
-/*
-        if (
-            msj_confirmacion === 'NO EXISTE DENUNCIA HACIA EL COMENTARIO POR PARTE DEL USUARIO'
-        ) {
-            div_denuncia(div_crearDenuncia_comentario, comentario, id_comentario)
-            abrirDenuncia()
-            //postDenuncia = post
-        } else if (msj_confirmacion === 'YA DENUNCIASTE ESTE COMENTARIO') {
-            tipo_msj = 'denunciaComentarioExistente'
-            display_msj(tipo_msj)
-        }
-*/
     } catch (error) {
         console.error(
             `ERROR AL VERIFICAR DENUNCIA AL COMENTARIO --> ${error}`
         )
     }
+    /*
+            if (
+                msj_confirmacion === 'NO EXISTE DENUNCIA HACIA EL COMENTARIO POR PARTE DEL USUARIO'
+            ) {
+                div_denuncia(div_crearDenuncia_comentario, comentario, id_comentario)
+                abrirDenuncia()
+                //postDenuncia = post
+            } else if (msj_confirmacion === 'YA DENUNCIASTE ESTE COMENTARIO') {
+                tipo_msj = 'denunciaComentarioExistente'
+                display_msj(tipo_msj)
+            }
+    */
 }
 
 function div_denuncia(div_crearDenuncia_comentario, comentario, id_comentario){
-    console.log(id_comentario)
     const form_denunciarComentario = div_crearDenuncia_comentario.querySelector("form")
 
     const div_content1 = div_crearDenuncia_comentario.querySelector(".div_content1")
@@ -453,7 +494,6 @@ async function denunciarComentario(comentario, form_denunciarComentario, div_cre
         descripción: descripcionDenuncia,
         _id_comentario: id_comentario
     }
-    console.log(data)
 
     try {
         const res = await fetch(form_denunciarComentario.action, {
@@ -520,7 +560,13 @@ function display_msj(tipo_msj){
     } else if (tipo_msj === 'denunciaComentarioExistente') {
         div_msj.className = 'mb-3 bg-red-600 px-5 py-2 font-bold'
         div_msj.textContent = 'Ya denunciaste este comentario'
-    } 
+    } else if (tipo_msj === 'interesMarcado'){
+        div_msj.className = "mb-3 bg-green-600 px-5 py-2 font-normal"
+        div_msj.textContent = "Marcaste tu interés en la imagen, se lo notificaremos al autor"        
+    } else if (tipo_msj === 'interesRetirado'){
+        div_msj.className = "mb-3 bg-red-600 px-5 py-2 font-normal"
+        div_msj.textContent = "Retiraste tu interés en la imagen"
+    }
 
     let posición_msj = document.body.querySelector('.msj')
 

@@ -2,6 +2,7 @@ import { Publicacion } from "../../models/Publicacion.js"
 import { Usuario } from "../../models/Usuario.js"
 import { Etiqueta } from "../../models/Etiqueta.js"
 import { Imagen } from "../../models/Imagen.js"
+import { Interes } from "../../models/Interes.js"
 import { Publicacion_Etiqueta } from "../../models/Publicacion_Etiqueta.js"
 import { Op, Sequelize } from "sequelize"
 import { Imagen_Etiqueta } from "../../models/Imagen_Etiqueta.js"
@@ -15,6 +16,10 @@ import { DenunciaComentario } from "../../models/DenunciaComentario.js"
 export async function mostrarPost(req, res) {
     const id = req.params.id_post
     let img = Number(req.params.img_index)
+    let usuarioSesion = req.user
+    let nombreUsuario = "" 
+    let estadoInteres = ""
+    let esAutor = ""
 
     const current_url = req.originalUrl
     let img_tags
@@ -33,6 +38,8 @@ export async function mostrarPost(req, res) {
             ...img.dataValues,
             img_path_copyright: getImagenUrl(img)
         }))
+
+        const idImg = imgsMod[img].id_img
 
         const post_user = await Publicacion.findOne({
             where: {
@@ -98,14 +105,29 @@ export async function mostrarPost(req, res) {
 
         let miValorizacion
 
-        if (req.user) {
+        if (usuarioSesion) {
+        
+            esAutor = usuarioSesion.id_usuario === imgsMod[0].Publicacion.id_usuario
+
+            nombreUsuario = usuarioSesion.nombre_usuario
+
             miValorizacion = await Valorizacion.findOne({
                 where: {
                     id_img: imgsMod[img].id_img,
-                    id_usuario: req.user.id_usuario
+                    id_usuario: usuarioSesion.id_usuario
                 }
             })
 
+            estadoInteres = await Interes.findOne({
+                where: {
+                    [Op.and]: [
+                        { id_img: idImg },
+                        { id_interesado: usuarioSesion.id_usuario }
+                    ]
+                },
+
+                attributes: ["estado"]
+            })
         }
 
         let motivos = await Motivo.findAll({
@@ -113,42 +135,47 @@ export async function mostrarPost(req, res) {
         })
 
         let arr_motivos = motivos.map(m => m.nombre)
+                
 
         if (img > 0 && img < (imgsMod.length - 1)) {
             const img_prev = img - 1
             const img_next = img + 1
 
             res.render("./post/postView", {
-                nombreUsuario: req.user.nombre_usuario,
+                esAutor,
+                nombreUsuario,
                 postImages: imgsMod,
                 post_id: id,
                 id_post_user: post_user.id_usuario,
                 prev: img_prev,
                 next: img_next,
-                idImg: imgsMod[img].id_img,
+                idImg,
                 imgIndex: img,
                 img_index_aux: img,
                 cant_valorizaciones: cant,
                 prom_valorizacion,
                 miValorizacion,
                 img_tags,
+                estadoInteres,
                 comments: img_coments,
                 current_url,
                 arr_motivos
             })
         } else {
             res.render("./post/postView", {
-                nombreUsuario: req.user.nombre_usuario,
+                esAutor,
+                nombreUsuario,
                 postImages: imgsMod,
                 post_id: id,
                 id_post_user: post_user.id_usuario,
-                idImg: imgsMod[img].id_img,
+                idImg,
                 imgIndex: img,
                 img_index_aux: img,
                 cant_valorizaciones: cant,
                 prom_valorizacion,
                 miValorizacion,
                 img_tags,
+                estadoInteres,
                 comments: img_coments,
                 current_url,
                 arr_motivos

@@ -8,6 +8,7 @@ import loginRoutes from "./routes/loginRoutes/loginRoutes.js"
 import registrerRoutes from "./routes/registrer/registrer.js"
 import postRoutes from "./routes/postRoutes/postRoutes.js"
 import UserPostRoutes from "./routes/UserPostRoutes/UserPostRoutes.js"
+import imageRoutes from "./routes/imageRoutes.js"
 import { authUserHome, esValidador } from "./middleware/auth.js";
 import { db_conexion } from "./models/index.js";
 
@@ -40,15 +41,17 @@ app.use("/login", loginRoutes)
 
 app.use("/registrarse", registrerRoutes)
 
+app.use("/", authUserHome, IndexRoutes)
+
 app.use("/usuarioPerfil", authUserHome, ProfileRoutes)
 
 app.use("/subirPost", authUserHome, postRoutes)
 
 app.use("/post", authUserHome, UserPostRoutes)
 
-app.use("/validador", authUserHome, esValidador, validadorRoutes)
+app.use("/imagen", authUserHome, imageRoutes)
 
-app.use("/", authUserHome, IndexRoutes)
+app.use("/validador", authUserHome, esValidador, validadorRoutes)
 
 
 db_conexion()
