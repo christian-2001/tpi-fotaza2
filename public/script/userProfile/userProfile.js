@@ -2,6 +2,8 @@ let posts = document.querySelectorAll(".post") //--> Todas las publicaciónes gu
 let post_menu_all = document.querySelectorAll(".opciones") //--> Obtiene todos los nodos que contienen el boton "..." en todas las publicaciones
 let post_menu_all2 = document.querySelectorAll(".opciones2") //--> Obtiene todos los nodos que contienen el boton "..." en todas las publicaciones
 let nombreColección
+let div_notificacionesNuevas = document.querySelector(".notificacionesNuevas") 
+let div_notificacionesLeidas = document.querySelector(".notificacionesLeidas")
 
 if (document.querySelector(".nombreColeccion")) {
     nombreColección = document.querySelector(".nombreColeccion").textContent
@@ -42,6 +44,24 @@ let motivos = [
     "Información falsa o engañosa (foto manipulada presentada como real)",
     "Otro motivo"
 ]
+
+document.addEventListener("DOMContentLoaded", () => {
+    if(div_notificacionesNuevas){
+        console.log("hola")
+        const arr_notificacionesNuevas = div_notificacionesNuevas.querySelector("#list_notificacionesNuevas").childNodes
+        
+        arr_notificacionesNuevas.forEach(async(n) => {
+            const _idNotificacion = n.querySelector("input").id
+
+            const res = await fetch(`/notificaciones/marcarLeida/${_idNotificacion}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+        })
+    }
+})
 
 //Iterar sobre todas las publicaciones
 for (const p of posts) {

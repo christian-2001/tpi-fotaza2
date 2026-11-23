@@ -4,7 +4,6 @@ import { Publicacion } from "./Publicacion.js";
 import { Imagen } from "./Imagen.js";
 import { Usuario } from "./Usuario.js";
 import { Comentario } from "./Comentario.js";
-import { Publicacion } from "./Publicacion.js";
 import { Seguidores } from "./Seguidores.js";
 
 export class Notificacion extends Model { }
@@ -22,7 +21,15 @@ Notificacion.init(
             allowNull: false
         },
 
-        id_usuario: {
+        id_usuario_creador: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: Usuario,
+                key: "id_usuario"
+            }
+        },
+
+        id_usuario_destinatario: {
             type: DataTypes.INTEGER,
             references: {
                 model: Usuario,

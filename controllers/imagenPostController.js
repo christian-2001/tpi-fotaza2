@@ -11,6 +11,7 @@ import { Interes } from "../models/Interes.js"
 import { getImagenUrl } from "../utils/cloudinaryHelper.js"
 import { Motivo } from "../models/Motivo.js"
 import { DenunciaComentario } from "../models/DenunciaComentario.js"
+import { Notificacion } from "../models/Notificacion.js"
 
 export async function marcarInteres(req, res){
     const _idImg  = parseInt(req.params.id_img)
@@ -18,6 +19,20 @@ export async function marcarInteres(req, res){
     let msj_confirmacion = ""
 
     try{ 
+
+        let id_usuario_post = await Imagen.findOne({
+            where: {
+                [Op.and]: [
+                    { id_img: _idImg },
+                ]
+            },
+            
+            include: [
+                { model: Publicacion, required: true, attributes: ["id_post", "id_usuario"] }
+            ]
+        })        
+
+        id_usuario_post = id_usuario_post.Publicacion.id_usuario
 
         const interesHallado = await Interes.findOne({
             where: {
@@ -42,6 +57,13 @@ export async function marcarInteres(req, res){
 
             msj_confirmacion = "Marcaste tu interes en la imagen, se lo notificaremos al autor" 
         
+            await Notificacion.create({
+                tipo_evento: "Me interesa",
+                id_usuario_creador: _idUsuario,
+                id_usuario_destinatario: id_usuario_post
+            })
+
+
         } else {
             if(interesHallado.estado === "inactivo"){
 
@@ -50,6 +72,12 @@ export async function marcarInteres(req, res){
 
                 msj_confirmacion = "Marcaste tu interes en la imagen, se lo notificaremos al autor" 
 
+                await Notificacion.create({
+                    tipo_evento: "Me interesa",
+                    id_usuario_creador: _idUsuario,
+                    id_usuario_destinatario: id_usuario_post
+                })
+                
             } else if (interesHallado.estado === "activo"){
                 
                 interesHallado.estado = "inactivo"

@@ -13,6 +13,7 @@ import { Publicacion_Colecciones } from "../../models/Publicacion_Colecciones.js
 import { Colección } from "../../models/Colección.js"
 import { DenunciaPublicacion } from "../../models/DenunciaPublicacion.js"
 import { DenunciaComentario } from "../../models/DenunciaComentario.js"
+import { Notificacion } from "../../models/Notificacion.js"
 import { Motivo } from "../../models/Motivo.js"
 
 
@@ -31,6 +32,7 @@ export async function mostrarPerfilUsuario(req, res) {
     let postsColeccion
     let idsComentariosVistos = new Set()
     let displayComentarios = []
+
     if (!req.user) {
         return res.redirect("/login");
     }
@@ -73,7 +75,7 @@ export async function mostrarPerfilUsuario(req, res) {
         const favoritos = await getPostsFavoritos(usuarioPerfil)
         const postsDenunciados = await getpostsDenunciados(usuarioPerfil)
         const cantPostsDadasDeBaja = await getcantPostsDadasDeBaja(usuarioPerfil)
-
+        
         //Armar array con comentarios denunciados sin repetir
         const comentariosDenunciados = await getComentariosDenunciados(usuarioPerfil.id_usuario)
         comentariosDenunciados.forEach(d => {
@@ -85,6 +87,14 @@ export async function mostrarPerfilUsuario(req, res) {
             }
         })
 
+        const notificaciones = await getNotificaciones(usuarioPerfil)
+
+        //EXTRAER NOTIFICACIONES NUEVAS/NO LEIDAS DEL ARRAY GENERAL DE NOTIFICACIONES
+        const notificacionesNuevas = notificaciones.filter(n => !n.notificacion_leida)
+
+        //EXTRAER NOTIFICACIONES LEIDAS DEL ARRAY GENERAL DE NOTIFICACIONES
+        const notificacionesLeidas = notificaciones.filter(n => n.notificacion_leida)
+        
         //Ordenar array por id_comentario de forma ascendente
         displayComentarios.sort((a, b) => a.Comentario.id_comentario - b.Comentario.id_comentario)
 
@@ -177,7 +187,10 @@ export async function mostrarPerfilUsuario(req, res) {
             postsDenunciados,
             cantPostsDadasDeBaja,
             displayComentarios,
-            comentariosDenunciados
+            comentariosDenunciados,
+            notificaciones,
+            notificacionesNuevas,
+            notificacionesLeidas
         });
     } catch (error) {
         res.status(400).send(`Ocurrió un error ${error}`)
@@ -650,35 +663,16 @@ async function getComentariosDenunciados(_id_usuario){
     return result
 }
 
-/*
-async function getComentariosDenunciados(_id_usuario){
-    const result = await DenunciaComentario.findAll({
+async function getNotificaciones(usuario){
+    const result = await Notificacion.findAll({
         where: {
-            estado: "pendiente"
+            [Op.and]: [
+                { id_usuario_destinatario: usuario.id_usuario },
+            ]
         },
-        attributes: ["id"],
-        include: [
-            { model: Comentario, 
-                attributes: ["id_comentario", "texto"], 
-                required: true, 
-                include: [
-                    { model: Imagen,
-                        attributes: ["id_img", "nombre_img", "img_path", "id_post"],
-                        required: true,
-                        include: [
-                            { model: Publicacion, 
-                                attributes: ["id_post", "titulo"],
-                                where: { 
-                                    id_usuario: _id_usuario
-                                },
-                                required: true
-                            }
-                        ]
-                    }
-                ]}
-        ],
-        order: [["fh_denuncia", "DESC"]],
+
+        order: [["fecha_notificacion", "DESC"]]
     })
 
-    return result
-}*/
+    return result 
+}

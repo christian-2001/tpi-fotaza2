@@ -75,7 +75,8 @@ block content
 
                 a(href=`/usuarioPerfil/${idPerfil}/colecciones`)
                     button(type="button" class=(sección == "colecciones") ? "colecciones bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "colecciones cursor-pointer hover:font-bold mx-5") Colecciones (#{userColecciones.length})
-
+                a(href=`/usuarioPerfil/${idPerfil}/notificaciones`)
+                    button(type="button" class=(sección == "notificaciones") ? "notificaciones bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "notificaciones cursor-pointer hover:font-bold mx-5")= notificacionesNuevas.length > 0 ? `Notificaciones (${notificacionesNuevas.length})` : "Notificaciones"
             .user_content
                 
                 //- Se utilizara el metodo reutilizable "renderPosts" que renderiza publicaciones en la siguientes secciones del perfil
@@ -260,4 +261,37 @@ block content
                                 label(for="btn_modificarColección")
                                     button(class="bg-white px-6 py-1 hover:bg-orange-400 hover:text-white cursor-pointer font-bold" id="btn_modificarColección") Cambiar nombre de Colección
                         +renderPosts(sección, postsColeccion, esFavorito, guardada, esDueño, postsDenunciados)                     
+                
+                //- ==================== NOTIFICACIONES ====================                              
+                else if sección == "notificaciones"
+                    if !notificaciones.length > 0
+                        p(class="text-center text-[2rem] my-5 font-medium") No has recibido notificaciones
+                    else
+                        div(class="mx-70")
+                            div(class="grid grid-cols-1 gap-4")
+                                if notificacionesNuevas.length > 0
+                                    .notificacionesNuevas(class="grid grid-cols-1 border-2 text-center bg-green-200 px-10 pb-5 mt-5 w-full")
+                                        p(class="font-bold text-[2rem] mt-3 mb-4 text-green-800") Nuevas notificaciones
+                                        
+                                        #list_notificacionesNuevas
+                                            each n in notificacionesNuevas
+                                                div(class="bg-orange-300 px-4 py-2 border-2")
+                                                    input(type="hidden", id=n.id_notificacion)
+                                                    div(class="grid grid-cols-2 border") 
+                                                        p(class="n_texto border-b-1 border-r-1 px-4 py-2") Texto de la notificacion
+                                                        p(class="n_evento border-b-1 px-4 py-2") Evento producido
+                                                        p(class="n_anchor col-span-2 py-1") anchor para dirigirse al contenido
+                                
+                                if notificacionesLeidas.length > 0
+                                    .notificacionesLeidas(class="grid grid-cols-1 border-2 text-center bg-sky-200 px-10 pb-5 mt-5 w-full")
+                                        p(class="font-bold text-[2rem] mt-3 mb-4") Notificaciones Leidas
+
+                                        #list_notificacionesLeidas
+                                            each n in notificacionesLeidas
+                                                div(class="bg-orange-300 px-4 py-2 border-2")
+                                                    div(class="grid grid-cols-2 border") 
+                                                        p(class="n_texto border-b-1 border-r-1 px-4 py-2") Texto de la notificacion
+                                                        p(class="n_evento border-b-1 px-4 py-2") Evento producido
+                                                        p(class="n_anchor col-span-2 py-1") anchor para dirigirse al contenido
+                            
     script(src="/script/userProfile/userProfile.js" defer) 

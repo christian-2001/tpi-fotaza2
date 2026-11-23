@@ -9,6 +9,7 @@ import registrerRoutes from "./routes/registrer/registrer.js"
 import postRoutes from "./routes/postRoutes/postRoutes.js"
 import UserPostRoutes from "./routes/UserPostRoutes/UserPostRoutes.js"
 import imageRoutes from "./routes/imageRoutes.js"
+import notificacionesRoutes from "./routes/notificacionesRoutes.js"
 import { authUserHome, esValidador } from "./middleware/auth.js";
 import { db_conexion } from "./models/index.js";
 
@@ -50,6 +51,8 @@ app.use("/subirPost", authUserHome, postRoutes)
 app.use("/post", authUserHome, UserPostRoutes)
 
 app.use("/imagen", authUserHome, imageRoutes)
+
+app.use("/notificaciones", authUserHome, notificacionesRoutes)
 
 app.use("/validador", authUserHome, esValidador, validadorRoutes)
 
