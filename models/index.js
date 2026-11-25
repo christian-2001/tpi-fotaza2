@@ -17,6 +17,7 @@ import { Motivo } from "./Motivo.js";
 import { DenunciaPublicacion } from "./DenunciaPublicacion.js";
 import { DenunciaComentario } from "./DenunciaComentario.js";
 import { Interes } from "./Interes.js";
+import { Notificacion } from "./Notificacion.js";
 /*
 ⁡⁢⁢⁢Relacion 1 a 1 con:
     HasOne -> un modelo tiene un elemento de otro modelo
@@ -67,11 +68,17 @@ Valorizacion.belongsTo(Imagen, { foreignKey: "id_img"})
 Usuario.hasMany(Valorizacion, { foreignKey: "id_usuario"})
 Valorizacion.belongsTo(Usuario, { foreignKey: "id_usuario"})
 
-Usuario.hasMany(Interes, { foreignKey: "id_interesado"})
-Interes.belongsTo(Usuario, { foreignKey: "id_interesado"})
+Interes.belongsTo(Usuario, { foreignKey: "id_interesado", as: "interesado"})
+Interes.belongsTo(Usuario, { foreignKey: "id_autor", as: "autor"})
 
 Imagen.hasMany(Interes, { foreignKey: "id_img"})
 Interes.belongsTo(Imagen, { foreignKey: "id_img"})
+
+Notificacion.belongsTo(Usuario, { foreignKey: "id_usuario_creador", as: "creador"})
+Notificacion.belongsTo(Usuario, { foreignKey: "id_usuario_destinatario", as: "destinatario"});
+
+Imagen.hasMany(Notificacion, { foreignKey: "id_img_evento", targetKey: "id_img", as: "imagen" })
+Notificacion.belongsTo(Imagen, { foreignKey: "id_img_evento", sourceKey: "id_img", as: "notificaciones" })
 
 //================================================================================
 Publicacion.hasMany(DenunciaPublicacion, { foreignKey: "id_post", as: "DenunciaPublicación"})

@@ -37,6 +37,14 @@ Notificacion.init(
             }
         },
 
+        id_img_evento: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: Imagen,
+                key: "id_img"
+            }
+        },
+
         fecha_notificacion: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,

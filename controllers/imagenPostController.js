@@ -22,9 +22,7 @@ export async function marcarInteres(req, res){
 
         let id_usuario_post = await Imagen.findOne({
             where: {
-                [Op.and]: [
-                    { id_img: _idImg },
-                ]
+                id_img: _idImg           
             },
             
             include: [
@@ -37,22 +35,18 @@ export async function marcarInteres(req, res){
         const interesHallado = await Interes.findOne({
             where: {
                 [Op.and]: [
-                    { '$Imagen.id_img$': _idImg },
-                    { '$Usuario.id_usuario$': _idUsuario }
+                    { id_img: _idImg },
+                    { id_interesado: _idUsuario }
                 ]
-            },
-
-            include: [
-                { model: Imagen, required: true, attributes: ["id_img"] },
-                { model: Usuario, required: true, attributes: ["id_usuario"] }
-            ]
+            }
         })
 
         if(!interesHallado){
 
             await Interes.create({
                 id_img: _idImg,
-                id_interesado: _idUsuario
+                id_interesado: _idUsuario,
+                id_autor: id_usuario_post
             })
 
             msj_confirmacion = "Marcaste tu interes en la imagen, se lo notificaremos al autor" 
@@ -60,7 +54,8 @@ export async function marcarInteres(req, res){
             await Notificacion.create({
                 tipo_evento: "Me interesa",
                 id_usuario_creador: _idUsuario,
-                id_usuario_destinatario: id_usuario_post
+                id_usuario_destinatario: id_usuario_post,
+                id_img_evento: _idImg
             })
 
 
@@ -75,7 +70,8 @@ export async function marcarInteres(req, res){
                 await Notificacion.create({
                     tipo_evento: "Me interesa",
                     id_usuario_creador: _idUsuario,
-                    id_usuario_destinatario: id_usuario_post
+                    id_usuario_destinatario: id_usuario_post,
+                    id_img_evento: _idImg
                 })
                 
             } else if (interesHallado.estado === "activo"){

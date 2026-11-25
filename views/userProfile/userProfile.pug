@@ -56,27 +56,30 @@ block content
                         if cantPostsDadasDeBaja === 2
                             h1(class="bg-red-300 text-red-700 font-bold text-2xl mt-2 py-3 px-6 rounded-lg") Una baja más y tu cuenta será inhabilitada
 
-            .user_content_options(class="mt-5 mx-5 text-center justify-center border-b-1 gap-2")
+            .user_content_options(class="flex flex-row justify-center items-center gap-4 mt-5 mx-5 border-b-1 text-[15px]")
             
                 a(href=`/usuarioPerfil/${idPerfil}/posts`)
-                    button(type="button" class=(sección == "posts") ? "posts bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "posts cursor-pointer hover:font-bold mx-3") Publicaciones (#{posts.length})
+                    button(type="button" class=(sección == "posts") ? "posts bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "posts cursor-pointer hover:font-bold ") Publicaciones (#{posts.length})
                 a(href=`/usuarioPerfil/${idPerfil}/followers`)
-                    button(type="button" class=(sección == "followers") ? "followers bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "followers cursor-pointer hover:font-bold mx-3") Seguidores (#{seguidores.length})
+                    button(type="button" class=(sección == "followers") ? "followers bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "followers cursor-pointer hover:font-bold") Seguidores (#{seguidores.length})
                 a(href=`/usuarioPerfil/${idPerfil}/following`)
-                    button(type="button" class=(sección == "following") ? "following bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "following cursor-pointer hover:font-bold mx-3") Siguiendo (#{seguidos.length})
+                    button(type="button" class=(sección == "following") ? "following bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "following cursor-pointer hover:font-bold") Siguiendo (#{seguidos.length})
+                a(href=`/usuarioPerfil/${idPerfil}/colecciones`)
+                    button(type="button" class=(sección == "colecciones") ? "colecciones bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "colecciones cursor-pointer hover:font-bold") Colecciones (#{userColecciones.length})
 
                 if esDueño
                     a(href=`/usuarioPerfil/${idPerfil}/favoritos`)
-                        button(type="button" class=(sección == "favoritos") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "favoritos cursor-pointer hover:font-bold mx-3") Favoritos (#{favoritos.length})
+                        button(type="button" class=(sección == "favoritos") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "favoritos cursor-pointer hover:font-bold") Favoritos (#{favoritos.length})
                     a(href=`/usuarioPerfil/${idPerfil}/postsFollowing`)
-                        button(type="button" class=(sección == "postsFollowing") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "favoritos cursor-pointer hover:font-bold mx-3") Publicaciones de usuarios que sigo (#{postsFollowing.length})
+                        button(type="button" class=(sección == "postsFollowing") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "favoritos cursor-pointer hover:font-bold") Publicaciones de usuarios que sigo (#{postsFollowing.length})
                     a(href=`/usuarioPerfil/${idPerfil}/comentariosDenunciados`)
-                        button(type="button" class=(sección == "comentariosDenunciados") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "favoritos cursor-pointer hover:font-bold mx-3") Comentarios denunciados (#{displayComentarios.length})
+                        button(type="button" class=(sección == "comentariosDenunciados") ? "favoritos bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-3 py-1" : "favoritos cursor-pointer hover:font-bold") Comentarios denunciados (#{displayComentarios.length})
+                    a(href=`/usuarioPerfil/${idPerfil}/notificaciones`)
+                        button(type="button" class=(sección == "notificaciones") ? "notificaciones bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "notificaciones cursor-pointer hover:font-bold")= notificacionesNuevas.length > 0 ? `Notificaciones (${notificacionesNuevas.length})` : "Notificaciones"
+                    a(href=`/usuarioPerfil/${idPerfil}/interesados`)
+                        button(type="button" class=(sección == "interesados") ? "interesados bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "interesados cursor-pointer hover:font-bold") Interesados
 
-                a(href=`/usuarioPerfil/${idPerfil}/colecciones`)
-                    button(type="button" class=(sección == "colecciones") ? "colecciones bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "colecciones cursor-pointer hover:font-bold mx-5") Colecciones (#{userColecciones.length})
-                a(href=`/usuarioPerfil/${idPerfil}/notificaciones`)
-                    button(type="button" class=(sección == "notificaciones") ? "notificaciones bg-orange-300 border-b-2 cursor-pointer hover:font-bold px-5 py-1" : "notificaciones cursor-pointer hover:font-bold mx-5")= notificacionesNuevas.length > 0 ? `Notificaciones (${notificacionesNuevas.length})` : "Notificaciones"
+            
             .user_content
                 
                 //- Se utilizara el metodo reutilizable "renderPosts" que renderiza publicaciones en la siguientes secciones del perfil
@@ -267,31 +270,65 @@ block content
                     if !notificaciones.length > 0
                         p(class="text-center text-[2rem] my-5 font-medium") No has recibido notificaciones
                     else
-                        div(class="mx-70")
-                            div(class="grid grid-cols-1 gap-4")
-                                if notificacionesNuevas.length > 0
-                                    .notificacionesNuevas(class="grid grid-cols-1 border-2 text-center bg-green-200 px-10 pb-5 mt-5 w-full")
-                                        p(class="font-bold text-[2rem] mt-3 mb-4 text-green-800") Nuevas notificaciones
+                        div(class="mx-[25%]")
+                            if notificacionesNuevas.length > 0
+                                div(class="flex justify-center")
+                                    .notificacionesNuevas(class="w-full bg-green-200 px-5 pb-5 mt-5 text-center rounded-xl")
+                                        p(class="font-bold text-3xl mt-3 mb-4 text-green-900") Nuevas notificaciones
                                         
-                                        #list_notificacionesNuevas
+                                        #list_notificacionesNuevas(class="flex flex-col gap-8")
                                             each n in notificacionesNuevas
-                                                div(class="bg-orange-300 px-4 py-2 border-2")
-                                                    input(type="hidden", id=n.id_notificacion)
-                                                    div(class="grid grid-cols-2 border") 
-                                                        p(class="n_texto border-b-1 border-r-1 px-4 py-2") Texto de la notificacion
-                                                        p(class="n_evento border-b-1 px-4 py-2") Evento producido
-                                                        p(class="n_anchor col-span-2 py-1") anchor para dirigirse al contenido
-                                
-                                if notificacionesLeidas.length > 0
-                                    .notificacionesLeidas(class="grid grid-cols-1 border-2 text-center bg-sky-200 px-10 pb-5 mt-5 w-full")
-                                        p(class="font-bold text-[2rem] mt-3 mb-4") Notificaciones Leidas
-
-                                        #list_notificacionesLeidas
-                                            each n in notificacionesLeidas
-                                                div(class="bg-orange-300 px-4 py-2 border-2")
-                                                    div(class="grid grid-cols-2 border") 
-                                                        p(class="n_texto border-b-1 border-r-1 px-4 py-2") Texto de la notificacion
-                                                        p(class="n_evento border-b-1 px-4 py-2") Evento producido
-                                                        p(class="n_anchor col-span-2 py-1") anchor para dirigirse al contenido
+                                                input(type="hidden", id=n.id_notificacion)
+                                                if n.tipo_evento == "Me interesa"
+                                                    div(class="flex justify-center")
+                                                        div(class="grid grid-cols-2 bg-orange-300 border h-45 w-119 rounded-lg")
+                                                            div(class="flex flex-col justify-center gap-3 px-4 py-3 border-r") 
+                                                                p(class="n_texto") #[span(class="font-bold") #{n.creador.nombre_usuario}] mostró interés en la siguiente imagen de tu publicación: #[span(class="font-bold") #{n.notificaciones.Publicacion.titulo}]
+                                                                a(href="" class="n_anchor underline underline-offset-2 hover:text-sky-800" title="Abrir chat con el interesado") Abrir chat con el interesado
+                                                            .imgEvento(class="overflow-hidden")
+                                                                img(src=n.notificaciones.img_path, alt="imgEvento" class="h-full object-cover")
+                                                                
                             
+                            if notificacionesLeidas && notificacionesLeidas.length > 0
+                                div(class="flex justify-center")
+                                    .notificacionesLeidas(class="w-full bg-sky-200 px-5 pb-5 mt-5 text-center rounded-xl")
+                                        p(class="font-bold text-3xl mt-3 mb-4 text-sky-900") Notificaciones Leidas
+
+                                        #list_notificacionesLeidas(class="flex flex-col gap-8")
+                                            each n in notificacionesLeidas
+                                                if n.tipo_evento == "Me interesa"
+                                                    div(class="flex justify-center")
+                                                        div(class="grid grid-cols-2 bg-orange-300 border-2 h-45 w-119 rounded-lg")
+                                                            div(class="flex flex-col justify-center gap-3 px-4 py-3 border-r") 
+                                                                p(class="n_texto") #[span(class="font-bold") #{n.creador.nombre_usuario}] mostró interés en la siguiente imagen de tu publicación: #[span(class="font-bold") #{n.notificaciones.Publicacion.titulo}]
+                                                                a(href="" class="n_anchor underline underline-offset-2 hover:text-sky-800" title="Abrir chat con el interesado") Abrir chat con el interesado
+                                                            .imgEvento(class="overflow-hidden")
+                                                                img(src=n.notificaciones.img_path, alt="imgEvento" class="w-full h-full object-cover")
+
+                else if sección == "interesados"
+                    if interesados.length === 0
+                        p(class="text-center text-[2rem] my-5 font-medium") Todavía nadie mostró interés en tus imágenes
+                    else
+                        div(class="mx-[18%]")
+                            .interesados(class="bg-indigo-100 px-5 pb-5 mt-5 rounded-xl")
+                                div(class="flex justify-center")
+                                    p(class="font-semibold text-3xl mt-3 mb-4 px-6 py-1 text-indigo-800 w-fit") Listado de interesados
+
+                                #list_interesados(class="flex flex-col gap-5")
+                                    each i in interesados
+                                        - const activo = i.estado === "activo"
+                                        article(data-id-interes=i.id_interes class="flex flex-row gap-4 p-4 bg-white border-2 border-indigo-300 rounded-xl")
+                                            img(src=i.Imagen.img_path, alt=i.Imagen.nombre_img, class="w-36 object-cover rounded-lg")
+
+                                            div(class="flex-1 text-left space-y-1")
+                                                a(href=`/usuarioPerfil/${i.interesado.id_usuario}/posts` class="text-xl font-bold hover:text-indigo-700 hover:underline")= i.interesado.nombre_usuario
+                                                p(class="text-sm text-gray-600") #{i.interesado.cant_seguidores} seguidores · #{i.interesado.cant_seguidos} seguidos
+                                                p(class="text-sm text-gray-600") Fecha registrada del interes: #{new Date(i.fecha_interes).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" })}
+                                                p(class="text-sm pt-2") #[span(class="font-semibold") Imagen:] #{i.Imagen.nombre_img}
+                                                p(class="text-sm") #[span(class="font-semibold") Publicación:] #{i.Imagen.Publicacion.titulo}
+
+                                            div(class="flex md:flex-col items-center md:items-end justify-between gap-3")
+                                                span(class="px-3 py-1 rounded-full text-sm font-bold " + (activo ? "bg-green-100 text-green-800" : "bg-red-200 text-red-600"))= activo ? "Activo" : "Retirado"
+                                                a(href=`` class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700") Abrir chat 
+                                                                                  
     script(src="/script/userProfile/userProfile.js" defer) 

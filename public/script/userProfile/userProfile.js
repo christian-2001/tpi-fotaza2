@@ -48,10 +48,10 @@ let motivos = [
 document.addEventListener("DOMContentLoaded", () => {
     if(div_notificacionesNuevas){
         console.log("hola")
-        const arr_notificacionesNuevas = div_notificacionesNuevas.querySelector("#list_notificacionesNuevas").childNodes
+        const arr_notificacionesNuevas = div_notificacionesNuevas.querySelector("#list_notificacionesNuevas").querySelectorAll("input")
         
         arr_notificacionesNuevas.forEach(async(n) => {
-            const _idNotificacion = n.querySelector("input").id
+            const _idNotificacion = n.id
 
             const res = await fetch(`/notificaciones/marcarLeida/${_idNotificacion}`, {
                 method: "POST",

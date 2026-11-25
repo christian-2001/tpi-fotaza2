@@ -33,6 +33,14 @@ Interes.init(
             unique: "InteresadoUnico"
         },
 
+        id_autor: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: Usuario,
+                key: "id_usuario"
+            }
+        },
+
         fecha_interes: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,

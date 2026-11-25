@@ -14,6 +14,7 @@ import { Colección } from "../../models/Colección.js"
 import { DenunciaPublicacion } from "../../models/DenunciaPublicacion.js"
 import { DenunciaComentario } from "../../models/DenunciaComentario.js"
 import { Notificacion } from "../../models/Notificacion.js"
+import { Interes } from "../../models/Interes.js"
 import { Motivo } from "../../models/Motivo.js"
 
 
@@ -87,7 +88,8 @@ export async function mostrarPerfilUsuario(req, res) {
             }
         })
 
-        const notificaciones = await getNotificaciones(usuarioPerfil)
+        const notificaciones = await getNotificaciones(usuarioPerfil.id_usuario)
+        const interesados = await getInteresados(usuarioPerfil.id_usuario)
 
         //EXTRAER NOTIFICACIONES NUEVAS/NO LEIDAS DEL ARRAY GENERAL DE NOTIFICACIONES
         const notificacionesNuevas = notificaciones.filter(n => !n.notificacion_leida)
@@ -188,6 +190,7 @@ export async function mostrarPerfilUsuario(req, res) {
             cantPostsDadasDeBaja,
             displayComentarios,
             comentariosDenunciados,
+            interesados,
             notificaciones,
             notificacionesNuevas,
             notificacionesLeidas
@@ -663,16 +666,66 @@ async function getComentariosDenunciados(_id_usuario){
     return result
 }
 
-async function getNotificaciones(usuario){
+async function getNotificaciones(_idUsuario){
     const result = await Notificacion.findAll({
         where: {
-            [Op.and]: [
-                { id_usuario_destinatario: usuario.id_usuario },
-            ]
+            id_usuario_destinatario: _idUsuario
         },
 
+        include: [
+            { model: Usuario, required: true, as: "creador", attributes: ["id_usuario", "nombre_usuario"]},
+            { model: Usuario, required: true, as: "destinatario", attributes: ["id_usuario", "nombre_usuario"]},
+            { 
+                model: Imagen,
+                attributes: ["id_img", "img_path", "id_post"], 
+                as: "notificaciones",
+                include: [
+                    { 
+                        model: Publicacion,
+                        attributes: ["id_post", "titulo"]
+                    }
+                ]
+            },
+        ],
+
+        logging: console.log,
+        
         order: [["fecha_notificacion", "DESC"]]
     })
 
+
     return result 
+}
+
+async function getInteresados(_idUsuario){
+    const result = await Interes.findAll({
+
+        where: {
+            id_autor: _idUsuario
+        },
+
+        include: [
+            { 
+                model: Imagen, 
+                required: true,
+                attributes: ["id_img", "img_path", "nombre_img", "id_post", "nombre_img"],
+                include: [
+                    { 
+                        model: Publicacion, 
+                        required: true,
+                        attributes: ["id_post", "titulo"]
+                    }
+                ]
+            },
+            { 
+                model: Usuario, 
+                as: "interesado", 
+                attributes: ["id_usuario", "nombre_usuario", "cant_publicaciones", "cant_seguidores", "cant_seguidos"] 
+            }
+        ],
+
+        order: [["id_interes", "ASC"]]
+    })
+
+    return result
 }
